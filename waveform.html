@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sine · Triangle · Square — 波形嘅物理現象</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+  :root{
+    --bg:#14110D;
+    --panel:#1D1811;
+    --panel-2:#241E15;
+    --amber:#FFB000;
+    --amber-dim:#8C5F00;
+    --teal:#4FA3C4;
+    --teal-dim:#2C5A6D;
+    --text:#E8DFC8;
+    --text-dim:#8C8371;
+    --line:#3A3226;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at 50% -10%, rgba(255,176,0,0.06), transparent 60%), var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans TC','IBM Plex Mono',monospace;
+    min-height:100vh;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+  header{margin-bottom:22px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--amber-dim);text-transform:uppercase;margin-bottom:8px;}
+  h1{font-family:'Space Grotesk','Noto Sans TC',sans-serif;font-weight:700;font-size:clamp(24px,4.6vw,34px);margin:0 0 8px;letter-spacing:0.01em;}
+  h1 span{color:var(--amber);}
+  .sub{color:var(--text-dim);font-size:14px;line-height:1.7;max-width:660px;}
+
+  .tabs{display:flex;gap:8px;margin-bottom:18px;}
+  .tab{
+    flex:1;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:0.06em;
+    padding:12px 10px;
+    cursor:pointer;
+    border-radius:2px;
+    text-align:center;
+    transition:all .15s ease;
+    text-transform:uppercase;
+  }
+  .tab .cn{display:block;font-family:'Noto Sans TC',sans-serif;font-size:14px;color:var(--text);margin-top:2px;text-transform:none;letter-spacing:0;}
+  .tab.active{border-color:var(--amber-dim);background:var(--panel-2);color:var(--amber);}
+  .tab.active .cn{color:var(--amber);}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  @media (max-width:680px){.grid{grid-template-columns:1fr;}}
+
+  .scope{background:var(--panel);border:1px solid var(--line);border-radius:2px;overflow:hidden;}
+  .scope-head{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;}
+  .scope-head .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-right:6px;vertical-align:1px;box-shadow:0 0 6px var(--amber);}
+  canvas{display:block;width:100%;}
+
+  .controls{background:var(--panel);border:1px solid var(--line);border-radius:2px;padding:16px 18px 18px;margin-bottom:18px;}
+  .ctrl-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+  .ctrl-row:last-child{margin-bottom:0;}
+  .ctrl-label{width:90px;flex-shrink:0;font-size:13px;}
+  input[type=range]{flex:1;-webkit-appearance:none;height:3px;background:var(--line);border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--amber);cursor:pointer;box-shadow:0 0 8px rgba(255,176,0,0.6);}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:var(--amber);cursor:pointer;}
+  .ctrl-num{width:64px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--teal);flex-shrink:0;}
+  .play-btn{display:inline-flex;align-items:center;gap:8px;background:var(--amber);color:#14110D;border:none;padding:10px 20px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;letter-spacing:0.05em;border-radius:2px;cursor:pointer;}
+  .play-btn.playing{background:var(--teal);color:#0d1b21;}
+
+  .card{background:var(--panel-2);border:1px solid var(--line);border-left:2px solid var(--amber-dim);padding:16px 18px;border-radius:2px;margin-bottom:16px;}
+  .card h3{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);margin:0 0 8px;}
+  .card p{font-size:13.5px;line-height:1.75;margin:0;}
+  .card p+p{margin-top:8px;}
+  .card b{color:var(--teal);font-weight:600;}
+
+  footer{text-align:center;color:var(--text-dim);font-size:10.5px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.08em;margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Waveform Physics · 波形物理</div>
+    <h1>三種基本波形,三種<span>物理現象</span></h1>
+    <p class="sub">
+      Sine、Triangle、Square 唔單止係synth面板上嘅icon——每一種都對應緊現實入面一種具體嘅運動或者電路行為。
+      揀一種波形,睇下佢嘅時域形狀、物理成因動畫、同泛音頻譜點樣互相對應。
+    </p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-wf="sine">SINE<span class="cn">簡諧運動</span></button>
+    <button class="tab" data-wf="triangle">TRIANGLE<span class="cn">等速來回</span></button>
+    <button class="tab" data-wf="square">SQUARE<span class="cn">狀態突變</span></button>
+  </div>
+
+  <div class="grid">
+    <div class="scope">
+      <div class="scope-head"><span><span class="dot"></span>TIME DOMAIN</span><span id="wfLabel">Sine</span></div>
+      <canvas id="waveCanvas" height="150"></canvas>
+    </div>
+    <div class="scope">
+      <div class="scope-head"><span><span class="dot" style="background:var(--teal);box-shadow:0 0 6px var(--teal)"></span>PHYSICAL ORIGIN</span><span id="physLabel">圓周運動投影</span></div>
+      <canvas id="physCanvas" height="150"></canvas>
+    </div>
+  </div>
+
+  <div class="scope" style="margin-bottom:18px;">
+    <div class="scope-head"><span><span class="dot" style="background:#C97B3F;box-shadow:0 0 6px #C97B3F"></span>HARMONIC SPECTRUM</span><span id="specInfo">泛音相對振幅</span></div>
+    <canvas id="specCanvas" height="140"></canvas>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-row">
+      <div class="ctrl-label">頻率</div>
+      <input type="range" id="freqSlider" min="80" max="800" value="220" step="1">
+      <div class="ctrl-num" id="freqNum">220 Hz</div>
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-label">音量</div>
+      <input type="range" id="ampSlider" min="10" max="100" value="50" step="1">
+      <div class="ctrl-num" id="ampNum">50%</div>
+    </div>
+    <div class="ctrl-row">
+      <button class="play-btn" id="playBtn">▶ 聽呢個波形</button>
+    </div>
+  </div>
+
+  <div class="card" id="descCard"></div>
+
+  <footer>FOURIER SERIES · REAL PHYSICAL SYSTEMS BEHIND SYNTH OSCILLATORS</footer>
+</div>
+
+<script>
+const waveCanvas = document.getElementById('waveCanvas');
+const physCanvas = document.getElementById('physCanvas');
+const specCanvas = document.getElementById('specCanvas');
+const wCtx = waveCanvas.getContext('2d');
+const phCtx = physCanvas.getContext('2d');
+const spCtx = specCanvas.getContext('2d');
+
+const freqSlider = document.getElementById('freqSlider');
+const ampSlider = document.getElementById('ampSlider');
+const freqNum = document.getElementById('freqNum');
+const ampNum = document.getElementById('ampNum');
+const playBtn = document.getElementById('playBtn');
+const wfLabel = document.getElementById('wfLabel');
+const physLabel = document.getElementById('physLabel');
+const descCard = document.getElementById('descCard');
+const tabs = document.querySelectorAll('.tab');
+
+let waveform = 'sine';
+let freq = 220;
+let amp = 50;
+let t = 0;
+
+const CONTENT = {
+  sine: {
+    physLabel: '圓周運動投影',
+    desc: `
+      <h3>物理現象 · Simple Harmonic Motion</h3>
+      <p><b>對應現實：</b>彈弓上嘅重物、細角度擺動嘅鐘擺、LC諧振電路。呢啲系統嘅共通點係「回復力同偏移量成正比」(F = -kx),數學解出嚟就係sine函數。</p>
+      <p><b>幾何本質：</b>等速圓周運動,投影到一條直線度,就係sine wave——右圖個點沿圓周勻速轉,佢嘅垂直位置隨時間畫出嚟嗰條線,同左邊個waveform一模一樣。</p>
+      <p><b>泛音：</b>淨係得fundamental frequency,冇任何harmonics——係頻譜上「最乾淨」嘅單一頻率,呢個係其他所有複雜波形嘅基本構件(Fourier認為任何週期波都可以拆返做一堆唔同頻率嘅sine相加)。</p>
+    `,
+    spectrum: [[1,1]]
+  },
+  triangle: {
+    physLabel: '恆定速度來回運動',
+    desc: `
+      <h3>物理現象 · Constant-Velocity Reversal</h3>
+      <p><b>對應現實：</b>一個物體用恆定速度移動,去到終點即刻反方向(速度大小唔變,方向瞬間反轉)——電子上對應「用恆定電流幫電容器充電、放電」,產生嘅電壓就係linear ramp嚟回。數學上,triangle wave正正就係square wave經過一次積分。</p>
+      <p><b>同sine嘅分別：</b>Sine嘅速度喺兩端慢、中間快(圓周運動嘅垂直分量);Triangle嘅速度全程恆定,淨係喺轉角嗰一瞬間突變——即係位移對時間嘅圖係直線嚟回,唔係曲線。</p>
+      <p><b>泛音：</b>得單數harmonics(1,3,5,7…),振幅按1/n²遞減——衰得好快,所以高頻份量好弱,聽落比square柔好多,接近純音又冇咁悶。</p>
+    `,
+    spectrum: [[1,1],[3,1/9],[5,1/25],[7,1/49],[9,1/81]]
+  },
+  square: {
+    physLabel: '雙穩態瞬間切換',
+    desc: `
+      <h3>物理現象 · Bistable Instant Switching</h3>
+      <p><b>對應現實：</b>一個系統喺兩個固定狀態之間即時切換,冇任何過渡態——好似relay/開關掣、電子電路入面嘅Schmitt trigger(雙穩態觸發器)。喺audio入面,square wave亦都係「sine被削波(clipping)到盡」嘅極端結果——你將個訊號送入overdrive/limiter谷盡,個sine嘅兩端會被夾平,愈夾愈近似square。</p>
+      <p><b>同triangle嘅分別：</b>Triangle係「恆速移動,轉角一刻反轉」;Square係「根本冇移動過程」——狀態即時由+1跳去-1,冇任何中間值。</p>
+      <p><b>泛音：</b>都係得單數harmonics(1,3,5,7…),但振幅按1/n遞減——衰得慢好多,所以高頻份量好豐富,聽落好「勁」、好「電」、好刺耳,成日用嚟做chiptune、bass、lead,或者代表「削波/distortion」呢種聲音特質。</p>
+    `,
+    spectrum: [[1,1],[3,1/3],[5,1/5],[7,1/7],[9,1/9]]
+  }
+};
+
+function resizeCanvases(){
+  [waveCanvas, physCanvas, specCanvas].forEach(c=>{
+    const w = c.parentElement.clientWidth;
+    const ratio = window.devicePixelRatio || 1;
+    const cssH = parseInt(c.getAttribute('height'));
+    c.width = w * ratio;
+    c.height = cssH * ratio;
+    c.style.height = cssH + 'px';
+    c.getContext('2d').setTransform(ratio,0,0,ratio,0,0);
+  });
+}
+
+function waveValue(phase){
+  // phase in radians
+  const s = Math.sin(phase);
+  if(waveform==='sine') return s;
+  if(waveform==='triangle') return (2/Math.PI)*Math.asin(s);
+  if(waveform==='square') return s>=0?1:-1;
+}
+
+function drawWave(){
+  const w = waveCanvas.clientWidth, h = parseInt(waveCanvas.getAttribute('height'));
+  wCtx.clearRect(0,0,w,h);
+  wCtx.strokeStyle='rgba(255,176,0,0.08)'; wCtx.lineWidth=1;
+  for(let x=0;x<w;x+=40){wCtx.beginPath();wCtx.moveTo(x,0);wCtx.lineTo(x,h);wCtx.stroke();}
+  wCtx.beginPath();wCtx.moveTo(0,h/2);wCtx.lineTo(w,h/2);wCtx.strokeStyle='rgba(255,176,0,0.18)';wCtx.stroke();
+
+  const cyclesVisible = 2 + freq/150;
+  const ampPx = (amp/100)*(h*0.4);
+  wCtx.beginPath();
+  wCtx.strokeStyle='#FFB000'; wCtx.lineWidth=2.2;
+  wCtx.shadowColor='rgba(255,176,0,0.5)'; wCtx.shadowBlur=6;
+  for(let x=0;x<=w;x++){
+    const phase = (x/w)*cyclesVisible*Math.PI*2 - t*(freq/60);
+    const y = h/2 - waveValue(phase)*ampPx;
+    if(x===0) wCtx.moveTo(x,y); else wCtx.lineTo(x,y);
+  }
+  wCtx.stroke(); wCtx.shadowBlur=0;
+}
+
+function drawPhys(){
+  const w = physCanvas.clientWidth, h = parseInt(physCanvas.getAttribute('height'));
+  phCtx.clearRect(0,0,w,h);
+  const cx = 34, cy = h/2, r = 26;
+  const speed = freq/60;
+  const phase = -t*speed*Math.PI*2;
+
+  if(waveform==='sine'){
+    // reference circle
+    phCtx.strokeStyle='rgba(79,163,196,0.4)'; phCtx.lineWidth=1.5;
+    phCtx.beginPath(); phCtx.arc(cx,cy,r,0,Math.PI*2); phCtx.stroke();
+    const px = cx + r*Math.cos(phase);
+    const py = cy + r*Math.sin(phase);
+    phCtx.strokeStyle='rgba(79,163,196,0.35)'; phCtx.beginPath(); phCtx.moveTo(cx,cy); phCtx.lineTo(px,py); phCtx.stroke();
+    phCtx.beginPath(); phCtx.arc(px,py,4,0,Math.PI*2); phCtx.fillStyle='#4FA3C4'; phCtx.fill();
+    // dashed to trace line
+    phCtx.setLineDash([2,3]);
+    phCtx.strokeStyle='rgba(79,163,196,0.3)';
+    phCtx.beginPath(); phCtx.moveTo(px,py); phCtx.lineTo(cx+r+20,py); phCtx.stroke();
+    phCtx.setLineDash([]);
+    // trace
+    phCtx.beginPath(); phCtx.strokeStyle='#4FA3C4'; phCtx.lineWidth=2;
+    const traceStart = cx+r+20;
+    for(let x=traceStart;x<w;x++){
+      const ph = phase - (x-traceStart)*0.09;
+      const y = cy + r*Math.sin(ph);
+      if(x===traceStart) phCtx.moveTo(x,y); else phCtx.lineTo(x,y);
+    }
+    phCtx.stroke();
+  } else if(waveform==='triangle'){
+    const trackY = cy;
+    const leftX = 30, rightX = w-160;
+    const pos = (2/Math.PI)*Math.asin(Math.sin(phase)); // -1..1
+    const ballX = leftX + (pos+1)/2*(rightX-leftX);
+    phCtx.strokeStyle='rgba(79,163,196,0.35)'; phCtx.lineWidth=1.5;
+    phCtx.beginPath(); phCtx.moveTo(leftX,trackY); phCtx.lineTo(rightX,trackY); phCtx.stroke();
+    phCtx.fillStyle='rgba(79,163,196,0.6)';
+    phCtx.fillRect(leftX-4,trackY-14,4,28);
+    phCtx.fillRect(rightX,trackY-14,4,28);
+    phCtx.beginPath(); phCtx.arc(ballX,trackY,5,0,Math.PI*2); phCtx.fillStyle='#4FA3C4'; phCtx.fill();
+    // trace
+    const traceStart = rightX+25;
+    phCtx.beginPath(); phCtx.strokeStyle='#4FA3C4'; phCtx.lineWidth=2;
+    for(let x=traceStart;x<w;x++){
+      const ph = phase - (x-traceStart)*0.09;
+      const y = cy - ((2/Math.PI)*Math.asin(Math.sin(ph)))*24;
+      if(x===traceStart) phCtx.moveTo(x,y); else phCtx.lineTo(x,y);
+    }
+    phCtx.stroke();
+  } else if(waveform==='square'){
+    const state = Math.sin(phase)>=0;
+    const boxY = state? cy-30 : cy+6;
+    phCtx.fillStyle='rgba(79,163,196,0.15)';
+    phCtx.fillRect(10,cy-30,50,24);
+    phCtx.fillRect(10,cy+6,50,24);
+    phCtx.fillStyle='#4FA3C4';
+    phCtx.fillRect(10,boxY,50,24);
+    phCtx.fillStyle='#14110D';
+    phCtx.font='10px IBM Plex Mono';
+    phCtx.fillText(state?'+1':'', 26, boxY+16);
+    phCtx.fillStyle='#8C8371';
+    phCtx.font='9px IBM Plex Mono';
+    phCtx.fillText('HIGH', 20, cy-30+16);
+    phCtx.fillText('LOW', 22, cy+6+16);
+    const traceStart = 90;
+    phCtx.beginPath(); phCtx.strokeStyle='#4FA3C4'; phCtx.lineWidth=2;
+    for(let x=traceStart;x<w;x++){
+      const ph = phase - (x-traceStart)*0.09;
+      const y = cy - (Math.sin(ph)>=0?1:-1)*24;
+      if(x===traceStart) phCtx.moveTo(x,y); else phCtx.lineTo(x,y);
+    }
+    phCtx.stroke();
+  }
+}
+
+function drawSpectrum(){
+  const w = specCanvas.clientWidth, h = parseInt(specCanvas.getAttribute('height'));
+  spCtx.clearRect(0,0,w,h);
+  const data = CONTENT[waveform].spectrum;
+  const maxN = 9;
+  const slots = [1,2,3,4,5,6,7,8,9];
+  const barW = w/slots.length;
+  spCtx.strokeStyle='rgba(255,176,0,0.1)'; spCtx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y = h-10-(h-30)*(i/4);
+    spCtx.beginPath(); spCtx.moveTo(0,y); spCtx.lineTo(w,y); spCtx.stroke();
+  }
+  slots.forEach((n,i)=>{
+    const found = data.find(d=>d[0]===n);
+    const val = found? found[1]:0;
+    const barH = val*(h-30);
+    const x = i*barW + barW*0.25;
+    const bw = barW*0.5;
+    const y = h-10-barH;
+    const grad = spCtx.createLinearGradient(0,y,0,h-10);
+    grad.addColorStop(0, found? '#C97B3F':'rgba(140,131,113,0.15)');
+    grad.addColorStop(1, found? 'rgba(201,123,63,0.3)':'rgba(140,131,113,0.05)');
+    spCtx.fillStyle = grad;
+    spCtx.fillRect(x,y,bw,Math.max(barH,found?2:0));
+    spCtx.fillStyle = found? '#E8DFC8':'#4a4232';
+    spCtx.font='10px IBM Plex Mono';
+    spCtx.textAlign='center';
+    spCtx.fillText('n='+n, x+bw/2, h-1);
+  });
+  spCtx.textAlign='left';
+}
+
+function animate(){
+  t += 0.016;
+  drawWave(); drawPhys(); drawSpectrum();
+  requestAnimationFrame(animate);
+}
+
+function updateUI(){
+  freqNum.textContent = freq+' Hz';
+  ampNum.textContent = amp+'%';
+  wfLabel.textContent = waveform.charAt(0).toUpperCase()+waveform.slice(1);
+  physLabel.textContent = CONTENT[waveform].physLabel;
+  descCard.innerHTML = CONTENT[waveform].desc;
+}
+
+tabs.forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    tabs.forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    waveform = tab.dataset.wf;
+    updateUI();
+    if(osc) osc.type = waveform;
+  });
+});
+
+freqSlider.addEventListener('input', ()=>{
+  freq = parseInt(freqSlider.value);
+  updateUI();
+  if(osc) osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+});
+ampSlider.addEventListener('input', ()=>{
+  amp = parseInt(ampSlider.value);
+  updateUI();
+  if(gainNode) gainNode.gain.setValueAtTime((amp/100)*0.15, audioCtx.currentTime);
+});
+
+window.addEventListener('resize', resizeCanvases);
+resizeCanvases();
+updateUI();
+animate();
+
+let audioCtx=null, osc=null, gainNode=null, playing=false;
+playBtn.addEventListener('click', ()=>{
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(!playing){
+    osc = audioCtx.createOscillator();
+    gainNode = audioCtx.createGain();
+    osc.type = waveform;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime((amp/100)*0.15, audioCtx.currentTime+0.05);
+    osc.connect(gainNode).connect(audioCtx.destination);
+    osc.start();
+    playing=true;
+    playBtn.textContent='■ 停止';
+    playBtn.classList.add('playing');
+  } else {
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime+0.05);
+    osc.stop(audioCtx.currentTime+0.06);
+    playing=false;
+    playBtn.textContent='▶ 聽呢個波形';
+    playBtn.classList.remove('playing');
+  }
+});
+</script>
+</body>
+</html>

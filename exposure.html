@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>菲林曝光原理</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background:#0d0d0d; color:#e8e0d0; font-family:Georgia,serif; padding:20px; max-width:620px; margin:0 auto; }
+h1 { text-align:center; font-size:1.1rem; letter-spacing:.2em; color:#c8a97e; margin-bottom:4px; }
+.sub { text-align:center; font-size:.7rem; color:#555; margin-bottom:22px; }
+.sec { font-size:.66rem; color:#777; letter-spacing:.14em; text-transform:uppercase; margin-bottom:8px; text-align:center; }
+.tri-wrap { display:flex; justify-content:center; margin-bottom:20px; }
+.controls { display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+.cr { display:flex; align-items:center; gap:10px; }
+.cl { width:86px; font-size:.76rem; color:#c8a97e; flex-shrink:0; }
+.cl span { display:block; font-size:.59rem; color:#555; }
+input[type=range] { flex:1; -webkit-appearance:none; height:4px; border-radius:2px; background:#333; outline:none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:#c8a97e; cursor:pointer; }
+.cv { width:56px; text-align:right; font-size:.77rem; color:#e8e0d0; font-variant-numeric:tabular-nums; }
+.ev-wrap { margin-bottom:20px; }
+.ev-row { display:flex; align-items:center; gap:8px; }
+.ev-e { font-size:.63rem; color:#555; width:42px; flex-shrink:0; }
+.ev-e.r { text-align:right; }
+.ev-bar { flex:1; height:16px; background:linear-gradient(to right,#040404,#1c1c1c,#777,#ddd,#fff); border-radius:3px; position:relative; border:1px solid #282828; }
+.ev-cm { position:absolute; top:0; left:50%; width:1px; height:100%; background:rgba(255,255,255,.1); }
+.ev-n { position:absolute; top:-5px; width:2px; height:26px; background:#e84040; border-radius:1px; transition:left .22s; transform:translateX(-1px); }
+.ev-val { text-align:center; font-size:.7rem; color:#c8a97e; margin-top:5px; }
+.two-panel { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+.sp canvas { width:100%; height:148px; display:block; border-radius:4px; border:1px solid #1e1e1e; }
+.sp-label { text-align:center; font-size:.6rem; color:#666; margin-top:4px; }
+.film-frame { position:relative; width:100%; height:128px; background:#111; border:2px solid #1e1e1e; border-radius:4px; overflow:hidden; margin-bottom:20px; }
+canvas#filmC { width:100%; height:100%; display:block; }
+.exp-label { position:absolute; bottom:6px; right:8px; font-size:.63rem; color:rgba(255,255,255,.33); }
+canvas#crossC { width:100%; height:118px; display:block; border-radius:4px; margin-bottom:16px; }
+.info { background:#111; border:1px solid #1c1c1c; border-radius:6px; padding:12px; font-size:.72rem; line-height:1.8; color:#999; }
+.info strong { color:#c8a97e; }
+.g { color:#7ae87a; } .w { color:#e8a07a; } .b { color:#7ab8e8; }
+</style>
+</head>
+<body>
+<h1>菲林曝光原理</h1>
+<div class="sub">Film Exposure &nbsp;·&nbsp; Depth of Field &nbsp;·&nbsp; Motion Blur</div>
+
+<div class="sec">曝光三角 Exposure Triangle</div>
+<div class="tri-wrap">
+<svg width="280" height="185" viewBox="0 0 280 185" overflow="visible">
+  <defs>
+    <radialGradient id="tg" cx="50%" cy="60%">
+      <stop offset="0%" stop-color="#c8a97e" stop-opacity=".13"/>
+      <stop offset="100%" stop-color="#c8a97e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <polygon points="140,16 16,170 264,170" fill="url(#tg)" stroke="#c8a97e" stroke-width="1.2" opacity=".85"/>
+  <text x="140" y="11" text-anchor="middle" fill="#e8c87a" font-size="14" font-family="Georgia">ISO</text>
+  <text x="140" y="23" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">感光度</text>
+  <text x="4" y="180" text-anchor="start" fill="#7ab8e8" font-size="13" font-family="Georgia">光圈</text>
+  <text x="4" y="190" text-anchor="start" fill="#555" font-size="9" font-family="Georgia">Aperture · DoF</text>
+  <text x="276" y="180" text-anchor="end" fill="#7ae87a" font-size="13" font-family="Georgia">快門</text>
+  <text x="276" y="190" text-anchor="end" fill="#555" font-size="9" font-family="Georgia">Shutter · Motion</text>
+  <circle cx="140" cy="112" r="24" fill="#0e0e0e" stroke="#2c2c2c" stroke-width="1"/>
+  <text x="140" y="108" text-anchor="middle" fill="#777" font-size="9" font-family="Georgia">EV</text>
+  <text id="evN" x="140" y="123" text-anchor="middle" fill="#c8a97e" font-size="14" font-family="Georgia" font-weight="bold">0</text>
+  <line x1="140" y1="36" x2="140" y2="88" stroke="#3a3a3a" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="30" y1="166" x2="114" y2="128" stroke="#3a3a3a" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="250" y1="166" x2="166" y2="128" stroke="#3a3a3a" stroke-width="1" stroke-dasharray="3,3"/>
+</svg>
+</div>
+
+<div class="controls">
+  <div class="cr"><div class="cl">ISO <span>感光度</span></div><input type="range" id="iso" min="0" max="5" step="1" value="2"><div class="cv" id="isoV">400</div></div>
+  <div class="cr"><div class="cl">光圈 <span>Aperture</span></div><input type="range" id="ap" min="0" max="6" step="1" value="3"><div class="cv" id="apV">f/5.6</div></div>
+  <div class="cr"><div class="cl">快門 <span>Shutter</span></div><input type="range" id="sh" min="0" max="6" step="1" value="3"><div class="cv" id="shV">1/125s</div></div>
+</div>
+
+<div class="ev-wrap">
+  <div class="sec">曝光計 Exposure Meter</div>
+  <div class="ev-row">
+    <div class="ev-e">− 欠曝</div>
+    <div class="ev-bar"><div class="ev-cm"></div><div class="ev-n" id="evNeedle"></div></div>
+    <div class="ev-e r">過曝 +</div>
+  </div>
+  <div class="ev-val" id="evDisp">EV 0 · 正確曝光</div>
+</div>
+
+<div class="sec">景深 Depth of Field &nbsp;&amp;&nbsp; 動態模糊 Motion Blur</div>
+<div class="two-panel">
+  <div class="sp"><canvas id="dofC"></canvas><div class="sp-label" id="dofLbl">景深：中等</div></div>
+  <div class="sp"><canvas id="motC"></canvas><div class="sp-label" id="motLbl">動態模糊：無</div></div>
+</div>
+
+<div class="sec">菲林預覽 Film Preview</div>
+<div class="film-frame">
+  <canvas id="filmC"></canvas>
+  <div class="exp-label" id="expL">正確曝光</div>
+</div>
+
+<div class="sec">感光乳劑剖面 Emulsion Cross-Section</div>
+<canvas id="crossC"></canvas>
+
+<div class="info" id="infoBox">調整上方滑桿觀察變化。</div>
+
+<script>
+const isoSteps=['100','200','400','800','1600','3200'];
+const apSteps=['f/1.4','f/2','f/2.8','f/4','f/5.6','f/8','f/11'];
+const shSteps=['1/15s','1/30s','1/60s','1/125s','1/250s','1/500s','1/1000s'];
+const dpr=window.devicePixelRatio||1;
+
+const getISO=()=>+document.getElementById('iso').value;
+const getAP= ()=>+document.getElementById('ap').value;
+const getSH= ()=>+document.getElementById('sh').value;
+const getEV= ()=>(getISO()-2)+(3-getAP())+(3-getSH());
+const getBright=()=>Math.max(0,Math.min(1,(getEV()+7)/14));
+const getGrain=()=>getISO()/5;
+const getDof=()=>getAP()/6;       // 0=shallowest(f1.4) 1=deepest(f11)
+const getBlur=()=>Math.max(0,(5-getSH())/5); // 0=frozen 1=max blur
+
+function initC(el){
+  el.width=el.offsetWidth*dpr;
+  el.height=el.offsetHeight*dpr;
+}
+
+/* ---- DOF ---- */
+const dofC=document.getElementById('dofC');
+const dofX=dofC.getContext('2d');
+function drawDof(){
+  initC(dofC);
+  const W=dofC.width,H=dofC.height;
+  const depth=getDof(), bright=getBright(), bv=bright*255;
+
+  // sky
+  const sky=dofX.createLinearGradient(0,0,0,H*.55);
+  sky.addColorStop(0,`rgb(${20+bv*.28},${28+bv*.32},${48+bv*.38})`);
+  sky.addColorStop(1,`rgb(${35+bv*.35},${45+bv*.38},${65+bv*.35})`);
+  dofX.fillStyle=sky; dofX.fillRect(0,0,W,H*.56);
+  // ground
+  dofX.fillStyle=`rgb(${28+bv*.22},${38+bv*.28},${22+bv*.18})`;
+  dofX.fillRect(0,H*.56,W,H*.44);
+
+  // three pillars at different distances
+  const pillars=[
+    {cx:.18,dist:1.8,col:[175,135,95]},   // far left
+    {cx:.50,dist:0,  col:[210,170,120]},   // mid — in focus
+    {cx:.80,dist:1.8,col:[160,120,85]},    // far right
+  ];
+  pillars.forEach(p=>{
+    const blurPx=p.dist*(1-depth)*7*dpr;
+    const px=p.cx*W, pw=W*.12, ph=H*.38, py=H*.2;
+    if(blurPx>.4){dofX.save();dofX.filter=`blur(${blurPx}px)`;}
+    const r=p.col[0]*bright,g=p.col[1]*bright,b=p.col[2]*bright;
+    dofX.fillStyle=`rgb(${r},${g},${b})`;
+    dofX.fillRect(px-pw/2,py,pw,ph);
+    if(blurPx>.4)dofX.restore();
+  });
+
+  // focus plane dashed line
+  const fx=.50*W;
+  dofX.save();
+  dofX.strokeStyle=`rgba(200,170,100,${.55-depth*.3})`;
+  dofX.lineWidth=1*dpr; dofX.setLineDash([3*dpr,3*dpr]);
+  dofX.beginPath();dofX.moveTo(fx,0);dofX.lineTo(fx,H);dofX.stroke();
+  dofX.restore();
+
+  // sharp zone highlight
+  const zw=(0.1+depth*.75)*W;
+  dofX.fillStyle=`rgba(200,180,100,${.04+depth*.06})`;
+  dofX.fillRect(fx-zw/2,0,zw,H);
+
+  const txt=depth<.22?'淺景深 Shallow DoF — f/1.4~2':
+            depth<.6 ?'中等景深 Medium DoF':
+                       '深景深 Deep DoF — f/8~11';
+  document.getElementById('dofLbl').textContent=txt;
+}
+
+/* ---- MOTION ---- */
+const motC=document.getElementById('motC');
+const motX=motC.getContext('2d');
+function drawMotion(){
+  initC(motC);
+  const W=motC.width,H=motC.height;
+  const blur=getBlur(), bright=getBright(), bv=bright*200;
+
+  // bg
+  motX.fillStyle=`rgb(${14+bv*.18},${17+bv*.2},${21+bv*.23})`;
+  motX.fillRect(0,0,W,H);
+
+  // bg stripes (blurred)
+  const stripes=[{y:.18,h:.07,col:[55,75,115]},{y:.33,h:.06,col:[38,58,38]},{y:.52,h:.09,col:[75,58,38]},{y:.7,h:.05,col:[48,68,48]}];
+  stripes.forEach(s=>{
+    const bp=blur*16*dpr;
+    if(bp>.4){motX.save();motX.filter=`blur(${bp}px)`;}
+    const r=s.col[0]*bright,g=s.col[1]*bright,b=s.col[2]*bright;
+    motX.fillStyle=`rgb(${r},${g},${b})`;
+    motX.fillRect(0,s.y*H,W,s.h*H);
+    if(bp>.4)motX.restore();
+  });
+
+  // subject + trail
+  const sx=W*.33, sw=W*.28, sy=H*.36, sh2=H*.26;
+  if(blur>.04){
+    const tl=blur*W*.5;
+    const tg=motX.createLinearGradient(sx-tl,0,sx,0);
+    tg.addColorStop(0,'rgba(220,188,128,0)');
+    tg.addColorStop(1,`rgba(220,188,128,${blur*.32*bright})`);
+    motX.fillStyle=tg; motX.fillRect(sx-tl,sy,tl,sh2);
+  }
+  const sb=blur*9*dpr;
+  if(sb>.4){motX.save();motX.filter=`blur(${sb}px)`;}
+  const sl=220*bright,sm=185*bright,ss=128*bright;
+  motX.fillStyle=`rgb(${sl},${sm},${ss})`;
+  motX.fillRect(sx,sy,sw,sh2);
+  if(sb>.4)motX.restore();
+  if(blur<.14){
+    motX.strokeStyle=`rgba(220,190,130,${.6*(1-blur/.14)})`;
+    motX.lineWidth=1.5*dpr;
+    motX.strokeRect(sx,sy,sw,sh2);
+  }
+  // speed lines
+  if(blur>.28){
+    const lc=Math.floor(blur*14);
+    for(let i=0;i<lc;i++){
+      const ly=sy+(i/(lc-1||1))*sh2;
+      const ll=blur*W*.42*(0.5+Math.random()*.5);
+      motX.strokeStyle=`rgba(255,228,175,${blur*.22})`;
+      motX.lineWidth=.5*dpr;
+      motX.beginPath();motX.moveTo(sx-ll,ly);motX.lineTo(sx,ly);motX.stroke();
+    }
+  }
+  const mt=blur<.05?'動態凝固 Frozen (1/500s+)':
+            blur<.32?'輕微模糊 Slight blur':
+            blur<.68?'動態模糊 Motion blur (1/30~60s)':
+                     '拖影嚴重 Heavy trail (1/15s)';
+  document.getElementById('motLbl').textContent=mt;
+}
+
+/* ---- FILM ---- */
+const filmC=document.getElementById('filmC');
+const filmX=filmC.getContext('2d');
+let gc=null;
+function drawFilm(){
+  filmC.width=filmC.offsetWidth*dpr; filmC.height=filmC.offsetHeight*dpr;
+  const W=filmC.width,H=filmC.height;
+  const bright=getBright(),grain=getGrain(),base=Math.round(bright*255);
+  if(!gc||gc.length!==W*H){gc=new Float32Array(W*H);for(let i=0;i<gc.length;i++)gc[i]=Math.random()-.5;}
+  const img=filmX.createImageData(W,H);const d=img.data;
+  for(let i=0;i<W*H;i++){
+    let l=base+gc[i]*grain*90*(0.6+Math.random()*.4);
+    l=Math.max(0,Math.min(255,l));
+    d[i*4]=l;d[i*4+1]=l*.94;d[i*4+2]=l*.85;d[i*4+3]=255;
+  }
+  filmX.putImageData(img,0,0);
+  const vg=filmX.createRadialGradient(W/2,H/2,H*.12,W/2,H/2,H*.9);
+  vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.5)');
+  filmX.fillStyle=vg;filmX.fillRect(0,0,W,H);
+  filmX.fillStyle='rgba(0,0,0,.88)';
+  for(let r=0;r<6;r++){const y=H*.06+r*H*.16;const ph=H*.09,pw=W*.03;filmX.beginPath();filmX.roundRect(W*.01,y,pw,ph,2);filmX.fill();filmX.beginPath();filmX.roundRect(W*.96,y,pw,ph,2);filmX.fill();}
+}
+
+/* ---- CROSS ---- */
+const crossC=document.getElementById('crossC');
+const crossX=crossC.getContext('2d');
+function drawCross(){
+  crossC.width=crossC.offsetWidth*dpr;crossC.height=crossC.offsetHeight*dpr;
+  const W=crossC.width,H=crossC.height;crossX.clearRect(0,0,W,H);
+  const bright=getBright(),grain=getGrain();
+  const layers=[
+    {n:'保護層 Overcoat',c:`rgba(190,200,210,.18)`,f:.07,g:false},
+    {n:'藍敏層 Blue-sensitive',c:`rgba(90,130,220,${.18+bright*.55})`,f:.17,g:true},
+    {n:'黃色濾片 Yellow filter',c:`rgba(200,185,50,.2)`,f:.06,g:false},
+    {n:'綠敏層 Green-sensitive',c:`rgba(70,175,90,${.18+bright*.55})`,f:.17,g:true},
+    {n:'紅敏層 Red-sensitive',c:`rgba(210,70,65,${.18+bright*.55})`,f:.17,g:true},
+    {n:'片基 Film base',c:`rgba(155,135,95,.28)`,f:.2,g:false},
+    {n:'防光暈層 Anti-halation',c:`rgba(20,15,8,.75)`,f:.16,g:false},
+  ];
+  let y=0;
+  layers.forEach(l=>{
+    const lh=l.f*H;crossX.fillStyle=l.c;crossX.fillRect(0,y,W,lh);
+    if(l.g&&bright>.04){
+      const n=Math.floor(bright*grain*160*(W/400/dpr));
+      crossX.fillStyle='rgba(15,10,5,.75)';
+      for(let i=0;i<n;i++){crossX.beginPath();crossX.arc(Math.random()*W,y+Math.random()*lh,(.6+grain*2.2)*dpr,0,Math.PI*2);crossX.fill();}
+    }
+    crossX.fillStyle='rgba(220,210,190,.7)';crossX.font=`${9.5*dpr}px Georgia`;
+    crossX.fillText(l.n,7*dpr,y+lh*.68);
+    crossX.strokeStyle='rgba(255,255,255,.06)';crossX.lineWidth=1;
+    crossX.beginPath();crossX.moveTo(0,y+lh);crossX.lineTo(W,y+lh);crossX.stroke();
+    y+=lh;
+  });
+}
+
+/* ---- MASTER UPDATE ---- */
+function updateAll(){
+  const iso=getISO(),ap=getAP(),sh=getSH(),ev=getEV();
+  document.getElementById('isoV').textContent=isoSteps[iso];
+  document.getElementById('apV').textContent=apSteps[ap];
+  document.getElementById('shV').textContent=shSteps[sh];
+  document.getElementById('evN').textContent=(ev>=0?'+':'')+ev;
+  const pct=Math.max(2,Math.min(97,((ev+7)/14)*100));
+  document.getElementById('evNeedle').style.left=pct+'%';
+  let label,cls;
+  if(ev<-4){label='嚴重欠曝';cls='b';}
+  else if(ev<-1){label='欠曝';cls='b';}
+  else if(ev<=1){label='正確曝光';cls='g';}
+  else if(ev<=4){label='過曝';cls='w';}
+  else{label='嚴重過曝';cls='w';}
+  document.getElementById('evDisp').innerHTML=`EV ${ev>=0?'+':''}${ev} · <span class="${cls}">${label}</span>`;
+  document.getElementById('expL').textContent=label;
+  const isoD=['極低感光，幾乎無顆粒，需強光。','低感光，顆粒細緻。','中等感光，通用選擇。','中高感光，顆粒明顯。','高感光，顆粒粗。','極高感光，顆粒極粗，近乎抽象。'];
+  const apD=['極大光圈，景深極淺，焦外虛化最強。','大光圈，明顯散景。','中大光圈，人像常用。','中等光圈，景深適中。','中小光圈，前後景均清晰。','小光圈，大景深。','最小光圈，全場銳利，可見星芒。'];
+  const shD=['極慢快門，強烈動態拖影，需三腳架。','慢快門，明顯模糊。','手持臨界快門。','標準快門，凝固日常動態。','快快門，可凝固跑步。','高速快門，運動攝影。','極速快門，凝固水花、子彈。'];
+  document.getElementById('infoBox').innerHTML=
+    `<strong>ISO ${isoSteps[iso]}</strong> — ${isoD[iso]}<br><strong>${apSteps[ap]}</strong> — ${apD[ap]}<br><strong>${shSteps[sh]}</strong> — ${shD[sh]}<br><span class="${cls}">▶ ${label}</span> — ${ev<-4?'畫面幾乎全黑。':ev<-1?'陰影喪失細節，偏暗。':ev<=1?'高光與陰影均保留細節。':ev<=4?'高光爆頂，細節消失。':'畫面幾乎全白。'}`;
+  gc=null;
+  drawDof();drawMotion();drawFilm();drawCross();
+}
+
+['iso','ap','sh'].forEach(id=>document.getElementById(id).addEventListener('input',updateAll));
+window.addEventListener('resize',updateAll);
+setTimeout(updateAll,90);
+</script>
+</body>
+</html>

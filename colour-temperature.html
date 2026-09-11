@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>色溫 · 黑體輻射</title>
+<style>
+  :root{
+    --bg:#07090C;
+    --panel:#0E1319;
+    --panel2:#131A22;
+    --line:#1E2A35;
+    --txt:#C7D3DC;
+    --dim:#5F7280;
+    --glow:#FF9A3C; /* dynamic: JS overwrites with live blackbody colour */
+    --mono:"SF Mono","JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    line-height:1.7;
+    padding-bottom:80px;
+    transition:background 0.6s;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+
+  /* ── header ── */
+  header{padding:56px 0 8px;text-align:center}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.35em;color:var(--dim);text-transform:uppercase}
+  h1{font-size:clamp(34px,7vw,54px);font-weight:700;letter-spacing:0.06em;margin:10px 0 4px}
+  h1 .k{color:var(--glow);transition:color 0.3s}
+  .sub{color:var(--dim);font-size:14px}
+
+  /* ── the glowing filament: signature element ── */
+  #stage{position:relative;height:170px;display:flex;align-items:center;justify-content:center;margin:28px 0 6px}
+  #orb{
+    width:92px;height:92px;border-radius:50%;
+    background:var(--glow);
+    box-shadow:0 0 60px 18px var(--glow), 0 0 160px 60px color-mix(in srgb, var(--glow) 35%, transparent);
+    transition:background 0.3s, box-shadow 0.3s;
+  }
+  #orbLabel{
+    position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:13px;color:var(--dim);white-space:nowrap;
+  }
+
+  /* ── control ── */
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;margin:22px 0}
+  .kelvinRow{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  #kelvin{font-family:var(--mono);font-size:clamp(38px,8vw,56px);font-weight:700;color:var(--glow);transition:color 0.3s}
+  #kelvin small{font-size:0.45em;color:var(--dim);font-weight:400;margin-left:4px}
+  #sceneName{font-family:var(--mono);font-size:14px;color:var(--dim)}
+  input[type=range]{
+    width:100%;margin:18px 0 6px;appearance:none;height:8px;border-radius:4px;outline:none;
+    background:linear-gradient(90deg,#ff3a00,#ff7c1f,#ffb45e,#ffd9a3,#fff3e0,#f4f6ff,#dfe6ff,#c7d4ff,#b3c5ff);
+  }
+  input[type=range]::-webkit-slider-thumb{
+    appearance:none;width:26px;height:26px;border-radius:50%;
+    background:var(--glow);border:3px solid #fff;cursor:pointer;
+    box-shadow:0 0 14px var(--glow);transition:background 0.3s;
+  }
+  input[type=range]:focus-visible{outline:2px solid #fff;outline-offset:4px}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .presets button{
+    background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    font-family:inherit;font-size:13px;padding:7px 13px;border-radius:20px;cursor:pointer;
+    transition:border-color .2s,color .2s;
+  }
+  .presets button:hover,.presets button:focus-visible{border-color:var(--glow);color:#fff;outline:none}
+  .presets button.on{border-color:var(--glow);color:var(--glow)}
+  .presets button b{font-family:var(--mono);font-weight:400;opacity:.6;margin-left:5px;font-size:11px}
+
+  /* ── charts ── */
+  canvas{display:block;width:100%;border-radius:8px}
+  .chartHead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .chartHead h2{font-size:16px;font-weight:700;letter-spacing:0.05em}
+  .chartHead .tag{font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .readout{font-family:var(--mono);font-size:13px;color:var(--glow);transition:color .3s}
+
+  /* energy bar */
+  .energyRow{display:flex;align-items:center;gap:12px;margin-top:14px}
+  .energyRow .lab{font-size:13px;color:var(--dim);white-space:nowrap}
+  .energyTrack{flex:1;height:10px;background:var(--panel2);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+  #energyFill{height:100%;width:10%;background:var(--glow);transition:width .3s,background .3s}
+
+  /* ── white balance demo ── */
+  .wbGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+  @media(max-width:560px){.wbGrid{grid-template-columns:1fr}}
+  .wbCell{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px}
+  .wbCell h3{font-size:13px;font-weight:400;color:var(--dim);margin-bottom:8px;font-family:var(--mono)}
+  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .sw{aspect-ratio:1;border-radius:6px;transition:background .3s}
+  .swName{font-size:11px;color:var(--dim);text-align:center;margin-top:4px}
+
+  /* ── explanation ── */
+  .explain{margin:36px 0 0}
+  .explain h2{font-size:20px;margin:34px 0 10px;letter-spacing:0.04em}
+  .explain h2::before{content:"— ";color:var(--glow);transition:color .3s}
+  .explain p{margin:10px 0;font-size:15.5px}
+  .formula{
+    font-family:var(--mono);text-align:center;font-size:clamp(16px,4vw,22px);
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:18px;margin:16px 0;color:#fff;
+  }
+  .formula .hl{color:var(--glow);transition:color .3s}
+  .note{font-size:13px;color:var(--dim)}
+  em{color:#fff;font-style:normal;border-bottom:1px dotted var(--dim)}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important}
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="eyebrow">Blackbody Radiation · 黑體輻射</div>
+  <h1>色<span class="k">溫</span></h1>
+  <div class="sub">點解「暖光」其實好凍，「冷光」其實好熱？</div>
+</header>
+
+<div class="wrap">
+
+  <div id="stage">
+    <div id="orb" aria-hidden="true"></div>
+    <div id="orbLabel">一舊被加熱嘅金屬 · 佢發出嘅光</div>
+  </div>
+
+  <!-- ── control panel ── -->
+  <div class="panel">
+    <div class="kelvinRow">
+      <div id="kelvin">3200<small>K</small></div>
+      <div id="sceneName">≈ 影樓鎢絲燈</div>
+    </div>
+    <input type="range" id="tempSlider" min="1000" max="12000" step="50" value="3200"
+           aria-label="溫度（Kelvin）">
+    <div class="presets" id="presets">
+      <button data-t="1850">蠟燭 <b>1850K</b></button>
+      <button data-t="3200" class="on">鎢絲燈 <b>3200K</b></button>
+      <button data-t="4300">日出後一小時 <b>4300K</b></button>
+      <button data-t="5600">正午日光 <b>5600K</b></button>
+      <button data-t="6500">陰天 <b>6500K</b></button>
+      <button data-t="9500">藍天陰影 <b>9500K</b></button>
+    </div>
+  </div>
+
+  <!-- ── planck curve ── -->
+  <div class="panel">
+    <div class="chartHead">
+      <h2>普朗克曲線：每個波長發出幾多能量</h2>
+      <span class="readout" id="peakReadout">峰值 λ = 905 nm</span>
+    </div>
+    <canvas id="planck" height="340" aria-label="黑體輻射光譜曲線"></canvas>
+    <div class="energyRow">
+      <span class="lab">總輻射能量（∝ T⁴）</span>
+      <div class="energyTrack"><div id="energyFill"></div></div>
+    </div>
+  </div>
+
+  <!-- ── white balance ── -->
+  <div class="panel">
+    <div class="chartHead">
+      <h2>攝影機點樣「執」返啲色：白平衡</h2>
+      <span class="tag">同一組物件，唔同光源</span>
+    </div>
+    <div class="wbGrid">
+      <div class="wbCell">
+        <h3>眼見（未校正）</h3>
+        <div class="swatches" id="rawSw"></div>
+      </div>
+      <div class="wbCell">
+        <h3>相機白平衡校正後</h3>
+        <div class="swatches" id="wbSw"></div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:10px">
+      左邊：物件染上光源嘅顏色。右邊：相機知道光源色溫之後，用相反方向抵消返——呢個就係你影相set WB做緊嘅嘢。
+    </p>
+  </div>
+
+  <!-- ── explanation ── -->
+  <div class="explain">
+    <h2>1 · 咩係黑體輻射？</h2>
+    <p>任何有溫度嘅物體都會發出電磁波。你、張枱、杯茶——全部都喺度發光，只不過大部分係<em>紅外線</em>，眼睇唔到。當你將一舊鐵加熱，佢會先發暗紅光，再變橙、變黃、最後變到偏白偏藍。<em>顏色直接話你知佢有幾熱</em>——呢個就係色溫嘅物理根據。</p>
+
+    <h2>2 · 維恩位移定律：愈熱，峰值愈短</h2>
+    <div class="formula">λ<sub>peak</sub> = 2898 ÷ <span class="hl">T</span> &nbsp;(μm · K)</div>
+    <p>拉下上面個slider，留意條曲線嘅<em>山頂</em>：溫度T愈高，山頂就愈向左移（波長愈短）。短波長 = 藍光嗰邊，長波長 = 紅光嗰邊。所以：</p>
+    <p><em>低溫（1850K 蠟燭）</em>→ 峰值喺紅外線，只有紅橙光滲入可見範圍 → 見到橙紅色。<br>
+    <em>高溫（9500K）</em>→ 峰值推到藍光甚至紫外線 → 光偏藍。</p>
+
+    <h2>3 · 咁點解叫「暖色」「冷色」？</h2>
+    <p>呢個係成個topic最迷惑嘅位：<em>物理上，藍光嘅來源溫度高過橙光</em>。但人類心理將橙紅聯想到火同太陽（暖），藍聯想到冰同陰影（凍）。所以「暖色調」嘅色溫數字反而細，「冷色調」嘅數字反而大。記住：色溫嘅K數講緊嘅係<em>光源本身有幾熱</em>，唔係佢畀你嘅感覺。</p>
+
+    <h2>4 · 同拍嘢有咩關係？</h2>
+    <p>攝影機唔似人腦咁識自動適應。人眼喺鎢絲燈下面睇白紙，腦會自動「執色」當佢係白色；但sensor會老實咁錄低嗰層橙。所以要set白平衡——話畀部機聽而家光源係幾多K，等佢用相反嘅顏色抵消。3200K同5600K呢兩個數，就係影視燈光嘅兩大標準：鎢絲燈同日光。而家你知道呢兩個數字，其實係兩個<em>溫度</em>。</p>
+
+    <p class="note" style="margin-top:28px">註：太陽表面約5778K，所以正午日光約5600K唔係巧合——你每日見到嘅「白色」，就係一個5778K黑體嘅顏色。</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const slider=document.getElementById('tempSlider');
+  const kelvinEl=document.getElementById('kelvin');
+  const sceneEl=document.getElementById('sceneName');
+  const peakEl=document.getElementById('peakReadout');
+  const energyEl=document.getElementById('energyFill');
+  const orb=document.getElementById('orb');
+  const cv=document.getElementById('planck');
+  const ctx=cv.getContext('2d');
+
+  const scenes=[[1000,'熔岩 / 電爐絲'],[1850,'蠟燭'],[2700,'家用黃燈膽'],[3200,'影樓鎢絲燈'],[4300,'日出後一小時'],[5000,'閃光燈'],[5600,'正午日光'],[6500,'陰天 / 螢幕標準'],[7500,'薄霧藍天'],[9500,'藍天陰影'],[12000,'高原藍天']];
+
+  // Kelvin → sRGB (Tanner Helland approximation)
+  function kToRGB(k){
+    k=k/100; let r,g,b;
+    r = k<=66 ? 255 : Math.min(255,Math.max(0,329.698727446*Math.pow(k-60,-0.1332047592)));
+    g = k<=66 ? Math.min(255,Math.max(0,99.4708025861*Math.log(k)-161.1195681661))
+              : Math.min(255,Math.max(0,288.1221695283*Math.pow(k-60,-0.0755148492)));
+    b = k>=66 ? 255 : (k<=19 ? 0 : Math.min(255,Math.max(0,138.5177312231*Math.log(k-10)-305.0447927307)));
+    return [r|0,g|0,b|0];
+  }
+  const css=rgb=>`rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+
+  // Planck spectral radiance, relative
+  const HC_K=1.43877e7; // hc/k in nm·K
+  function planck(lam,T){ return Math.pow(lam,-5)/(Math.exp(HC_K/(lam*T))-1); }
+
+  // wavelength(380-750nm) → approx RGB for the visible band strip
+  function wlToRGB(w){
+    let r=0,g=0,b=0;
+    if(w<440){r=-(w-440)/60;b=1}
+    else if(w<490){g=(w-440)/50;b=1}
+    else if(w<510){g=1;b=-(w-510)/20}
+    else if(w<580){r=(w-510)/70;g=1}
+    else if(w<645){r=1;g=-(w-645)/65}
+    else{r=1}
+    let f=1;
+    if(w<420)f=0.3+0.7*(w-380)/40;
+    if(w>700)f=0.3+0.7*(750-w)/50;
+    return [r*f*255|0,g*f*255|0,b*f*255|0];
+  }
+
+  const LMIN=100,LMAX=2600;
+  function draw(T){
+    const dpr=window.devicePixelRatio||1;
+    const W=cv.clientWidth, H=340;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+
+    const padL=44,padR=14,padT=16,padB=54;
+    const pw=W-padL-padR, ph=H-padT-padB;
+    const X=l=>padL+(l-LMIN)/(LMAX-LMIN)*pw;
+
+    // grid
+    ctx.strokeStyle='#16202B';ctx.lineWidth=1;
+    for(let l=500;l<LMAX;l+=500){ctx.beginPath();ctx.moveTo(X(l),padT);ctx.lineTo(X(l),padT+ph);ctx.stroke()}
+    for(let i=1;i<4;i++){const y=padT+ph*i/4;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(padL+pw,y);ctx.stroke()}
+
+    // visible band strip under axis
+    for(let x=0;x<pw;x++){
+      const lam=LMIN+(x/pw)*(LMAX-LMIN);
+      if(lam>=380&&lam<=750){ctx.fillStyle=css(wlToRGB(lam));ctx.fillRect(padL+x,padT+ph+8,1.5,12)}
+      else{ctx.fillStyle='#0E1319';ctx.fillRect(padL+x,padT+ph+8,1.5,12)}
+    }
+    ctx.fillStyle='#5F7280';ctx.font='11px ui-monospace,monospace';ctx.textAlign='center';
+    ctx.fillText('可見光',X(565),padT+ph+50);
+    ctx.fillText('← 紫外線',X(220),padT+ph+34);
+    ctx.fillText('紅外線 →',X(1800),padT+ph+34);
+    for(let l=500;l<=2500;l+=500)ctx.fillText(l+'nm',X(l),padT+ph+34);
+
+    // curve, normalised to own peak
+    let max=0;
+    const N=340,pts=[];
+    for(let i=0;i<=N;i++){
+      const lam=LMIN+(i/N)*(LMAX-LMIN);
+      const v=planck(lam,T); pts.push([lam,v]); if(v>max)max=v;
+    }
+    const rgb=kToRGB(T), col=css(rgb);
+
+    // area fill: gradient of curve colour
+    ctx.beginPath();
+    ctx.moveTo(X(pts[0][0]),padT+ph);
+    pts.forEach(p=>ctx.lineTo(X(p[0]),padT+ph-(p[1]/max)*ph*0.94));
+    ctx.lineTo(X(pts[N][0]),padT+ph);
+    ctx.closePath();
+    const g=ctx.createLinearGradient(0,padT,0,padT+ph);
+    g.addColorStop(0,`rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.35)`);
+    g.addColorStop(1,`rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.02)`);
+    ctx.fillStyle=g;ctx.fill();
+
+    ctx.beginPath();
+    pts.forEach((p,i)=>{const x=X(p[0]),y=padT+ph-(p[1]/max)*ph*0.94; i?ctx.lineTo(x,y):ctx.moveTo(x,y)});
+    ctx.strokeStyle=col;ctx.lineWidth=2.5;
+    ctx.shadowColor=col;ctx.shadowBlur=10;ctx.stroke();ctx.shadowBlur=0;
+
+    // wien peak marker
+    const lp=2.8978e6/T;
+    if(lp>LMIN&&lp<LMAX){
+      const px=X(lp),py=padT+ph-ph*0.94;
+      ctx.setLineDash([4,4]);ctx.strokeStyle='#ffffff55';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(px,py-4);ctx.lineTo(px,padT+ph);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();
+      ctx.font='12px ui-monospace,monospace';ctx.textAlign=lp<1400?'left':'right';
+      ctx.fillText(' λpeak '+(lp|0)+'nm ',px,py-10);
+    }
+  }
+
+  // white balance demo
+  const objects=[['白卡',[235,235,235]],['膚色',[224,172,138]],['牛仔藍',[62,92,145]],['植物綠',[74,122,66]]];
+  const rawSw=document.getElementById('rawSw'),wbSw=document.getElementById('wbSw');
+  objects.forEach(o=>{
+    for(const box of [rawSw,wbSw]){
+      const d=document.createElement('div');
+      d.innerHTML=`<div class="sw"></div><div class="swName">${o[0]}</div>`;
+      box.appendChild(d);
+    }
+  });
+  function updateWB(T){
+    const L=kToRGB(T), Lm=Math.max(L[0],L[1],L[2]);
+    const norm=L.map(v=>v/Lm);
+    const rawCells=rawSw.querySelectorAll('.sw'), wbCells=wbSw.querySelectorAll('.sw');
+    objects.forEach((o,i)=>{
+      const lit=o[1].map((v,c)=>Math.min(255,v*norm[c]));
+      rawCells[i].style.background=css(lit.map(v=>v|0));
+      // von Kries correction: divide by illuminant
+      const corr=lit.map((v,c)=>Math.min(255,v/norm[c]));
+      wbCells[i].style.background=css(corr.map(v=>v|0));
+    });
+  }
+
+  function nearest(T){let best=scenes[0];for(const s of scenes)if(Math.abs(s[0]-T)<Math.abs(best[0]-T))best=s;return best}
+
+  function update(){
+    const T=+slider.value;
+    const rgb=kToRGB(T), col=css(rgb);
+    document.documentElement.style.setProperty('--glow',col);
+    kelvinEl.innerHTML=T+'<small>K</small>';
+    sceneEl.textContent='≈ '+nearest(T)[1];
+    peakEl.textContent='峰值 λ = '+(2.8978e6/T|0)+' nm';
+    // energy ∝ T⁴, normalised to 12000K
+    energyEl.style.width=Math.max(1.5,Math.pow(T/12000,4)*100)+'%';
+    orb.style.background=col;
+    document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on',+b.dataset.t===T));
+    draw(T);
+    updateWB(T);
+  }
+
+  slider.addEventListener('input',update);
+  document.getElementById('presets').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    slider.value=b.dataset.t; update();
+  });
+  window.addEventListener('resize',()=>draw(+slider.value));
+  update();
+})();
+</script>
+</body>
+</html>
