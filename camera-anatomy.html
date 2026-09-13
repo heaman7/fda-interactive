@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相機結構 · 光嘅旅程</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d0d;color:#e8e0d0;font-family:Georgia,"PingFang TC","Noto Sans TC",serif;padding:22px 18px 70px;max-width:680px;margin:0 auto;line-height:1.75}
+h1{text-align:center;font-size:1.15rem;letter-spacing:.2em;color:#c8a97e;margin-bottom:4px}
+.sub{text-align:center;font-size:.7rem;color:#555;letter-spacing:.1em;margin-bottom:20px}
+nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:26px}
+nav a{font-size:.68rem;letter-spacing:.08em;color:#9a8f7e;text-decoration:none;border:1px solid #262626;border-radius:20px;padding:5px 11px}
+nav a:hover{border-color:#c8a97e;color:#c8a97e}
+h2{font-size:.72rem;color:#777;letter-spacing:.16em;text-transform:uppercase;margin:0 0 4px;text-align:center}
+h2 b{display:block;font-size:1.05rem;color:#c8a97e;letter-spacing:.06em;text-transform:none;margin-top:3px}
+section{margin:0 0 44px;padding-top:14px}
+hr{border:0;border-top:1px solid #1e1e1e;margin:38px 0 0}
+h3{font-size:.85rem;color:#c8a97e;letter-spacing:.05em;margin:22px 0 8px}
+p{font-size:.79rem;color:#a8a096;margin-bottom:10px}
+p strong{color:#e8e0d0;font-weight:normal;border-bottom:1px solid #3a3229}
+.panel{background:#111;border:1px solid #1c1c1c;border-radius:7px;padding:13px;margin-bottom:14px}
+.controls{display:flex;flex-direction:column;gap:11px;margin:12px 0}
+.cr{display:flex;align-items:center;gap:10px}
+.cl{width:92px;font-size:.74rem;color:#c8a97e;flex-shrink:0}
+.cl span{display:block;font-size:.58rem;color:#555;letter-spacing:.02em}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:#333;outline:none;min-width:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:#c8a97e;cursor:pointer}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border:0;border-radius:50%;background:#c8a97e;cursor:pointer}
+.cv{width:74px;text-align:right;font-size:.75rem;color:#e8e0d0;font-variant-numeric:tabular-nums;flex-shrink:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.seg button{flex:1;min-width:78px;background:#141414;border:1px solid #2a2a2a;color:#8a8278;font-family:inherit;font-size:.72rem;padding:7px 4px;border-radius:5px;cursor:pointer;letter-spacing:.04em}
+.seg button.on{background:#c8a97e;border-color:#c8a97e;color:#0d0d0d}
+.chk{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 4px}
+.chk label{font-size:.73rem;color:#9a9289;display:flex;align-items:center;gap:6px;cursor:pointer}
+.chk input{accent-color:#c8a97e;width:14px;height:14px}
+canvas{display:block;width:100%;border-radius:5px}
+.read{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.read div{flex:1;min-width:82px;background:#141414;border:1px solid #202020;border-radius:5px;padding:7px 9px}
+.read b{display:block;font-size:.57rem;color:#5e5e5e;letter-spacing:.1em;text-transform:uppercase;font-weight:normal;margin-bottom:2px}
+.read span{font-size:.86rem;color:#e8e0d0;font-variant-numeric:tabular-nums}
+.note{font-size:.72rem;line-height:1.85;color:#8e867d;background:#101010;border-left:2px solid #3a3229;padding:9px 12px;margin:12px 0;border-radius:0 5px 5px 0}
+.note b{color:#c8a97e;font-weight:normal}
+.warn{border-left-color:#8a4a3a}
+.warn b{color:#e8a07a}
+ul{margin:6px 0 12px 18px}
+li{font-size:.78rem;color:#a8a096;margin-bottom:5px}
+li b{color:#c8a97e;font-weight:normal}
+.g{color:#7ae87a}.w{color:#e8a07a}.b{color:#7ab8e8}.r{color:#e86a5a}
+table{width:100%;border-collapse:collapse;font-size:.73rem;margin:10px 0}
+th{color:#6e6e6e;font-weight:normal;text-align:left;letter-spacing:.08em;font-size:.62rem;text-transform:uppercase;padding:5px 6px;border-bottom:1px solid #242424}
+td{padding:6px;border-bottom:1px solid #171717;color:#a8a096;vertical-align:top}
+td:first-child{white-space:nowrap}
+td b{color:#c8a97e;font-weight:normal}
+.cap{font-size:.72rem;color:#8e867d;min-height:3.4em;background:#101010;border:1px solid #1c1c1c;border-radius:5px;padding:9px 11px;margin-top:8px;line-height:1.8}
+.cap b{color:#c8a97e;font-weight:normal}
+.hot{cursor:pointer}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two .lab{text-align:center;font-size:.62rem;color:#666;margin-top:4px}
+@media(max-width:520px){.two{grid-template-columns:1fr}.cl{width:80px}}
+.ck{border:1px solid #1c1c1c;border-radius:6px;overflow:hidden;margin-bottom:12px}
+.ck>div.hd{background:#141414;padding:8px 12px;font-size:.72rem;color:#c8a97e;letter-spacing:.08em}
+.ck label{display:flex;gap:9px;padding:9px 12px;border-top:1px solid #171717;cursor:pointer;align-items:flex-start}
+.ck label:hover{background:#121212}
+.ck input{accent-color:#c8a97e;width:15px;height:15px;margin-top:2px;flex-shrink:0}
+.ck em{font-style:normal;font-size:.76rem;color:#b8b0a6;display:block}
+.ck i{font-style:normal;font-size:.67rem;color:#6e6a64;display:block;margin-top:2px;line-height:1.65}
+.ck label.done em{color:#5e5a55;text-decoration:line-through}
+.prog{font-size:.68rem;color:#6e6e6e;text-align:right;margin:-4px 0 16px}
+footer{color:#4e4e4e;font-size:.66rem;text-align:center;margin-top:34px;letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<h1>相機結構 · 光嘅旅程</h1>
+<p class="sub">FILTER → LENS → BODY</p>
+
+<nav>
+  <a href="#s1">一 · 光嘅路徑</a>
+  <a href="#s2">二 · 濾鏡</a>
+  <a href="#s3">三 · 鏡頭</a>
+  <a href="#s4">四 · 機身</a>
+  <a href="#s5">五 · 揀機驗機</a>
+</nav>
+
+<!-- ========== 1 ========== -->
+<section id="s1">
+<h2>一<b>光嘅路徑</b></h2>
+<p>由被攝物反射出嚟嘅光，去到變成一個檔案，中間經過一連串關卡。每一關都會改變最後嗰張畫面。</p>
+
+<div class="seg" id="bodySeg">
+  <button data-v="dslr" class="on">單鏡反光機 DSLR</button>
+  <button data-v="mless">無反 Mirrorless</button>
+</div>
+
+<div class="panel">
+<svg id="pathSvg" viewBox="0 0 660 300" style="width:100%;display:block">
+  <defs>
+    <marker id="ah" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 z" fill="#c8a97e"/>
+    </marker>
+  </defs>
+
+  <!-- 被攝物 -->
+  <g>
+    <circle cx="30" cy="128" r="11" fill="#3a3229"/>
+    <rect x="20" y="142" width="20" height="34" rx="4" fill="#3a3229"/>
+    <text x="30" y="196" fill="#5e5e5e" font-size="11" text-anchor="middle" font-family="Georgia,serif">被攝物</text>
+  </g>
+  <g stroke="#c8a97e" stroke-width="1" opacity=".55">
+    <line x1="44" y1="128" x2="112" y2="112"/>
+    <line x1="44" y1="150" x2="112" y2="150"/>
+    <line x1="44" y1="166" x2="112" y2="188"/>
+  </g>
+
+  <!-- 濾鏡 -->
+  <g class="hot" data-k="filter">
+    <rect x="112" y="98" width="9" height="104" rx="3" fill="#2a3a3a" stroke="#4a6a6a"/>
+    <text x="116" y="218" fill="#7ab8e8" font-size="11" text-anchor="middle" font-family="Georgia,serif">濾鏡</text>
+  </g>
+
+  <!-- 鏡頭 -->
+  <g class="hot" data-k="lens">
+    <rect x="132" y="96" width="168" height="108" rx="7" fill="#141414" stroke="#2e2e2e"/>
+    <ellipse cx="158" cy="150" rx="9" ry="46" fill="#22303a" stroke="#4a6a7a"/>
+    <ellipse cx="196" cy="150" rx="7" ry="38" fill="#22303a" stroke="#4a6a7a"/>
+    <ellipse cx="276" cy="150" rx="8" ry="40" fill="#22303a" stroke="#4a6a7a"/>
+    <text x="200" y="218" fill="#7ab8e8" font-size="11" text-anchor="middle" font-family="Georgia,serif">鏡片組</text>
+  </g>
+  <g class="hot" data-k="iris">
+    <path d="M228 112 L246 150 L228 188 Z" fill="#c8a97e" opacity=".75"/>
+    <path d="M252 112 L234 150 L252 188 Z" fill="#c8a97e" opacity=".75"/>
+    <text x="240" y="104" fill="#c8a97e" font-size="11" text-anchor="middle" font-family="Georgia,serif">光圈</text>
+  </g>
+  <g class="hot" data-k="mount">
+    <rect x="300" y="92" width="8" height="116" rx="2" fill="#4a4038"/>
+  </g>
+
+  <!-- DSLR 機身 -->
+  <g id="gDslr">
+    <rect x="308" y="60" width="300" height="164" rx="8" fill="#0f0f0f" stroke="#2a2a2a"/>
+    <polygon points="392,60 500,60 446,18" fill="#161616" stroke="#2e2e2e" class="hot" data-k="prism"/>
+    <text x="446" y="48" fill="#7e7468" font-size="10" text-anchor="middle" font-family="Georgia,serif">五稜鏡</text>
+    <rect x="500" y="30" width="26" height="18" rx="3" fill="#1c1c1c" stroke="#3a3a3a" class="hot" data-k="finder"/>
+    <text x="540" y="43" fill="#6e6e6e" font-size="10" font-family="Georgia,serif">目鏡</text>
+    <line x1="336" y1="206" x2="424" y2="96" stroke="#7ab8e8" stroke-width="3" class="hot" data-k="mirror"/>
+    <text x="352" y="228" fill="#7ab8e8" font-size="11" font-family="Georgia,serif">反光鏡</text>
+    <g class="hot" data-k="shutter">
+      <rect x="512" y="88" width="7" height="46" rx="2" fill="#5a4a3a"/>
+      <rect x="512" y="166" width="7" height="46" rx="2" fill="#5a4a3a"/>
+      <text x="516" y="246" fill="#e8a07a" font-size="11" text-anchor="middle" font-family="Georgia,serif">快門</text>
+    </g>
+    <g class="hot" data-k="sensor">
+      <rect x="540" y="88" width="9" height="124" rx="2" fill="#2a4a44" stroke="#5a9a8a"/>
+      <text x="572" y="154" fill="#7ae8c0" font-size="11" text-anchor="middle" font-family="Georgia,serif">感光</text>
+      <text x="572" y="168" fill="#7ae8c0" font-size="11" text-anchor="middle" font-family="Georgia,serif">元件</text>
+    </g>
+    <g stroke="#c8a97e" stroke-width="1.2" opacity=".8" fill="none">
+      <path d="M308 150 L378 150" marker-end="url(#ah)"/>
+      <path d="M380 150 L380 62" stroke-dasharray="3 3"/>
+      <path d="M380 44 L498 44" stroke-dasharray="3 3" marker-end="url(#ah)"/>
+    </g>
+    <text x="312" y="270" fill="#5e5e5e" font-size="10" font-family="Georgia,serif">取景時：光經反光鏡上五稜鏡 → 目鏡（光學觀景器）</text>
+    <text x="312" y="286" fill="#5e5e5e" font-size="10" font-family="Georgia,serif">按快門：反光鏡彈起 → 快門開 → 光到感光元件</text>
+  </g>
+
+  <!-- 無反機身 -->
+  <g id="gMless" style="display:none">
+    <rect x="308" y="72" width="196" height="140" rx="8" fill="#0f0f0f" stroke="#2a2a2a"/>
+    <rect x="392" y="34" width="48" height="24" rx="4" fill="#161616" stroke="#2e2e2e" class="hot" data-k="evf"/>
+    <text x="416" y="50" fill="#7e7468" font-size="10" text-anchor="middle" font-family="Georgia,serif">EVF</text>
+    <g class="hot" data-k="shutter">
+      <rect x="338" y="96" width="7" height="40" rx="2" fill="#5a4a3a"/>
+      <rect x="338" y="164" width="7" height="40" rx="2" fill="#5a4a3a"/>
+      <text x="340" y="228" fill="#e8a07a" font-size="11" text-anchor="middle" font-family="Georgia,serif">快門</text>
+    </g>
+    <g class="hot" data-k="sensor">
+      <rect x="362" y="94" width="9" height="112" rx="2" fill="#2a4a44" stroke="#5a9a8a"/>
+      <text x="398" y="152" fill="#7ae8c0" font-size="11" font-family="Georgia,serif">感光元件</text>
+    </g>
+    <g stroke="#c8a97e" stroke-width="1.2" opacity=".8" fill="none">
+      <path d="M308 150 L356 150" marker-end="url(#ah)"/>
+      <path d="M371 120 L388 120 L388 60" stroke-dasharray="3 3" marker-end="url(#ah)"/>
+    </g>
+    <g class="hot" data-k="flange">
+      <line x1="308" y1="252" x2="366" y2="252" stroke="#7ab8e8" stroke-width="1"/>
+      <line x1="308" y1="246" x2="308" y2="258" stroke="#7ab8e8"/>
+      <line x1="366" y1="246" x2="366" y2="258" stroke="#7ab8e8"/>
+      <text x="376" y="256" fill="#7ab8e8" font-size="10" font-family="Georgia,serif">法蘭距短</text>
+    </g>
+    <text x="312" y="286" fill="#5e5e5e" font-size="10" font-family="Georgia,serif">冇反光鏡：光一直去到感光元件，畫面由感光元件直接送去 EVF／螢幕</text>
+  </g>
+</svg>
+<div class="cap" id="pathCap"><b>撳圖入面任何一個部件。</b></div>
+</div>
+
+<table>
+<tr><th>層</th><th>負責</th><th>撳錯會點</th></tr>
+<tr><td><b>濾鏡</b></td><td>保護前鏡片、過濾特定方向或波長嘅光</td><td>平價濾鏡令逆光起鬼影、反差跌</td></tr>
+<tr><td><b>鏡頭</b></td><td>成像、視角、進光量、景深、防手震</td><td>光圈唔夠大、暗位要谷 ISO</td></tr>
+<tr><td><b>機身</b></td><td>曝光時間、感光面積、讀取同記錄</td><td>快門同讀取速度唔夠，動作變形</td></tr>
+</table>
+</section>
+
+<hr>
+
+<!-- ========== 2 ========== -->
+<section id="s2">
+<h2>二<b>濾鏡 Filter</b></h2>
+
+<h3>UV 濾鏡</h3>
+<p>菲林年代，UV 濾鏡係用嚟擋紫外線，避免遠景發藍朦。數碼感光元件前面已經有一塊 UV／IR 截止玻璃，所以今日一塊 UV 濾鏡對畫面幾乎冇影響。</p>
+<p>剩返嘅真實用途係<strong>物理保護</strong>：擋沙、擋水花、擋手指、鏡頭跌低時犧牲嗰塊玻璃。代價係光路上多咗兩個玻璃－空氣界面。</p>
+<div class="note warn"><b>代價：</b>逆光或者夜景有強光源嗰陣，濾鏡兩面嘅反射會喺畫面上形成鬼影同光暈；鍍膜差嘅平價濾鏡仲會令整體反差跌。一支五千蚊嘅鏡，唔好配一塊三十蚊嘅濾鏡。</div>
+
+<h3>CPL 環形偏光鏡</h3>
+<p>反射光係<strong>偏振</strong>嘅——由水面、玻璃、樹葉表面反射出嚟嘅光，振動方向集中喺同一個平面。偏光鏡就係一道柵，只俾某一個方向嘅光通過。轉動濾鏡前環，就係轉呢道柵嘅角度。</p>
+
+<div class="panel">
+<canvas id="cplC" height="230"></canvas>
+<div class="controls">
+  <div class="cr"><div class="cl">濾鏡角度<span>前環轉動</span></div><input type="range" id="cplA" min="0" max="180" value="0"><div class="cv" id="cplAv">0°</div></div>
+  <div class="cr"><div class="cl">太陽方位<span>同拍攝方向夾角</span></div><input type="range" id="cplS" min="0" max="180" value="90"><div class="cv" id="cplSv">90°</div></div>
+</div>
+<div class="chk"><label><input type="checkbox" id="cplW"> 用超廣角鏡（16mm）</label></div>
+<div class="read">
+  <div><b>水面反光</b><span id="cplR">100%</span></div>
+  <div><b>天空偏振度</b><span id="cplP">100%</span></div>
+  <div><b>光量損失</b><span id="cplL">−1.7 EV</span></div>
+</div>
+</div>
+
+<ul>
+<li><b>消反光</b>——水面、玻璃、濕地、樹葉蠟質層。想影到水底或者櫥窗入面嘅嘢，呢個係唯一方法，後期救唔到。</li>
+<li><b>加深藍天</b>——效果最強係喺同太陽成 90° 嘅方向；順光同逆光位置，天空基本上冇偏振，轉極都冇用。</li>
+<li><b>金屬反光冇效</b>——金屬表面嘅反射唔會產生偏振。</li>
+<li><b>食光 1.5 至 2 級</b>——室內、傍晚、影片要就快門嗰陣，加 CPL 等於逼自己升 ISO。</li>
+<li><b>超廣角要留神</b>——一個 16mm 畫面已經橫跨幾十度天空，偏振度由左到右唔同，會出現一條深藍、一邊淺嘅唔均勻天空。</li>
+<li><b>可變焦嘅鏡要注意</b>——CPL 效果隨鏡頭轉向而變，運鏡（搖鏡）嘅時候天空會忽深忽淺。</li>
+</ul>
+
+<div class="note"><b>疊濾鏡：</b>CPL 加 ND 加 UV 疊三層，廣角端會見到四角變黑（暗角）。要疊就換薄框（slim）版本，或者用方形濾鏡系統。</div>
+</section>
+
+<hr>
+<!-- ========== 3 ========== -->
+<section id="s3">
+<h2>三<b>鏡頭 Lens</b></h2>
+
+<h3>光圈：鏡頭嘅水龍頭</h3>
+<p>f 值 = 焦距 ÷ 有效光圈直徑。所以同一個 f/2.8，200mm 鏡嘅前玻璃一定大過 50mm 鏡——呢個就係長焦大光圈鏡又大又貴嘅原因。</p>
+<p>鏡身上面寫住 <strong>18-55mm f/3.5-5.6</strong>，意思係：18mm 端最大只可以開到 f/3.5，推到 55mm 端就跌到 f/5.6。寫 <strong>24-70mm f/2.8</strong> 就係全程恆定。</p>
+
+<div class="panel">
+<canvas id="zoomC" height="150"></canvas>
+<div class="controls">
+  <div class="cr"><div class="cl">焦距<span>變焦環</span></div><input type="range" id="zoomF" min="18" max="55" value="18"><div class="cv" id="zoomFv">18mm</div></div>
+</div>
+<div class="read">
+  <div><b>浮動光圈鏡</b><span id="zoomA">f/3.5</span></div>
+  <div><b>恆定光圈鏡</b><span>f/2.8</span></div>
+  <div><b>兩者相差</b><span id="zoomD">0.5 級</span></div>
+</div>
+</div>
+
+<div class="note"><b>對拍片嘅影響：</b>用浮動光圈鏡推變焦，曝光會一路變暗，而且係一級一級跳，成段片會見到光度階梯。手動模式下推 zoom 特別明顯。</div>
+
+<h3>防手震：只醫相機郁，唔醫主體郁</h3>
+<p>鏡頭入面嘅 <strong>OIS</strong> 用一組浮動鏡片反方向補償；機身嘅 <strong>IBIS</strong> 直接郁感光元件；電子防震 <strong>EIS</strong> 係裁走畫面邊緣嚟做緩衝，所以會損失視角同少少畫質。</p>
+<p>經驗法則：手持安全快門 ≈ <strong>1 ÷（焦距 × 裁切系數）</strong>。防震標榜「5 級」，即係理論上可以再慢 5 級。</p>
+
+<div class="panel">
+<canvas id="isC" height="180"></canvas>
+<div class="controls">
+  <div class="cr"><div class="cl">焦距</div><input type="range" id="isF" min="0" max="9" value="3"><div class="cv" id="isFv">50mm</div></div>
+  <div class="cr"><div class="cl">快門</div><input type="range" id="isS" min="0" max="12" value="6"><div class="cv" id="isSv">1/60</div></div>
+  <div class="cr"><div class="cl">防震<span>補償級數</span></div><input type="range" id="isI" min="0" max="6" value="0"><div class="cv" id="isIv">關</div></div>
+</div>
+<div class="chk">
+  <label><input type="checkbox" id="isM"> 主體移動緊</label>
+  <label><input type="checkbox" id="isC15"> APS-C（×1.5）</label>
+</div>
+<div class="read">
+  <div><b>安全快門</b><span id="isSafe">1/50</span></div>
+  <div><b>餘裕</b><span id="isMar">+0.3 級</span></div>
+  <div><b>結果</b><span id="isRes">穩</span></div>
+</div>
+</div>
+
+<ul>
+<li><b>腳架上要熄防震</b>——舊式防震系統搵唔到震動會自己搵嘢補償，反而令畫面輕微飄。新機多數會自動偵測，但穩陣起見自己熄。</li>
+<li><b>防震唔等於進光</b>——快門慢咗，主體一郁就散。影人、影街、影運動，快門先係主角。</li>
+<li><b>拍片嘅防震係另一回事</b>——行路嗰陣嘅上下彈跳唔係手震，係位移，要靠穩定器或者步姿處理。</li>
+</ul>
+</section>
+
+<hr>
+
+<!-- ========== 4 ========== -->
+<section id="s4">
+<h2>四<b>機身 Body</b></h2>
+
+<h3>快門：兩塊簾之間嘅一條縫</h3>
+<p>感光元件前面有兩塊簾。慢快門嗰陣，前簾完全拉開、等一陣、後簾先落——全塊感光元件同時受光。但簾本身行走要時間（大約 1/200 至 1/250 秒），當你設定嘅快門快過呢個時間，後簾喺前簾未行完就要起步，兩塊簾之間淨返<strong>一條縫掃過畫面</strong>。</p>
+<p>電子快門冇簾，改為逐行讀取感光元件。讀取一次全片嘅時間可以慢到 1/30 秒，所以移動中嘅物體會被「掃」到傾斜——呢個就係果凍效應。</p>
+
+<div class="panel">
+<div class="seg" id="shSeg">
+  <button data-v="mech" class="on">機械快門</button>
+  <button data-v="elec">電子快門</button>
+</div>
+<div class="two">
+  <div><canvas id="shC" height="190"></canvas><div class="lab">簾幕運動</div></div>
+  <div><canvas id="shR" height="190"></canvas><div class="lab">拍到嘅畫面</div></div>
+</div>
+<div class="controls">
+  <div class="cr"><div class="cl">快門速度</div><input type="range" id="shS" min="0" max="10" value="4"><div class="cv" id="shSv">1/125</div></div>
+  <div class="cr"><div class="cl">主體速度<span>橫向移動</span></div><input type="range" id="shV" min="0" max="10" value="5"><div class="cv" id="shVv">中</div></div>
+</div>
+<div class="chk"><label><input type="checkbox" id="shF"> 開閃光燈</label></div>
+<div class="read">
+  <div><b>簾幕／讀取</b><span id="shT">1/250 s</span></div>
+  <div><b>開縫闊度</b><span id="shW">全開</span></div>
+  <div><b>傾斜</b><span id="shSk">輕微</span></div>
+</div>
+</div>
+
+<ul>
+<li><b>閃燈同步速度</b>——快過 1/250 就唔會有全開嘅一刻，閃光只照到一條縫，畫面會有一道黑帶。要用高速同步（HSS）先破到。</li>
+<li><b>電子快門嘅好處</b>——完全無聲、無震動、可以去到 1/32000，影劇場同紀錄片好用。</li>
+<li><b>電子快門嘅代價</b>——果凍傾斜、LED 同光管下出現橫向光暗帶、多數機唔支援閃燈、部分機得 12-bit 輸出。</li>
+<li><b>快門次數</b>——機械快門係消耗品，入門機大約 10 萬次，專業機 50 萬次。買二手要問。</li>
+</ul>
+
+<h3>感光元件：面積先係重點</h3>
+<p>像素數字決定你放大到幾大都仲清楚；<strong>感光面積</strong>決定每粒像素收到幾多光子，直接影響高 ISO 雜訊同動態範圍。同樣 2400 萬像素，全片幅每粒像素嘅受光面積係 M4/3 嘅四倍。</p>
+
+<div class="panel">
+<canvas id="snC" height="244"></canvas>
+<div class="seg" id="snSeg">
+  <button data-v="0">手機 1/2.3"</button>
+  <button data-v="1">1"</button>
+  <button data-v="2">M4/3</button>
+  <button data-v="3" class="on">APS-C</button>
+  <button data-v="4">Super 35</button>
+  <button data-v="5">全片幅</button>
+</div>
+<div class="controls">
+  <div class="cr"><div class="cl">鏡頭焦距</div><input type="range" id="snF" min="12" max="200" value="50"><div class="cv" id="snFv">50mm</div></div>
+</div>
+<div class="read">
+  <div><b>尺寸</b><span id="snSz">23.5×15.6</span></div>
+  <div><b>裁切系數</b><span id="snCf">1.53×</span></div>
+  <div><b>等效視角</b><span id="snEq">76mm</span></div>
+  <div><b>像素間距</b><span id="snPx">3.9µm</span></div>
+</div>
+</div>
+
+<div class="note"><b>等效焦距唔止影響視角：</b>APS-C 機用 35mm f/2 鏡，視角同全片幅 53mm 差唔多，但景深淺度亦都近似全片幅 f/3。同一支鏡、同一個 f 值，細片幅嘅散景一定冇咁化開。</div>
+
+<div class="note"><b>Super 35 係電影標準：</b>大部分電影鏡頭同鏡頭語言係建基於 Super 35（約等於 APS-C）。拍片揀 APS-C 唔係退而求其次，而係同電影鏡頭生態一致。</div>
+</section>
+
+<hr>
+
+<!-- ========== 5 ========== -->
+<section id="s5">
+<h2>五<b>揀機同驗機</b></h2>
+
+<h3>錢應該點分</h3>
+<table>
+<tr><th>項目</th><th>建議</th><th>理由</th></tr>
+<tr><td><b>鏡頭</b></td><td>預算一半以上</td><td>機身三年就落後，鏡頭用十年，而且保值</td></tr>
+<tr><td><b>機身</b></td><td>三分一</td><td>上一代二手機身通常最抵，畫質同新機差別細</td></tr>
+<tr><td><b>配件</b></td><td>剩返嗰啲</td><td>電池、記憶卡、防潮箱、清潔工具——呢啲缺一件就開唔到工</td></tr>
+</table>
+
+<h3>規格表要睇邊幾行</h3>
+<ul>
+<li><b>接環</b>——決定你之後十年可以買咩鏡。轉會成本極高，揀接環重要過揀機身。</li>
+<li><b>有冇機身防震（IBIS）</b>——手持拍片同暗位手持嘅分水嶺。</li>
+<li><b>影片規格</b>——唔止睇「4K」，要睇有冇裁切、幾多 fps、幾多 bit、有冇 Log。寫「4K 30p（1.5× crop）」即係你支廣角唔再廣。</li>
+<li><b>錄影時限同散熱</b>——寫住 30 分鐘上限或者連拍會過熱嘅機，唔適合影舞台同訪問。</li>
+<li><b>雙卡槽</b>——收費工作嘅底線。</li>
+<li><b>電池型號</b>——舊細電池（例如 LP-E17 一類）現場要帶四五粒。</li>
+</ul>
+
+<h3>驗機清單</h3>
+<p>以下每項喺舖頭當場做得晒，全部加埋大約十五分鐘。</p>
+
+<div class="ck" id="ckA">
+  <div class="hd">機身外觀同機械</div>
+  <label><input type="checkbox"><span><em>底部、接環、熱靴有冇撞崩</em><i>接環變形會令對焦唔準，係大問題</i></span></label>
+  <label><input type="checkbox"><span><em>螺絲有冇批花</em><i>批花代表拆過，維修紀錄要問清楚</i></span></label>
+  <label><input type="checkbox"><span><em>手感位膠皮有冇甩、發黏</em><i>潮濕地方存放嘅跡象</i></span></label>
+  <label><input type="checkbox"><span><em>所有按鈕、轉盤、搖桿逐粒㩒</em><i>錄影鍵同 AF-ON 最常被忽略</i></span></label>
+  <label><input type="checkbox"><span><em>翻揭螢幕轉到盡、觸控每一角有反應</em><i>排線係常見故障位</i></span></label>
+  <label><input type="checkbox"><span><em>記憶卡槽、電池門、各個蓋開合順暢</em><i></i></span></label>
+</div>
+
+<div class="ck" id="ckB">
+  <div class="hd">感光元件同快門</div>
+  <label><input type="checkbox"><span><em>睇快門次數</em><i>用機身選單或者影一張 JPG 讀 EXIF。同機齡對照：一年一萬次以內算輕用</i></span></label>
+  <label><input type="checkbox"><span><em>縮到最細光圈（f/22）影一張白牆或者藍天</em><i>放大睇：黑點係灰塵，一團團絲狀就係霉，霉要即刻走人</i></span></label>
+  <label><input type="checkbox"><span><em>蓋住鏡頭蓋、用 30 秒快門影一張全黑</em><i>放大搵紅綠白色亮點，就係壞點</i></span></label>
+  <label><input type="checkbox"><span><em>用電子快門影一次日光燈</em><i>見到橫紋屬正常現象，但可以順便確認電子快門正常</i></span></label>
+  <label><input type="checkbox"><span><em>連拍五秒、再錄十分鐘片</em><i>試機身會唔會過熱停機</i></span></label>
+</div>
+
+<div class="ck" id="ckC">
+  <div class="hd">鏡頭</div>
+  <label><input type="checkbox"><span><em>對住燈由前面同後面望穿鏡片</em><i>塵少少可以接受；蜘蛛網狀白絲係發霉；一圈圈彩虹紋係鍍膜刮花</i></span></label>
+  <label><input type="checkbox"><span><em>轉對焦環同變焦環</em><i>有冇沙聲、鬆位、推到某個焦距突然卡住</i></span></label>
+  <label><input type="checkbox"><span><em>鏡頭指向下再向上，聽有冇「咔」一聲</em><i>變焦鏡內部鬆脫嘅聲</i></span></label>
+  <label><input type="checkbox"><span><em>裝上機試自動對焦，遠近各三次</em><i>聽有冇異聲、會唔會拉風箱搵唔到焦</i></span></label>
+  <label><input type="checkbox"><span><em>開防震，快門調慢兩級手持影</em><i>聽到輕微摩打聲屬正常，冇聲就要試多幾張比較</i></span></label>
+  <label><input type="checkbox"><span><em>光圈葉片有冇油漬</em><i>收縮光圈時葉片反光油亮，係漏油，之後會卡死</i></span></label>
+</div>
+
+<div class="ck" id="ckD">
+  <div class="hd">附件同手續</div>
+  <label><input type="checkbox"><span><em>電池循環次數、有冇鼓脹</em><i>放喺平枱面轉得郁就係脹咗，即棄</i></span></label>
+  <label><input type="checkbox"><span><em>原廠充電器、鏡頭蓋前後、遮光罩、機身蓋齊唔齊</em><i>散件補返要幾百蚊</i></span></label>
+  <label><input type="checkbox"><span><em>有冇單、保養期、行貨定水貨</em><i></i></span></label>
+  <label><input type="checkbox"><span><em>自己帶記憶卡同讀卡器去，即場過相返電腦放大睇</em><i>機背螢幕睇唔出壞點同霉</i></span></label>
+</div>
+
+<div class="prog" id="ckProg">0 / 21 完成</div>
+
+<h3>買咗返屋企第一晚</h3>
+<ul>
+<li><b>入防潮箱</b>——香港常年七八十度濕度，鏡頭發霉唔係意外係必然。濕度設 45% 左右。</li>
+<li><b>格式化記憶卡</b>——喺機身入面格，唔好喺電腦格。</li>
+<li><b>影片格式、色彩、對焦模式一次過設定好</b>——現場先嚟設定必定甩漏。</li>
+<li><b>入袋前貼一張紙</b>——寫低快門次數同購入日，方便日後保養同轉手。</li>
+</ul>
+</section>
+
+<footer>CPOP FILM DIGITAL ART — 課堂用互動教材</footer>
+<script>
+(function(){
+"use strict";
+var DPR=Math.min(2,window.devicePixelRatio||1);
+function $(id){return document.getElementById(id);}
+function C(id,h){
+  var c=$(id); if(!c) return null;
+  c.style.height=h+'px';
+  var g=c.getContext('2d'), o={c:c,g:g,w:300,h:h,draw:null};
+  function size(){var w=c.clientWidth||300;c.width=Math.round(w*DPR);c.height=Math.round(h*DPR);g.setTransform(DPR,0,0,DPR,0,0);o.w=w;o.h=h;}
+  o.size=size; size();
+  window.addEventListener('resize',function(){size();if(o.draw)o.draw();});
+  return o;
+}
+function rgb(a){return 'rgb('+Math.round(a[0])+','+Math.round(a[1])+','+Math.round(a[2])+')';}
+function mix(a,b,t,bri){bri=bri===undefined?1:bri;return rgb([(a[0]+(b[0]-a[0])*t)*bri,(a[1]+(b[1]-a[1])*t)*bri,(a[2]+(b[2]-a[2])*t)*bri]);}
+function seg(id,cb){
+  var box=$(id); if(!box) return;
+  box.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    [].forEach.call(box.querySelectorAll('button'),function(x){x.classList.remove('on');});
+    b.classList.add('on'); cb(b.dataset.v);
+  });
+}
+
+/* ===== 1 · 光路 ===== */
+var CAP={
+ filter:'<b>濾鏡</b>　旋喺鏡頭最前。UV 做保護、CPL 揀光嘅振動方向、ND 純減光。呢一層唔負責成像，只係決定咩光入得嚟。',
+ lens:'<b>鏡片組</b>　幾組凹凸鏡片嘅組合，決定視角、變形、色差同銳利度。變焦就係郁其中幾組鏡片改變焦距。',
+ iris:'<b>光圈</b>　一組葉片圍成嘅可變圓孔。f 值愈細個孔愈大，進光愈多、景深愈淺。葉片數量同形狀決定散景同星芒。',
+ mount:'<b>接環</b>　機身同鏡頭嘅介面，同時要傳電同傳訊號。接環決定咗你未來十年可以用邊個系統嘅鏡。',
+ mirror:'<b>反光鏡</b>　45° 擺放，取景時將光反上五稜鏡。按快門一刻要彈起，所以觀景器會黑一黑，機身亦有輕微震動同聲響。',
+ prism:'<b>五稜鏡</b>　將反光鏡送上嚟嘅倒轉影像反正，再送去目鏡。呢一路係純光學，冇電子參與。',
+ finder:'<b>光學觀景器</b>　零延遲、唔食電、光線再暗都睇到，但曝光同白平衡要靠自己估。',
+ evf:'<b>電子觀景器 EVF</b>　睇緊嘅係感光元件嘅即時輸出：曝光、白平衡、對焦峰值所見即所得。代價係食電，同埋極暗環境下會有雜訊同延遲。',
+ shutter:'<b>快門</b>　兩塊簾控制感光元件受光幾耐。高速嗰陣兩塊簾之間淨返一條縫掃過畫面。',
+ sensor:'<b>感光元件</b>　將光子轉成電荷再轉成數字。面積決定收光能力同雜訊表現，像素數量決定解像度。',
+ flange:'<b>法蘭距</b>　接環到感光元件嘅距離。無反冇咗反光鏡箱，法蘭距短好多，所以加一個轉接環就可以用返單反年代嘅鏡。'
+};
+var svg=$('pathSvg'), cap=$('pathCap');
+if(svg){
+  svg.addEventListener('click',function(e){
+    var t=e.target.closest('.hot'); if(!t) return;
+    var k=t.dataset.k; if(CAP[k]) cap.innerHTML=CAP[k];
+  });
+  seg('bodySeg',function(v){
+    $('gDslr').style.display = v==='dslr'?'':'none';
+    $('gMless').style.display = v==='mless'?'':'none';
+    cap.innerHTML = v==='dslr'
+      ? '<b>單鏡反光機</b>　光經反光鏡同五稜鏡去到目鏡，你望到嘅係真光。按快門先彈起反光鏡。'
+      : '<b>無反相機</b>　冇反光鏡，光直達感光元件；畫面經電子訊號送去 EVF 或者螢幕。機身薄、法蘭距短。';
+  });
+}
+
+/* ===== 2 · CPL ===== */
+var cpl=C('cplC',230);
+if(cpl){
+  function mountain(g,w,hor){
+    g.fillStyle='#151a1e'; g.beginPath(); g.moveTo(0,hor);
+    g.lineTo(w*0.10,hor-26); g.lineTo(w*0.20,hor-10); g.lineTo(w*0.34,hor-40);
+    g.lineTo(w*0.46,hor-14); g.lineTo(w*0.62,hor-32); g.lineTo(w*0.78,hor-8);
+    g.lineTo(w*0.90,hor-20); g.lineTo(w,hor-6); g.lineTo(w,hor); g.closePath(); g.fill();
+  }
+  function sky(g,wA,hor,sun,spread,block){
+    for(var x=0;x<wA;x+=3){
+      var ls=sun+spread*(x/wA-0.5);
+      var p=Math.pow(Math.sin(ls*Math.PI/180),2), k=p*block;
+      var gr=g.createLinearGradient(0,0,0,hor);
+      gr.addColorStop(0,mix([96,152,208],[16,50,116],0.8*k,1-0.32*k));
+      gr.addColorStop(1,mix([182,208,230],[88,146,200],0.7*k,1-0.14*k));
+      g.fillStyle=gr; g.fillRect(x,0,3,hor);
+    }
+  }
+  cpl.draw=function(){
+    var g=cpl.g,w=cpl.w,h=cpl.h;
+    var th=+$('cplA').value*Math.PI/180, sun=+$('cplS').value, wide=$('cplW').checked;
+    var block=Math.pow(Math.sin(th),2), keep=1-0.92*block, spread=wide?72:14;
+    var pol=Math.pow(Math.sin(sun*Math.PI/180),2);
+    g.clearRect(0,0,w,h);
+    var gap=8, wA=Math.round((w-gap)*0.60), wB=w-gap-wA, xB=wA+gap, hor=Math.round(h*0.44), lab=h-16;
+
+    g.save(); g.beginPath(); g.rect(0,0,wA,h-18); g.clip();
+    sky(g,wA,hor,sun,spread,block);
+    mountain(g,wA,hor);
+    g.fillStyle='#101a22'; g.fillRect(0,hor,wA,h-hor);
+    g.fillStyle='#2e2a22';
+    g.beginPath(); g.ellipse(wA*0.22,hor+(h-hor)*0.62,15,6,0,0,7); g.fill();
+    g.beginPath(); g.ellipse(wA*0.52,hor+(h-hor)*0.46,11,4.5,0,0,7); g.fill();
+    g.beginPath(); g.ellipse(wA*0.74,hor+(h-hor)*0.74,18,7,0,0,7); g.fill();
+    g.fillStyle='#3a3428'; g.font='10px Georgia,serif'; g.fillText('水底',wA*0.20,hor+(h-hor)*0.64+3);
+    g.save(); g.beginPath(); g.rect(0,hor,wA,h-hor-18); g.clip();
+    g.globalAlpha=keep*0.88; g.translate(0,2*hor); g.scale(1,-1);
+    sky(g,wA,hor,sun,spread,block); mountain(g,wA,hor);
+    g.restore();
+    g.restore();
+    g.strokeStyle='#1c1c1c'; g.lineWidth=1; g.strokeRect(0.5,0.5,wA-1,h-19);
+
+    g.save(); g.beginPath(); g.rect(xB,0,wB,h-18); g.clip();
+    g.fillStyle='#17120e'; g.fillRect(xB,0,wB,h-18);
+    g.fillStyle='#4a3a24'; g.fillRect(xB+wB*0.22,h*0.30,wB*0.56,h*0.34);
+    g.fillStyle='#6a5434'; g.fillRect(xB+wB*0.30,h*0.22,wB*0.40,h*0.10);
+    g.fillStyle='#8a7a5a'; g.font='10px Georgia,serif'; g.fillText('櫥窗裡面',xB+wB*0.24,h*0.76);
+    g.globalAlpha=keep;
+    var gr2=g.createLinearGradient(xB,0,xB+wB,h);
+    gr2.addColorStop(0,'rgba(200,214,228,0.62)'); gr2.addColorStop(0.5,'rgba(150,172,196,0.30)'); gr2.addColorStop(1,'rgba(210,222,236,0.55)');
+    g.fillStyle=gr2; g.fillRect(xB,0,wB,h-18);
+    g.fillStyle='rgba(28,32,38,0.55)';
+    g.beginPath(); g.arc(xB+wB*0.30,h*0.42,9,0,7); g.fill();
+    g.fillRect(xB+wB*0.30-11,h*0.42+8,22,h*0.34);
+    g.fillStyle='rgba(255,255,255,0.34)';
+    g.beginPath(); g.moveTo(xB+wB*0.55,0); g.lineTo(xB+wB*0.78,0); g.lineTo(xB+wB*0.46,h); g.lineTo(xB+wB*0.24,h); g.closePath(); g.fill();
+    g.restore();
+    g.strokeStyle='#1c1c1c'; g.strokeRect(xB+0.5,0.5,wB-1,h-19);
+
+    g.fillStyle='#6e6a64'; g.font='10px Georgia,serif';
+    g.fillText('水面 · 天空',4,lab+8);
+    g.fillText('玻璃反光',xB+4,lab+8);
+    var dir = sun<40?'順光':(sun>140?'逆光':'側光');
+    g.fillStyle='#c8a97e'; g.fillText(dir,wA-34,lab+8);
+
+    $('cplAv').textContent=$('cplA').value+'°';
+    $('cplSv').textContent=$('cplS').value+'°';
+    $('cplR').textContent=Math.round(keep*100)+'%';
+    $('cplP').textContent=Math.round(pol*100)+'%';
+    $('cplL').textContent='−1.7 EV';
+  };
+  ['cplA','cplS','cplW'].forEach(function(id){$(id).addEventListener('input',cpl.draw);});
+  cpl.draw();
+}
+
+/* ===== 3a · 浮動光圈 ===== */
+var zm=C('zoomC',150);
+if(zm){
+  function fAt(len){ return len<24?3.5 : len<29?4.0 : len<39?4.5 : len<48?5.0 : 5.6; }
+  function iris(g,cx,cy,R,f,col,label){
+    g.fillStyle='#0a0a0a'; g.beginPath(); g.arc(cx,cy,R,0,7); g.fill();
+    g.strokeStyle='#2e2e2e'; g.lineWidth=1; g.stroke();
+    var r=R*(2.0/f);
+    g.fillStyle=col; g.beginPath();
+    for(var i=0;i<7;i++){var a=-Math.PI/2+i*2*Math.PI/7; var x=cx+r*Math.cos(a),y=cy+r*Math.sin(a); i?g.lineTo(x,y):g.moveTo(x,y);}
+    g.closePath(); g.fill();
+    g.fillStyle='#8a8278'; g.font='11px Georgia,serif'; g.textAlign='center';
+    g.fillText(label,cx,cy+R+16); g.textAlign='left';
+  }
+  zm.draw=function(){
+    var g=zm.g,w=zm.w,h=zm.h, len=+$('zoomF').value, f=fAt(len);
+    g.clearRect(0,0,w,h); g.fillStyle='#0d0d0d'; g.fillRect(0,0,w,h);
+    var R=Math.min(46,h*0.32);
+    iris(g,w*0.28,h*0.42,R,f,'#c8a97e','18-55mm f/3.5-5.6　→　f/'+f.toFixed(1));
+    iris(g,w*0.72,h*0.42,R,2.8,'#7ab8e8','24-70mm f/2.8　→　f/2.8');
+    var d=2*Math.log(f/2.8)/Math.log(2);
+    g.fillStyle='#5e5e5e'; g.font='10px Georgia,serif'; g.textAlign='center';
+    g.fillText('進光量相差 '+d.toFixed(1)+' 級（'+Math.pow(2,d).toFixed(1)+' 倍）',w/2,h-10);
+    g.textAlign='left';
+    $('zoomFv').textContent=len+'mm';
+    $('zoomA').textContent='f/'+f.toFixed(1);
+    $('zoomD').textContent=d.toFixed(1)+' 級';
+  };
+  $('zoomF').addEventListener('input',zm.draw); zm.draw();
+}
+
+/* ===== 3b · 防手震 ===== */
+var IS=C('isC',180);
+if(IS){
+  var FOC=[16,24,35,50,85,135,200,300,400,600];
+  var SHT=[1/4000,1/2000,1/1000,1/500,1/250,1/125,1/60,1/30,1/15,1/8,1/4,1/2,1];
+  var SHL=['1/4000','1/2000','1/1000','1/500','1/250','1/125','1/60','1/30','1/15','1/8','1/4','1/2','1"'];
+  function scene(g,w,h,dx,dy,sdx){
+    g.save(); g.translate(dx,dy);
+    g.fillStyle='#14110e'; g.fillRect(-40,-40,w+80,h+80);
+    g.fillStyle='#1e1a16'; g.fillRect(w*0.04,h*0.10,w*0.30,h*0.80);
+    g.fillStyle='#2a231c'; g.fillRect(w*0.66,h*0.04,w*0.30,h*0.86);
+    g.fillStyle='#c8a97e'; g.font='bold 20px Georgia,serif'; g.fillText('夜市',w*0.07,h*0.34);
+    g.fillStyle='#e8a07a'; g.fillRect(w*0.70,h*0.16,w*0.22,4); g.fillRect(w*0.70,h*0.30,w*0.22,4);
+    g.fillStyle='#f0d8a0'; g.beginPath(); g.arc(w*0.50,h*0.16,7,0,7); g.fill();
+    g.fillStyle='#5a4a3a'; g.fillRect(0,h*0.88,w,h*0.12);
+    g.restore();
+    g.save(); g.translate(dx+sdx,dy);
+    g.fillStyle='#9a8f80'; g.beginPath(); g.arc(w*0.46,h*0.50,8,0,7); g.fill();
+    g.fillRect(w*0.46-9,h*0.58,18,h*0.30);
+    g.restore();
+  }
+  IS.draw=function(){
+    var g=IS.g,w=IS.w,h=IS.h;
+    var foc=FOC[+$('isF').value], T=SHT[+$('isS').value], st=+$('isI').value;
+    var crop=$('isC15').checked?1.5:1, moving=$('isM').checked;
+    var safe=1/(foc*crop)*Math.pow(2,st);
+    var ratio=T/safe, margin=Math.log(safe/T)/Math.log(2);
+    var shake=ratio<=1? ratio*1.3 : Math.min(26,1.3+(ratio-1)*5.5);
+    var sub=moving?Math.min(42,T*300):0;
+    g.clearRect(0,0,w,h); g.fillStyle='#0d0d0d'; g.fillRect(0,0,w,h);
+    var N=12; g.save(); g.beginPath(); g.rect(4,4,w-8,h-8); g.clip();
+    for(var i=0;i<N;i++){
+      var t=i/(N-1)-0.5;
+      g.globalAlpha=1/N;
+      scene(g,w,h,t*shake*1.6+Math.sin(i*2.1)*shake*0.5, Math.cos(i*1.7)*shake*0.6, t*sub*1.8);
+    }
+    g.restore(); g.globalAlpha=1;
+    g.strokeStyle='#1e1e1e'; g.strokeRect(4.5,4.5,w-9,h-9);
+    $('isFv').textContent=foc+'mm';
+    $('isSv').textContent=SHL[+$('isS').value];
+    $('isIv').textContent=st===0?'關':st+' 級';
+    var sd=Math.round(1/safe);
+    $('isSafe').textContent= safe>=1? safe.toFixed(0)+'"' : '1/'+sd;
+    $('isMar').textContent=(margin>=0?'+':'')+margin.toFixed(1)+' 級';
+    var res, cls;
+    if(sub>10){res='主體散';cls='r';}
+    else if(shake>9){res='散';cls='r';}
+    else if(shake>3.5){res='邊緣';cls='w';}
+    else if(sub>4){res='主體輕微';cls='w';}
+    else {res='穩';cls='g';}
+    var el=$('isRes'); el.textContent=res; el.className=cls;
+  };
+  ['isF','isS','isI','isM','isC15'].forEach(function(id){$(id).addEventListener('input',IS.draw);});
+  IS.draw();
+}
+
+/* ===== 4a · 快門 ===== */
+var shA=C('shC',190), shB=C('shR',190);
+if(shA&&shB){
+  var SS=[1/4000,1/2000,1/1000,1/500,1/250,1/125,1/60,1/30,1/15,1/8,1/4];
+  var SL=['1/4000','1/2000','1/1000','1/500','1/250','1/125','1/60','1/30','1/15','1/8','1/4'];
+  var VL=['靜止','極慢','很慢','慢','偏慢','中','偏快','快','很快','極快','高速'];
+  var mode='mech', t0=performance.now();
+  function bg(g,w,h){
+    g.fillStyle='#141822'; g.fillRect(0,0,w,h);
+    g.strokeStyle='#1e2430'; g.lineWidth=1;
+    for(var x=0;x<w;x+=26){g.beginPath();g.moveTo(x,0);g.lineTo(x,h);g.stroke();}
+    for(var y=0;y<h;y+=26){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}
+  }
+  function params(){
+    var T=SS[+$('shS').value], ro=(mode==='mech')?1/250:1/30;
+    var v=(+$('shV').value)*150;
+    return {T:T,ro:ro,v:v,slit:Math.min(1,T/ro),flash:$('shF').checked};
+  }
+  function drawResult(){
+    var g=shB.g,w=shB.w,h=shB.h,P=params();
+    g.clearRect(0,0,w,h); bg(g,w,h);
+    var x0=w*0.22, bw=Math.max(7,w*0.07);
+    var smear=Math.min(w*0.55,P.v*P.T);
+    g.save(); g.beginPath(); g.rect(0,0,w,h); g.clip();
+    for(var y=0;y<h;y++){
+      var tc=(y/h)*P.ro+P.T/2;
+      var x=x0+P.v*tc;
+      var grd=g.createLinearGradient(x,0,x+bw+smear,0);
+      grd.addColorStop(0,'rgba(232,200,140,'+(smear>2?0.55:0.95)+')');
+      grd.addColorStop(1,'rgba(232,200,140,0)');
+      g.fillStyle=smear>2?grd:'rgba(232,200,140,0.95)';
+      g.fillRect(x,y,bw+smear,1);
+    }
+    if(P.flash){
+      var dark=(mode==='mech')?(1-P.slit):Math.max(0.82,1-P.slit);
+      if(dark>0.01){
+        g.fillStyle='rgba(0,0,0,0.90)'; g.fillRect(0,0,w,h*dark);
+        g.fillStyle='#e86a5a'; g.font='10px Georgia,serif';
+        g.fillText(mode==='mech'?'簾幕遮住，閃光照唔到':'電子快門＋閃燈',6,Math.min(h*dark-6,h-6));
+      }
+    }
+    g.restore();
+    g.strokeStyle='#1e1e1e'; g.strokeRect(0.5,0.5,w-1,h-1);
+  }
+  function frame(now){
+    var g=shA.g,w=shA.w,h=shA.h,P=params();
+    var total=P.ro+P.T, cyc=2600, el=((now-t0)%cyc)/cyc;
+    var vt=Math.min(1,el/0.78)*total;
+    g.clearRect(0,0,w,h); bg(g,w,h);
+    var yF=h*Math.max(0,Math.min(1,vt/P.ro));
+    var yR=h*Math.max(0,Math.min(1,(vt-P.T)/P.ro));
+    var x0=w*0.22, bw=Math.max(7,w*0.07), x=x0+P.v*vt;
+    g.save(); g.beginPath(); g.rect(0,yR,w,Math.max(0,yF-yR)); g.clip();
+    g.fillStyle='rgba(232,200,140,0.95)'; g.fillRect(x,0,bw,h);
+    g.restore();
+    if(mode==='mech'){
+      g.fillStyle='#241d16'; g.fillRect(0,0,w,yR);
+      g.fillStyle='#2e241a'; g.fillRect(0,yF,w,h-yF);
+      g.strokeStyle='#c8a97e'; g.lineWidth=1.5;
+      g.beginPath(); g.moveTo(0,yF); g.lineTo(w,yF); g.stroke();
+      g.strokeStyle='#7ab8e8';
+      g.beginPath(); g.moveTo(0,yR); g.lineTo(w,yR); g.stroke();
+      g.fillStyle='#c8a97e'; g.font='9px Georgia,serif';
+      if(yF<h-4) g.fillText('前簾',4,Math.min(h-3,yF+11));
+      g.fillStyle='#7ab8e8';
+      if(yR>6) g.fillText('後簾',4,yR-4);
+    }else{
+      g.fillStyle='rgba(8,8,10,0.82)'; g.fillRect(0,0,w,yR);
+      g.fillStyle='rgba(8,8,10,0.82)'; g.fillRect(0,yF,w,h-yF);
+      g.strokeStyle='#7ae8c0'; g.lineWidth=1.5;
+      g.beginPath(); g.moveTo(0,yF); g.lineTo(w,yF); g.stroke();
+      g.fillStyle='#7ae8c0'; g.font='9px Georgia,serif';
+      if(yF<h-4) g.fillText('讀取中',4,Math.min(h-3,yF+11));
+    }
+    g.strokeStyle='#1e1e1e'; g.lineWidth=1; g.strokeRect(0.5,0.5,w-1,h-1);
+    requestAnimationFrame(frame);
+  }
+  function readouts(){
+    var P=params();
+    $('shSv').textContent=SL[+$('shS').value];
+    $('shVv').textContent=VL[+$('shV').value];
+    $('shT').textContent=(mode==='mech')?'1/250 s':'1/30 s';
+    $('shW').textContent=P.slit>=1?'全開':Math.round(P.slit*100)+'%';
+    var sk=P.v*P.ro;
+    $('shSk').textContent= sk<6?'輕微' : sk<20?'明顯' : '嚴重';
+    $('shSk').className= sk<6?'g' : sk<20?'w' : 'r';
+    drawResult();
+  }
+  seg('shSeg',function(v){mode=v;readouts();});
+  ['shS','shV','shF'].forEach(function(id){$(id).addEventListener('input',readouts);});
+  shB.draw=drawResult; readouts(); requestAnimationFrame(frame);
+}
+
+/* ===== 4b · 片幅 ===== */
+var sn=C('snC',244);
+if(sn){
+  var FM=[{n:'手機 1/2.3"',w:6.17,h:4.55},{n:'1"',w:13.2,h:8.8},{n:'M4/3',w:17.3,h:13},
+          {n:'APS-C',w:23.5,h:15.6},{n:'Super 35',w:24.89,h:18.66},{n:'全片幅',w:36,h:24}];
+  var sel=3;
+  sn.draw=function(){
+    var g=sn.g,w=sn.w,h=sn.h;
+    var LW=86, DW=w-LW-10, S=Math.min(DW/36,(h-46)/24);
+    g.clearRect(0,0,w,h); g.fillStyle='#0d0d0d'; g.fillRect(0,0,w,h);
+    var cx=DW/2+6, cy=h/2-8, lx=w-6;
+    for(var i=FM.length-1;i>=0;i--){
+      var f=FM[i], ww=f.w*S, hh=f.h*S, on=(i===sel);
+      g.strokeStyle=on?'#c8a97e':'#2e2e2e'; g.lineWidth=on?2:1;
+      if(on){g.fillStyle='rgba(200,169,126,0.13)';g.fillRect(cx-ww/2,cy-hh/2,ww,hh);}
+      g.strokeRect(cx-ww/2,cy-hh/2,ww,hh);
+      var ly=16+(5-i)*((h-42)/5);
+      g.strokeStyle=on?'#c8a97e':'#242424'; g.lineWidth=1;
+      g.beginPath(); g.moveTo(cx+ww/2,cy-hh/2); g.lineTo(lx-LW+4,ly-3); g.stroke();
+      g.fillStyle=on?'#c8a97e':'#5e5e5e'; g.font=(on?'bold ':'')+'10px Georgia,serif';
+      g.textAlign='right'; g.fillText(f.n,lx,ly); g.textAlign='left';
+    }
+    var f2=FM[sel], diag=Math.sqrt(f2.w*f2.w+f2.h*f2.h), crop=43.267/diag, len=+$('snF').value;
+    var pitch=Math.sqrt(f2.w*f2.h/24e6)*1000;
+    g.fillStyle='#5e5e5e'; g.font='10px Georgia,serif';
+    g.fillText('2400 萬像素下，每粒像素嘅受光面積比例：'+(1/(crop*crop)).toFixed(2)+'×（以全片幅為 1.00）',8,h-8);
+    $('snFv').textContent=len+'mm';
+    $('snSz').textContent=f2.w+'×'+f2.h;
+    $('snCf').textContent=crop.toFixed(2)+'×';
+    $('snEq').textContent=Math.round(len*crop)+'mm';
+    $('snPx').textContent=pitch.toFixed(1)+'µm';
+  };
+  seg('snSeg',function(v){sel=+v;sn.draw();});
+  $('snF').addEventListener('input',sn.draw);
+  sn.draw();
+}
+
+/* ===== 5 · 驗機清單 ===== */
+(function(){
+  var boxes=[].slice.call(document.querySelectorAll('.ck input[type=checkbox]'));
+  if(!boxes.length) return;
+  var KEY='fda-cam-check-v1', saved=null;
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
+  boxes.forEach(function(b,i){
+    if(saved&&saved[i]) b.checked=true;
+    b.closest('label').classList.toggle('done',b.checked);
+    b.addEventListener('change',function(){
+      b.closest('label').classList.toggle('done',b.checked);
+      upd();
+    });
+  });
+  function upd(){
+    var n=boxes.filter(function(b){return b.checked;}).length;
+    $('ckProg').textContent=n+' / '+boxes.length+' 完成';
+    try{localStorage.setItem(KEY,JSON.stringify(boxes.map(function(b){return b.checked?1:0;})));}catch(e){}
+  }
+  upd();
+})();
+
+})();
+</script>
+</body>
+</html>
