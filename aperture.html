@@ -1,11 +1,384 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>f 值與景深</title>
 <style>
-html{color-scheme:light dark}
-body{margin:0}
-img{max-width:100%}
-[hidden]{display:none!important}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d0d;color:#e8e0d0;font-family:Georgia,"PingFang TC","Noto Sans TC",serif;padding:24px 18px 70px;max-width:660px;margin:0 auto;line-height:1.75}
+h1{text-align:center;font-size:1.15rem;letter-spacing:.2em;color:#c8a97e}
+.sub{text-align:center;font-size:.7rem;color:#555;letter-spacing:.12em;margin:4px 0 22px}
+nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:26px}
+nav a{font-size:.68rem;letter-spacing:.06em;color:#9a8f7e;text-decoration:none;border:1px solid #262626;border-radius:20px;padding:5px 11px}
+nav a:hover{border-color:#c8a97e;color:#c8a97e}
+section{margin:0 0 42px;padding-top:12px}
+hr{border:0;border-top:1px solid #1e1e1e;margin:36px 0 0}
+h2{font-size:.7rem;color:#777;letter-spacing:.16em;text-transform:uppercase;margin:0 0 4px;text-align:center}
+h2 b{display:block;font-size:1.05rem;color:#c8a97e;letter-spacing:.05em;text-transform:none;margin-top:3px}
+p{font-size:.79rem;color:#a8a096;margin-bottom:10px}
+p strong{color:#e8e0d0;font-weight:normal;border-bottom:1px solid #3a3229}
+.panel{background:#111;border:1px solid #1c1c1c;border-radius:7px;padding:13px;margin-bottom:14px}
+.controls{display:flex;flex-direction:column;gap:11px;margin:12px 0 0}
+.cr{display:flex;align-items:center;gap:10px}
+.cl{width:96px;font-size:.74rem;color:#c8a97e;flex-shrink:0}
+.cl span{display:block;font-size:.58rem;color:#555}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:#333;outline:none;min-width:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:#c8a97e;cursor:pointer}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border:0;border-radius:50%;background:#c8a97e;cursor:pointer}
+.cv{width:78px;text-align:right;font-size:.75rem;color:#e8e0d0;font-variant-numeric:tabular-nums;flex-shrink:0}
+canvas{display:block;width:100%;border-radius:5px}
+.read{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.read div{flex:1;min-width:84px;background:#141414;border:1px solid #202020;border-radius:5px;padding:7px 9px}
+.read b{display:block;font-size:.56rem;color:#5e5e5e;letter-spacing:.1em;text-transform:uppercase;font-weight:normal;margin-bottom:2px}
+.read span{font-size:.86rem;color:#e8e0d0;font-variant-numeric:tabular-nums}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0}
+.seg button{flex:1;min-width:66px;background:#141414;border:1px solid #2a2a2a;color:#8a8278;font-family:inherit;font-size:.71rem;padding:7px 3px;border-radius:5px;cursor:pointer}
+.seg button.on{background:#c8a97e;border-color:#c8a97e;color:#0d0d0d}
+.note{font-size:.72rem;line-height:1.85;color:#8e867d;background:#101010;border-left:2px solid #3a3229;padding:9px 12px;margin:12px 0;border-radius:0 5px 5px 0}
+.note b{color:#c8a97e;font-weight:normal}
+ul{margin:6px 0 12px 18px}
+li{font-size:.78rem;color:#a8a096;margin-bottom:5px}
+li b{color:#c8a97e;font-weight:normal}
+.g{color:#7ae87a}.w{color:#e8a07a}.b{color:#7ab8e8}
+.stops{display:flex;gap:3px;margin-top:10px}
+.stops div{flex:1;text-align:center;font-size:.6rem;color:#4e4e4e;padding:4px 0;border-radius:3px;border:1px solid #1c1c1c;cursor:pointer}
+.stops div.on{color:#0d0d0d;background:#c8a97e;border-color:#c8a97e}
+footer{color:#4e4e4e;font-size:.66rem;text-align:center;margin-top:34px;letter-spacing:.06em}
+a.more{display:block;text-align:center;font-size:.72rem;color:#6e6a64;margin-top:20px;text-decoration:none}
+a.more:hover{color:#c8a97e}
 </style>
+</head>
+<body>
+
+<h1>f 值與景深</h1>
+<p class="sub">APERTURE · DEPTH OF FIELD</p>
+
+<nav>
+  <a href="#a1">一 · 光圈葉片</a>
+  <a href="#a2">二 · f 值點計</a>
+  <a href="#a3">三 · 彌散圓</a>
+  <a href="#a4">四 · 散景</a>
+</nav>
+
+<section id="a1">
+<h2>一<b>光圈葉片</b></h2>
+<p>鏡頭入面一組彎曲嘅金屬葉片，圍成一個可大可細嘅圓孔。葉片收埋喺鏡壁就係全開，向中間伸出去就係收細。</p>
+
+<div class="panel">
+<canvas id="irisC" height="230"></canvas>
+<div class="stops" id="stops"></div>
+<div class="read">
+  <div><b>f 值</b><span id="ir_f">f/1.8</span></div>
+  <div><b>孔口面積</b><span id="ir_a">100%</span></div>
+  <div><b>相差</b><span id="ir_s">0 級</span></div>
+</div>
+</div>
+
+<p>每收細一級（f/1.4 → f/2 → f/2.8 → f/4 …），孔口面積減一半，進光量減一半。所以 f 值嘅數字係 √2 咁跳。</p>
+
+<div class="note"><b>葉片數量同形狀：</b>葉片愈多、愈彎，孔口愈接近圓形，散景光點就愈圓。直邊葉片收細之後會變成多邊形，點光源散景會見到七角或者九角形；同樣道理，強光源嘅星芒條數係葉片數（單數葉片就變雙倍）。</div>
+</section>
+
+<hr>
+
+<section id="a2">
+<h2>二<b>f 值點計出嚟</b></h2>
+<p>f 值唔係一個獨立嘅數字，係一條除數：</p>
+<div class="note"><b>f 值 ＝ 焦距 ÷ 有效孔徑</b>　例如 50mm 鏡開 f/2，孔徑就係 50 ÷ 2 ＝ 25mm。</div>
+<p>所以同一個 f 值，長焦鏡嘅前玻璃一定大過短焦鏡。呢個就係 200mm f/2.8 又大又重又貴，而 50mm f/1.8 細細支又平嘅原因。</p>
+
+<div class="panel">
+<canvas id="calcC" height="180"></canvas>
+<div class="controls">
+  <div class="cr"><div class="cl">焦距</div><input type="range" id="cf" min="14" max="300" value="50"><div class="cv" id="cfv">50mm</div></div>
+  <div class="cr"><div class="cl">f 值</div><input type="range" id="cn" min="0" max="9" value="2"><div class="cv" id="cnv">f/2</div></div>
+</div>
+<div class="read">
+  <div><b>有效孔徑</b><span id="cd">25.0mm</span></div>
+  <div><b>前鏡片起碼</b><span id="cw">約 28mm</span></div>
+</div>
+</div>
+</section>
+
+<hr>
+
+<section id="a3">
+<h2>三<b>彌散圓</b></h2>
+<p>鏡頭將一個點，聚成感光元件上嘅一個點——但只限啱啱合焦嗰個距離。近少少或者遠少少嘅嘢，個錐形光束喺感光元件上仲未收到埋一點，就變成一個<strong>圓</strong>。呢個圓就係彌散圓。</p>
+<p>個圓細到肉眼分唔出，我哋就叫佢「清」。所有清嘅距離加埋，就係景深。</p>
+
+<div class="panel">
+<canvas id="cocC" height="240"></canvas>
+<div class="controls">
+  <div class="cr"><div class="cl">主體距離<span>對焦喺度</span></div><input type="range" id="oS" min="30" max="600" value="150"><div class="cv" id="oSv">1.5m</div></div>
+  <div class="cr"><div class="cl">另一個點<span>喺前定後</span></div><input type="range" id="oB" min="30" max="900" value="300"><div class="cv" id="oBv">3.0m</div></div>
+  <div class="cr"><div class="cl">光圈</div><input type="range" id="oN" min="0" max="9" value="2"><div class="cv" id="oNv">f/2</div></div>
+</div>
+<div class="read">
+  <div><b>彌散圓</b><span id="oC">0.061mm</span></div>
+  <div><b>清嘅界線</b><span id="oL">0.029mm</span></div>
+  <div><b>判斷</b><span id="oJ">散</span></div>
+</div>
+</div>
+
+<div class="note"><b>「清」嘅界線唔係絕對：</b>一般用感光元件對角線除以 1440 做標準（全片幅約 0.03mm）。但呢個數係假設你睇一張 8×10 相片。放大到成幅牆，或者喺 4K 螢幕上 100% 睇，界線即刻嚴格好多——所以「景深夠唔夠」要睇你張相最後用嚟做咩。</div>
+</section>
+
+<hr>
+
+<section id="a4">
+<h2>四<b>散景：四個變數</b></h2>
+<p>背景化到幾開，唔係淨係睇光圈。焦距、主體距離、背景距離、片幅，四樣一齊決定。</p>
+
+<div class="panel">
+<canvas id="bokC" height="250"></canvas>
+<div class="controls">
+  <div class="cr"><div class="cl">焦距</div><input type="range" id="bf" min="18" max="200" value="50"><div class="cv" id="bfv">50mm</div></div>
+  <div class="cr"><div class="cl">光圈</div><input type="range" id="bn" min="0" max="9" value="2"><div class="cv" id="bnv">f/2</div></div>
+  <div class="cr"><div class="cl">主體距離</div><input type="range" id="bs" min="40" max="600" value="150"><div class="cv" id="bsv">1.5m</div></div>
+  <div class="cr"><div class="cl">背景距離</div><input type="range" id="bb" min="100" max="2000" value="600"><div class="cv" id="bbv">6.0m</div></div>
+</div>
+<div class="seg" id="fmt">
+  <button data-v="0">M4/3</button>
+  <button data-v="1" class="on">APS-C</button>
+  <button data-v="2">全片幅</button>
+</div>
+<div class="read">
+  <div><b>景深</b><span id="bd">0.12m</span></div>
+  <div><b>視角</b><span id="ba">40°</span></div>
+  <div><b>背景模糊</b><span id="bblur">中</span></div>
+</div>
+</div>
+
+<ul>
+<li><b>主體距離最有力</b>——行近一步，景深即刻窄好多。呢個比開大兩級光圈更有效。</li>
+<li><b>背景愈遠愈化</b>——同一支鏡同一個光圈，背景由 2m 推到 20m，散景完全兩回事。搵背景遠嘅位企。</li>
+<li><b>焦距推長</b>——85mm 企遠啲影同一個構圖，背景會壓縮同埋更化。</li>
+<li><b>片幅</b>——要影到同一個構圖，細片幅要退後或者用更短焦距，結果景深深咗。</li>
+</ul>
+
+<div class="note"><b>景深唔係愈淺愈好：</b>淺景深係用嚟指定觀眾睇邊度。成個畫面都化晒，等於冇指定過。訪問、紀錄、group shot，f/4 到 f/5.6 好多時比 f/1.4 更啱用。</div>
+</section>
+
+<a class="more" href="camera-anatomy.html">相機結構 · 光嘅旅程 →</a>
+<footer>CPOP FILM DIGITAL ART — 課堂用互動教材</footer>
+
+<script>
+(function(){
+"use strict";
+var DPR=Math.min(2,window.devicePixelRatio||1);
+function $(id){return document.getElementById(id);}
+function C(id,h){
+  var c=$(id); if(!c) return null;
+  c.style.height=h+'px';
+  var g=c.getContext('2d'), o={c:c,g:g,w:300,h:h,draw:null};
+  function size(){var w=c.clientWidth||300;c.width=Math.round(w*DPR);c.height=Math.round(h*DPR);g.setTransform(DPR,0,0,DPR,0,0);o.w=w;o.h=h;}
+  size(); window.addEventListener('resize',function(){size();if(o.draw)o.draw();});
+  return o;
+}
+var NS=[1.4,2,2.8,4,5.6,8,11,16,22,32];
+var NL=['f/1.4','f/2','f/2.8','f/4','f/5.6','f/8','f/11','f/16','f/22','f/32'];
+
+/* ===== 1 · 葉片 ===== */
+var ir=C('irisC',230), irIdx=1;
+if(ir){
+  var box=$('stops');
+  NL.forEach(function(l,i){
+    var d=document.createElement('div'); d.textContent=l.replace('f/','');
+    d.addEventListener('click',function(){irIdx=i;ir.draw();});
+    box.appendChild(d);
+  });
+  ir.draw=function(){
+    var g=ir.g,w=ir.w,h=ir.h,N=NS[irIdx];
+    var cx=w/2, cy=h/2, R=Math.min(w,h)*0.40;
+    g.clearRect(0,0,w,h); g.fillStyle='#0d0d0d'; g.fillRect(0,0,w,h);
+    var t=Math.sqrt(NS[0]/N);
+    var r=R*(0.16+0.84*t);
+    g.save();
+    g.beginPath(); g.arc(cx,cy,R,0,7); g.clip();
+    var lg=g.createRadialGradient(cx-R*0.3,cy-R*0.3,R*0.1,cx,cy,R);
+    lg.addColorStop(0,'#f0e0b8'); lg.addColorStop(0.55,'#c8a97e'); lg.addColorStop(1,'#6a5a3e');
+    g.fillStyle=lg; g.beginPath(); g.arc(cx,cy,R,0,7); g.fill();
+    var n=9, dc=R*1.42, Rb=dc-r, spin=(1-t)*0.34;
+    for(var i=0;i<n;i++){
+      var a=i*2*Math.PI/n+spin;
+      var bx=cx+dc*Math.cos(a), by=cy+dc*Math.sin(a);
+      var bg=g.createLinearGradient(bx-Rb,by-Rb,bx+Rb,by+Rb);
+      bg.addColorStop(0,'#3a3a40'); bg.addColorStop(0.5,'#22222a'); bg.addColorStop(1,'#141418');
+      g.fillStyle=bg;
+      g.beginPath(); g.arc(bx,by,Rb,0,7); g.fill();
+      g.strokeStyle='rgba(150,150,165,0.30)'; g.lineWidth=1;
+      g.beginPath(); g.arc(bx,by,Rb,0,7); g.stroke();
+    }
+    g.restore();
+    g.strokeStyle='#4a4a52'; g.lineWidth=3;
+    g.beginPath(); g.arc(cx,cy,R+1.5,0,7); g.stroke();
+    var pct=Math.pow(NS[0]/N,2)*100, st=2*Math.log(N/NS[0])/Math.log(2);
+    $('ir_f').textContent=NL[irIdx];
+    $('ir_a').textContent=(pct>=10?pct.toFixed(0):pct.toFixed(1))+'%';
+    $('ir_s').textContent='−'+st.toFixed(0)+' 級';
+    [].forEach.call(box.children,function(d,i){d.classList.toggle('on',i===irIdx);});
+  };
+  ir.draw();
+}
+
+/* ===== 2 · f 值計算 ===== */
+var ca=C('calcC',180);
+if(ca){
+  ca.draw=function(){
+    var g=ca.g,w=ca.w,h=ca.h;
+    var f=+$('cf').value, N=NS[+$('cn').value], d=f/N;
+    g.clearRect(0,0,w,h); g.fillStyle='#0d0d0d'; g.fillRect(0,0,w,h);
+    var scale=Math.min((w*0.34)/110,(h*0.62)/110);
+    var cx=w*0.30, cy=h*0.48, rr=Math.max(4,d*scale);
+    g.fillStyle='#141418'; g.beginPath(); g.arc(cx,cy,Math.max(rr+8,rr*1.18),0,7); g.fill();
+    g.strokeStyle='#3a3a42'; g.lineWidth=2; g.stroke();
+    var lg=g.createRadialGradient(cx-rr*0.3,cy-rr*0.3,rr*0.1,cx,cy,rr);
+    lg.addColorStop(0,'#8ab8e0'); lg.addColorStop(1,'#1e3a56');
+    g.fillStyle=lg; g.beginPath(); g.arc(cx,cy,rr,0,7); g.fill();
+    g.strokeStyle='#c8a97e'; g.lineWidth=1; g.setLineDash([4,3]);
+    g.beginPath(); g.moveTo(cx-rr,cy); g.lineTo(cx+rr,cy); g.stroke(); g.setLineDash([]);
+    g.fillStyle='#c8a97e'; g.font='11px Georgia,serif'; g.textAlign='center';
+    g.fillText(d.toFixed(1)+'mm',cx,cy-rr-12);
+    g.textAlign='left';
+    var x=w*0.56;
+    g.fillStyle='#5e5e5e'; g.font='12px Georgia,serif';
+    g.fillText('焦距',x,h*0.34);
+    g.fillText('f 值',x,h*0.70);
+    g.fillStyle='#e8e0d0'; g.font='19px Georgia,serif';
+    g.fillText(f+'mm',x+52,h*0.34);
+    g.fillText('÷ '+N,x+52,h*0.70);
+    g.strokeStyle='#2e2e2e'; g.lineWidth=1;
+    g.beginPath(); g.moveTo(x,h*0.46); g.lineTo(w-14,h*0.46); g.stroke();
+    g.fillStyle='#c8a97e'; g.font='13px Georgia,serif';
+    g.fillText('＝ 孔徑 '+d.toFixed(1)+'mm',x,h*0.90);
+    $('cfv').textContent=f+'mm';
+    $('cnv').textContent=NL[+$('cn').value];
+    $('cd').textContent=d.toFixed(1)+'mm';
+    $('cw').textContent='約 '+Math.round(d*1.15+3)+'mm';
+  };
+  $('cf').addEventListener('input',ca.draw);
+  $('cn').addEventListener('input',ca.draw);
+  ca.draw();
+}
+
+/* ===== 3 · 彌散圓 ===== */
+var co=C('cocC',240);
+if(co){
+  co.draw=function(){
+    var g=co.g,w=co.w,h=co.h;
+    var s=+$('oS').value, b=+$('oB').value, N=NS[+$('oN').value];
+    var f=50, c=0.030;
+    var sm=s*10, bm=b*10;
+    var coc=(f*f/N)*Math.abs(bm-sm)/(bm*(sm-f));
+    g.clearRect(0,0,w,h); g.fillStyle='#0d0d0d'; g.fillRect(0,0,w,h);
+    var lx=w*0.62, sx=w*0.86, ax=h*0.44;
+    var ap=Math.max(7,Math.min(h*0.30,(50/N)*2.6));
+    g.strokeStyle='#2a2a2a'; g.lineWidth=1;
+    g.beginPath(); g.moveTo(10,ax); g.lineTo(w-10,ax); g.stroke();
+    g.fillStyle='#22303a'; g.strokeStyle='#5a7a96'; g.lineWidth=1.5;
+    g.beginPath(); g.ellipse(lx,ax,7,ap,0,0,7); g.fill(); g.stroke();
+    g.fillStyle='#2a4a44'; g.fillRect(sx,ax-h*0.30,6,h*0.60);
+    g.strokeStyle='#5a9a8a'; g.strokeRect(sx,ax-h*0.30,6,h*0.60);
+    g.fillStyle='#5e5a55'; g.font='10px Georgia,serif'; g.textAlign='center';
+    g.fillText('鏡頭',lx,h*0.90); g.fillText('感光元件',sx+3,h*0.90);
+    g.textAlign='left';
+    var px1=10+(1-Math.min(1,s/600))*(w*0.44);
+    var px2=10+(1-Math.min(1,b/900))*(w*0.44);
+    g.fillStyle='#c8a97e';
+    g.beginPath(); g.arc(px1,ax-h*0.17,4,0,7); g.fill();
+    g.fillStyle='#7ab8e8';
+    g.beginPath(); g.arc(px2,ax+h*0.19,4,0,7); g.fill();
+    g.strokeStyle='rgba(200,169,126,0.65)'; g.lineWidth=1;
+    g.beginPath(); g.moveTo(px1,ax-h*0.17); g.lineTo(lx,ax-ap); g.lineTo(sx,ax); g.stroke();
+    g.beginPath(); g.moveTo(px1,ax-h*0.17); g.lineTo(lx,ax+ap); g.lineTo(sx,ax); g.stroke();
+    var conv=Math.max(1.5,Math.min(h*0.22,coc*115));
+    g.strokeStyle='rgba(122,184,232,0.65)';
+    g.beginPath(); g.moveTo(px2,ax+h*0.19); g.lineTo(lx,ax-ap); g.lineTo(sx,ax-conv/2); g.stroke();
+    g.beginPath(); g.moveTo(px2,ax+h*0.19); g.lineTo(lx,ax+ap); g.lineTo(sx,ax+conv/2); g.stroke();
+    g.strokeStyle='#7ab8e8'; g.lineWidth=2.4;
+    g.beginPath(); g.moveTo(sx+7,ax-conv/2); g.lineTo(sx+7,ax+conv/2); g.stroke();
+    g.fillStyle='#c8a97e'; g.font='10px Georgia,serif';
+    g.fillText('對焦點',6,ax-h*0.17-9);
+    g.fillStyle='#7ab8e8';
+    g.fillText('另一個點',6,ax+h*0.19+16);
+    g.fillText(coc.toFixed(3)+'mm',sx-16,ax-conv/2-8);
+    $('oSv').textContent=(s/100).toFixed(2)+'m';
+    $('oBv').textContent=(b/100).toFixed(2)+'m';
+    $('oNv').textContent=NL[+$('oN').value];
+    $('oC').textContent=coc.toFixed(3)+'mm';
+    $('oL').textContent=c.toFixed(3)+'mm';
+    var j=$('oJ');
+    if(coc<=c){j.textContent='清';j.className='g';}
+    else if(coc<c*2.2){j.textContent='邊緣';j.className='w';}
+    else {j.textContent='散';j.className='';}
+  };
+  ['oS','oB','oN'].forEach(function(id){$(id).addEventListener('input',co.draw);});
+  co.draw();
+}
+
+/* ===== 4 · 散景 ===== */
+var bk=C('bokC',250);
+if(bk){
+  var FM=[{n:'M4/3',w:17.3,h:13},{n:'APS-C',w:23.5,h:15.6},{n:'全片幅',w:36,h:24}], fi=1;
+  $('fmt').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    [].forEach.call(this.querySelectorAll('button'),function(x){x.classList.remove('on');});
+    b.classList.add('on'); fi=+b.dataset.v; bk.draw();
+  });
+  bk.draw=function(){
+    var g=bk.g,w=bk.w,h=bk.h;
+    var f=+$('bf').value, N=NS[+$('bn').value];
+    var s=+$('bs').value*10, bd=+$('bb').value*10;
+    var F=FM[fi], diag=Math.sqrt(F.w*F.w+F.h*F.h), c=diag/1440;
+    var H=f*f/(N*c)+f;
+    var near=s*(H-f)/(H+s-2*f), far=(s<H)? s*(H-f)/(H-s) : Infinity;
+    var dof=(far===Infinity)?Infinity:(far-near)/1000;
+    var blurmm=(f*f/N)*Math.abs(bd-s)/(bd*(s-f));
+    var rel=blurmm/F.w;
+    var ang=2*Math.atan(F.w/(2*f))*180/Math.PI;
+    g.clearRect(0,0,w,h);
+    var sky=g.createLinearGradient(0,0,0,h);
+    sky.addColorStop(0,'#12161c'); sky.addColorStop(1,'#1c1814');
+    g.fillStyle=sky; g.fillRect(0,0,w,h);
+    var R=Math.max(1.2,Math.min(w*0.16,rel*w*2.2));
+    var pts=[[0.12,0.22],[0.30,0.14],[0.47,0.26],[0.63,0.13],[0.80,0.24],[0.92,0.16],
+             [0.20,0.45],[0.38,0.38],[0.58,0.46],[0.74,0.36],[0.88,0.44],[0.06,0.36]];
+    var cols=['rgba(232,200,140,','rgba(232,160,122,','rgba(122,184,232,','rgba(200,220,240,'];
+    pts.forEach(function(p,i){
+      var x=p[0]*w, y=p[1]*h, col=cols[i%4];
+      var rg=g.createRadialGradient(x,y,0,x,y,R);
+      rg.addColorStop(0,col+(R<3?0.95:0.55)+')');
+      rg.addColorStop(0.72,col+(R<3?0.9:0.42)+')');
+      rg.addColorStop(0.93,col+(R<3?0.8:0.30)+')');
+      rg.addColorStop(1,col+'0)');
+      g.fillStyle=rg; g.beginPath(); g.arc(x,y,R,0,7); g.fill();
+    });
+    g.fillStyle='rgba(10,10,12,0.55)'; g.fillRect(0,h*0.58,w,h*0.42);
+    var cx=w*0.5, cy=h*0.70;
+    g.fillStyle='#b8a890'; g.beginPath(); g.arc(cx,cy,Math.min(26,h*0.11),0,7); g.fill();
+    g.fillStyle='#8e8272';
+    g.fillRect(cx-Math.min(30,h*0.13),cy+Math.min(20,h*0.085),Math.min(60,h*0.26),h*0.30);
+    g.fillStyle='#6e6a64'; g.font='10px Georgia,serif';
+    g.fillText('主體（合焦）',8,h-8);
+    g.fillText('背景光點',8,h*0.12);
+    $('bfv').textContent=f+'mm';
+    $('bnv').textContent=NL[+$('bn').value];
+    $('bsv').textContent=(+$('bs').value/100).toFixed(2)+'m';
+    $('bbv').textContent=(+$('bb').value/100).toFixed(1)+'m';
+    $('bd').textContent=(dof===Infinity)?'無限':(dof<1?(dof*100).toFixed(0)+'cm':dof.toFixed(2)+'m');
+    $('ba').textContent=ang.toFixed(0)+'°';
+    var bb=$('bblur');
+    if(rel<0.006){bb.textContent='幾乎清';bb.className='';}
+    else if(rel<0.02){bb.textContent='微化';bb.className='b';}
+    else if(rel<0.05){bb.textContent='明顯';bb.className='w';}
+    else {bb.textContent='全化';bb.className='g';}
+  };
+  ['bf','bn','bs','bb'].forEach(function(id){$(id).addEventListener('input',bk.draw);});
+  bk.draw();
+}
+})();
+</script>
+</body>
+</html>
