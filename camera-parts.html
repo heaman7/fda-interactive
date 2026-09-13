@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相機三件頭</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d0d;color:#e8e0d0;font-family:Georgia,"PingFang TC","Noto Sans TC",serif;padding:26px 18px 60px;max-width:660px;margin:0 auto;line-height:1.75}
+h1{text-align:center;font-size:1.15rem;letter-spacing:.2em;color:#c8a97e}
+.sub{text-align:center;font-size:.7rem;color:#555;letter-spacing:.12em;margin:4px 0 22px}
+.seg{display:flex;gap:8px;margin:0 0 14px}
+.seg button{flex:1;background:#141414;border:1px solid #2a2a2a;color:#8a8278;font-family:inherit;font-size:.74rem;padding:8px 4px;border-radius:5px;cursor:pointer;letter-spacing:.06em}
+.seg button.on{background:#c8a97e;border-color:#c8a97e;color:#0d0d0d}
+.stage{background:#111;border:1px solid #1c1c1c;border-radius:8px;padding:10px 6px 4px}
+svg{display:block;width:100%}
+#cam g.part{cursor:pointer;transition:transform .55s cubic-bezier(.4,1.4,.5,1),opacity .25s}
+.chips{display:flex;gap:8px;margin:12px 0 0}
+.chips button{flex:1;background:#141414;border:1px solid #2a2a2a;color:#9a9289;font-family:inherit;font-size:.76rem;padding:9px 4px;border-radius:5px;cursor:pointer}
+.chips button.on{border-color:#c8a97e;color:#c8a97e;background:#171310}
+.cap{font-size:.8rem;color:#a8a096;background:#111;border:1px solid #1c1c1c;border-radius:7px;padding:13px 15px;margin-top:12px;min-height:6.2em;line-height:1.9}
+.cap b{display:block;color:#c8a97e;font-weight:normal;font-size:.92rem;margin-bottom:4px}
+.flow{display:flex;align-items:center;justify-content:center;gap:6px;margin:26px 0 0;flex-wrap:wrap}
+.flow span{font-size:.74rem;color:#8a8278;border:1px solid #262626;border-radius:20px;padding:5px 13px}
+.flow i{font-style:normal;color:#4e4e4e;font-size:.8rem}
+.flow span.k{color:#c8a97e;border-color:#3a3229}
+footer{color:#4e4e4e;font-size:.66rem;text-align:center;margin-top:34px;letter-spacing:.06em}
+a.more{display:block;text-align:center;font-size:.72rem;color:#6e6a64;margin-top:22px;text-decoration:none}
+a.more:hover{color:#c8a97e}
+</style>
+</head>
+<body>
+
+<h1>相機三件頭</h1>
+<p class="sub">FILTER · LENS · BODY</p>
+
+<div class="seg" id="seg">
+  <button data-v="0" class="on">合埋</button>
+  <button data-v="1">拆開</button>
+</div>
+
+<div class="stage">
+<svg id="cam" viewBox="96 26 524 288">
+<defs>
+  <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#56565f"/><stop offset="0.40" stop-color="#33333a"/><stop offset="1" stop-color="#1a1a1e"/>
+  </linearGradient>
+  <linearGradient id="gl" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5c5c64"/><stop offset="0.42" stop-color="#35353c"/><stop offset="1" stop-color="#1c1c20"/>
+  </linearGradient>
+  <linearGradient id="gm" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9a9aa2"/><stop offset="0.5" stop-color="#5a5a62"/><stop offset="1" stop-color="#32323a"/>
+  </linearGradient>
+  <radialGradient id="gg" cx="0.38" cy="0.3" r="0.85">
+    <stop offset="0" stop-color="#6ea4d8"/><stop offset="0.45" stop-color="#25496e"/><stop offset="1" stop-color="#0d1a2a"/>
+  </radialGradient>
+  <pattern id="rib" width="5" height="8" patternUnits="userSpaceOnUse">
+    <rect width="5" height="8" fill="none"/>
+    <line x1="1.2" y1="0" x2="1.2" y2="8" stroke="#000" stroke-opacity=".45" stroke-width="1.6"/>
+  </pattern>
+  <pattern id="grip" width="6" height="6" patternUnits="userSpaceOnUse">
+    <circle cx="3" cy="3" r="1.1" fill="#000" fill-opacity=".4"/>
+  </pattern>
+</defs>
+
+<!-- 光 -->
+<g id="ray" opacity=".8">
+  <line x1="104" y1="150" x2="126" y2="150" stroke="#c8a97e" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <path d="M124 144.5 L136 150 L124 155.5 Z" fill="#c8a97e"/>
+  <text x="104" y="138" fill="#c8a97e" font-size="12" font-family="Georgia,serif">光</text>
+</g>
+
+<!-- 機身 -->
+<g class="part" id="pBody" data-k="body">
+  <path d="M566 96 q30 10 30 54 t-30 54 z" fill="#3a3a42" stroke="#0a0a0a"/>
+  <path d="M566 96 q30 10 30 54 t-30 54 z" fill="url(#grip)"/>
+  <text x="600" y="238" fill="#4e4a45" font-size="10" text-anchor="middle" font-family="Georgia,serif">手柄</text>
+  <rect x="404" y="82" width="168" height="136" rx="15" fill="url(#gb)" stroke="#0a0a0a"/>
+  <path d="M404 97 h168" stroke="#0a0a0a" stroke-opacity=".8"/>
+  <path d="M406 99 h164" stroke="#6a6a74" stroke-opacity=".35"/>
+  <rect x="430" y="180" width="120" height="30" rx="6" fill="#000" fill-opacity=".22"/>
+  <circle cx="418" cy="120" r="6" fill="#2a2a30" stroke="#0a0a0a"/>
+  <path d="M408 84 l12 0 l-6 9 z" fill="#3a3a42" stroke="#0a0a0a"/>
+  <path d="M444 82 L458 52 L508 52 L522 82 Z" fill="#2e2e34" stroke="#0a0a0a"/>
+  <rect x="518" y="56" width="30" height="24" rx="6" fill="#101013" stroke="#3a3a40"/>
+  <text x="486" y="44" fill="#5e5a55" font-size="10" text-anchor="middle" font-family="Georgia,serif">觀景器</text>
+  <ellipse cx="562" cy="80" rx="15" ry="6" fill="url(#gm)" stroke="#0a0a0a"/>
+  <g stroke="#1a1a1a" stroke-width="1">
+    <line x1="551" y1="79" x2="554" y2="79"/><line x1="560" y1="76" x2="564" y2="76"/><line x1="570" y1="79" x2="573" y2="79"/>
+  </g>
+  <ellipse cx="424" cy="78" rx="13" ry="5.5" fill="#c8a97e" stroke="#0a0a0a"/>
+  <ellipse cx="424" cy="76" rx="9" ry="3.5" fill="#e0c69a"/>
+  <text x="424" y="42" fill="#5e5a55" font-size="10" text-anchor="middle" font-family="Georgia,serif">快門掣</text>
+  <rect x="570" y="104" width="10" height="106" rx="3" fill="#121a20" stroke="#2a3a44"/>
+  <rect x="394" y="104" width="14" height="92" rx="4" fill="url(#gm)" stroke="#0a0a0a"/>
+  <circle cx="401" cy="196" r="2.6" fill="#c8a97e"/>
+  <rect x="416" y="112" width="8" height="76" rx="2" fill="#2a4a44" stroke="#4a7a70"/>
+  <text x="466" y="152" fill="#5e5a55" font-size="10" text-anchor="middle" font-family="Georgia,serif">感光元件</text>
+  <text x="466" y="166" fill="#5e5a55" font-size="10" text-anchor="middle" font-family="Georgia,serif">同快門</text>
+  <rect x="412" y="204" width="40" height="8" rx="3" fill="#0f0f12"/>
+</g>
+
+<!-- 鏡頭 -->
+<g class="part" id="pLens" data-k="lens">
+  <rect x="252" y="104" width="146" height="92" rx="9" fill="url(#gl)" stroke="#0a0a0a"/>
+  <rect x="268" y="102" width="44" height="96" rx="6" fill="#3a3a42" stroke="#0a0a0a"/>
+  <rect x="268" y="102" width="44" height="96" rx="6" fill="url(#rib)"/>
+  <rect x="328" y="102" width="34" height="96" rx="6" fill="#33333a" stroke="#0a0a0a"/>
+  <rect x="328" y="102" width="34" height="96" rx="6" fill="url(#rib)"/>
+  <text x="320" y="153" fill="#8a8a92" font-size="8" text-anchor="middle" font-family="Georgia,serif">24-70</text>
+  <text x="320" y="165" fill="#8a8a92" font-size="8" text-anchor="middle" font-family="Georgia,serif">f/2.8</text>
+  <rect x="238" y="112" width="16" height="76" rx="5" fill="#3e3e46" stroke="#0a0a0a"/>
+  <ellipse cx="244" cy="150" rx="9" ry="38" fill="url(#gg)" stroke="#1a2a3a"/>
+  <path d="M240 126 q7 22 0 48" stroke="#a8cff0" stroke-opacity=".55" stroke-width="2.4" fill="none"/>
+  <circle cx="390" cy="192" r="2.6" fill="#c8a97e"/>
+  <text x="284" y="212" fill="#4e4a45" font-size="9" text-anchor="middle" font-family="Georgia,serif">變焦環</text>
+  <text x="345" y="212" fill="#4e4a45" font-size="9" text-anchor="middle" font-family="Georgia,serif">對焦環</text>
+</g>
+
+<!-- 濾鏡 -->
+<g class="part" id="pFilter" data-k="filter">
+  <rect x="219" y="113" width="13" height="74" rx="4" fill="url(#gm)" stroke="#0a0a0a"/>
+  <rect x="219" y="113" width="13" height="74" rx="4" fill="url(#rib)" opacity=".5"/>
+  <ellipse cx="225" cy="150" rx="6" ry="34" fill="#1a2a38" stroke="#7a8a9a" stroke-opacity=".7"/>
+  <path d="M222 130 q5 20 0 40" stroke="#d8e8f8" stroke-opacity=".4" stroke-width="2" fill="none"/>
+</g>
+
+<!-- 標示 -->
+<g id="labels" font-family="Georgia,serif" font-size="12">
+  <g id="lFilter">
+    <line x1="225" y1="248" x2="225" y2="192" stroke="#3a3a3a"/>
+    <text x="225" y="266" fill="#7ab8e8" text-anchor="middle">濾鏡</text>
+    <text x="225" y="282" fill="#4e4a45" font-size="9" text-anchor="middle">Filter</text>
+  </g>
+  <g id="lLens">
+    <line x1="320" y1="248" x2="320" y2="222" stroke="#3a3a3a"/>
+    <text x="320" y="266" fill="#c8a97e" text-anchor="middle">鏡頭</text>
+    <text x="320" y="282" fill="#4e4a45" font-size="9" text-anchor="middle">Lens</text>
+  </g>
+  <g id="lBody">
+    <line x1="490" y1="248" x2="490" y2="224" stroke="#3a3a3a"/>
+    <text x="490" y="266" fill="#7ae8c0" text-anchor="middle">機身</text>
+    <text x="490" y="282" fill="#4e4a45" font-size="9" text-anchor="middle">Body</text>
+  </g>
+</g>
+</svg>
+</div>
+
+<div class="chips" id="chips">
+  <button data-k="filter">濾鏡</button>
+  <button data-k="lens">鏡頭</button>
+  <button data-k="body">機身</button>
+</div>
+
+<div class="cap" id="cap"><b>一部相機由三件嘢砌成</b>最前面一塊可以扭上扭落嘅濾鏡，中間一支鏡頭，後面一個機身。撳圖上面任何一件，或者撳下面三個掣。</div>
+
+<div class="flow">
+  <span>光</span><i>→</i>
+  <span class="k">濾鏡</span><i>→</i>
+  <span class="k">鏡頭</span><i>→</i>
+  <span class="k">機身</span><i>→</i>
+  <span>相片</span>
+</div>
+
+<a class="more" href="camera-anatomy.html">詳細版：相機結構 · 光嘅旅程 →</a>
+
+<footer>CPOP FILM DIGITAL ART — 課堂用互動教材</footer>
+
+<script>
+(function(){
+"use strict";
+var CAP={
+ filter:'<b>濾鏡　Filter</b>扭喺鏡頭最前面嘅一塊玻璃，可以隨時扭走。UV 用嚟保護鏡片；CPL 用嚟消水面同玻璃嘅反光；ND 用嚟減光。唔裝都影到相。',
+ lens:'<b>鏡頭　Lens</b>入面一組鏡片，外面兩個環：一個變焦、一個對焦。鏡身寫住焦距同最大光圈，例如 24-70mm f/2.8。後面嘅接環扣落機身。',
+ body:'<b>機身　Body</b>感光元件同快門喺入面。上面有快門掣同轉盤，後面有螢幕同觀景器，右邊係手柄。換咗鏡，機身照用。'
+};
+var DEF='<b>一部相機由三件嘢砌成</b>最前面一塊可以扭上扭落嘅濾鏡，中間一支鏡頭，後面一個機身。撳圖上面任何一件，或者撳下面三個掣。';
+var P={filter:document.getElementById('pFilter'),lens:document.getElementById('pLens'),body:document.getElementById('pBody')};
+var L={filter:document.getElementById('lFilter'),lens:document.getElementById('lLens'),body:document.getElementById('lBody')};
+var OFF={filter:-86,lens:-42,body:0}, open=false, cur=null;
+function apply(){
+  for(var k in P){
+    P[k].setAttribute('transform','translate('+(open?OFF[k]:0)+',0)');
+    L[k].setAttribute('transform','translate('+(open?OFF[k]:0)+',0)');
+    var on=(cur===null||cur===k);
+    P[k].style.opacity=on?1:0.22;
+    L[k].style.opacity=on?1:0.22;
+  }
+  document.getElementById('cap').innerHTML=cur?CAP[cur]:DEF;
+  [].forEach.call(document.querySelectorAll('#chips button'),function(b){
+    b.classList.toggle('on',b.dataset.k===cur);
+  });
+}
+function pick(k){ cur=(cur===k)?null:k; apply(); }
+document.getElementById('cam').addEventListener('click',function(e){
+  var t=e.target.closest('.part'); if(!t) return; pick(t.dataset.k);
+});
+document.getElementById('chips').addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b) return; pick(b.dataset.k);
+});
+document.getElementById('seg').addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  [].forEach.call(this.querySelectorAll('button'),function(x){x.classList.remove('on');});
+  b.classList.add('on'); open=(b.dataset.v==='1'); apply();
+});
+apply();
+})();
+</script>
+</body>
+</html>
