@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>收音靜靜</title>
+<style>
+:root{
+  --bg:#000; --panel:#0e0e0e; --line:#1f1f1f; --line2:#333;
+  --fg:#fff; --dim:#8e8e93; --dim2:#5a5a5e;
+  --ok:#7ee0a0; --warn:#ffd60a; --no:#ff6b5e; --hot:#ff453a; --cool:#64d2ff;
+  --spring:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro TC","PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  padding:0 20px 120px; max-width:660px; margin:0 auto;
+}
+h1,h2,h3{margin:0; font-weight:700; letter-spacing:-.035em; line-height:1.08}
+
+#bar{position:fixed;top:0;left:0;height:2px;background:var(--fg);width:0;z-index:50;transition:width .2s linear}
+#snd{position:fixed;top:14px;right:14px;z-index:50;background:rgba(30,30,30,.72);backdrop-filter:blur(14px);
+  color:var(--dim);border:0;border-radius:999px;padding:7px 13px;font:inherit;font-size:12px;cursor:pointer}
+#snd.on{color:var(--fg)}
+
+#hero{min-height:88vh;display:flex;flex-direction:column;justify-content:center;padding:60px 0 40px}
+#hero h1{font-size:clamp(36px,11.5vw,62px)}
+#hero .lede{color:var(--dim);font-size:17px;margin:22px 0 0;max-width:30em}
+.cue{margin-top:44px;color:var(--dim2);font-size:12px;letter-spacing:.2em}
+
+.task{border:1px solid var(--line2);border-radius:18px;padding:24px;margin:36px 0 0}
+.task h3{font-size:20px;margin-bottom:6px}
+.task .diag{margin:10px 0 0}
+.diag a{display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:15px 2px;border-bottom:1px solid var(--line);color:var(--fg);text-decoration:none;font-size:15px}
+.diag a:last-child{border-bottom:0}
+.diag a span{color:var(--dim2);font-size:12px;letter-spacing:.14em;white-space:nowrap}
+
+.card{padding:84px 0 12px;opacity:0;transform:translateY(26px);
+  transition:opacity .8s var(--spring),transform .8s var(--spring)}
+.card.in{opacity:1;transform:none}
+.eyebrow{font-size:11px;letter-spacing:.24em;color:var(--dim2);margin-bottom:16px;font-variant-numeric:tabular-nums}
+.card h2{font-size:clamp(26px,7.2vw,40px)}
+.card .note{color:var(--dim);font-size:15px;margin:18px 0 0}
+
+.quiz{margin:30px 0 0}
+.quiz .q{font-size:14px;color:var(--dim);margin:0 0 12px}
+.opt{display:block;width:100%;text-align:left;margin-bottom:9px;background:#121212;color:var(--fg);
+  border:1px solid transparent;border-radius:14px;padding:15px 18px;font:inherit;font-size:15px;cursor:pointer;
+  transition:transform .45s var(--spring),background .3s,border-color .3s,color .3s}
+.opt:active{transform:scale(.975)}
+.opt.ok{border-color:var(--ok);color:var(--ok);background:rgba(126,224,160,.07)}
+.opt.bad{border-color:var(--no);color:var(--no);background:rgba(255,107,94,.07)}
+.opt.ans{border-color:var(--ok);color:var(--ok)}
+.opt[disabled]{cursor:default}
+
+.toy{margin:26px 0 0;border-radius:20px;background:var(--panel);border:1px solid var(--line);
+  padding:22px 20px;max-height:0;overflow:hidden;opacity:0;padding-top:0;padding-bottom:0;border-width:0;
+  transition:max-height .9s var(--spring),opacity .6s ease .15s,padding .9s var(--spring),border-width .3s}
+.toy.open{max-height:5200px;opacity:1;padding-top:22px;padding-bottom:22px;border-width:1px}
+
+canvas{display:block;width:100%;background:#000;border-radius:12px;touch-action:none}
+
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:16px}
+button.act{background:var(--fg);color:#000;border:0;border-radius:999px;padding:13px 24px;
+  font:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:transform .45s var(--spring),background .3s,color .3s}
+button.act:active{transform:scale(.95)}
+button.act.off{background:#1c1c1e;color:var(--fg)}
+button.pill{flex:1 1 auto;min-width:76px;background:#1c1c1e;color:var(--dim);border:0;border-radius:999px;
+  padding:11px 8px;font:inherit;font-size:13px;cursor:pointer;transition:transform .45s var(--spring),background .3s,color .3s}
+button.pill:active{transform:scale(.94)}
+button.pill.on{background:var(--fg);color:#000;font-weight:600}
+
+label.sl{display:block;margin-top:20px}
+label.sl .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin-bottom:2px}
+label.sl .val{color:var(--fg);font-variant-numeric:tabular-nums;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:#2c2c2e}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:#2c2c2e}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+  background:#fff;margin-top:-11px;box-shadow:0 1px 6px rgba(0,0,0,.6)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:0}
+
+.meta{opacity:0;transform:translateY(8px);transition:opacity .7s var(--spring),transform .7s var(--spring)}
+.meta.on{opacity:1;transform:none}
+.readout{display:flex;gap:22px;flex-wrap:wrap;margin-top:18px;font-variant-numeric:tabular-nums}
+.readout div{font-size:12px;color:var(--dim2)}
+.readout b{display:block;font-size:26px;color:var(--fg);font-weight:700;letter-spacing:-.03em;line-height:1.2}
+.readout b.hot{color:var(--hot)} .readout b.ok{color:var(--ok)} .readout b.warn{color:var(--warn)} .readout b.cool{color:var(--cool)}
+
+/* live level meter */
+.meter{position:relative;height:30px;border-radius:8px;overflow:hidden;margin-top:20px;
+  background:linear-gradient(90deg,#162b1e 0%,#162b1e 80%,#3d3413 80%,#3d3413 90%,#3d1b18 90%,#3d1b18 100%)}
+.mfill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ok);transition:width .07s linear,background .18s}
+.mfill.warn{background:var(--warn)} .mfill.peak{background:var(--hot)}
+.mmark{position:absolute;top:0;bottom:0;left:80%;width:2px;background:rgba(255,255,255,.85)}
+.mscale{display:flex;font-size:11px;color:var(--dim2);margin-top:7px;font-variant-numeric:tabular-nums;position:relative;height:16px}
+.mscale span{position:absolute;transform:translateX(-50%)}
+
+.take,.note{}
+.spec{margin-top:22px;border-top:1px solid var(--line);padding-top:18px}
+.spec dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:9px 16px;font-size:14px}
+.spec dt{color:var(--dim);white-space:nowrap}
+.spec dd{margin:0;font-variant-numeric:tabular-nums;text-align:right}
+.spec h4{margin:0 0 12px;font-size:12px;letter-spacing:.18em;color:var(--dim2);font-weight:600}
+
+table.t{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:14px}
+table.t th{text-align:left;color:var(--dim2);font-weight:600;font-size:11px;letter-spacing:.14em;padding:0 8px 8px 0}
+table.t td{padding:9px 8px 9px 0;border-top:1px solid var(--line);vertical-align:top}
+table.t td:first-child{white-space:nowrap;font-weight:600}
+table.t .y{color:var(--ok)} table.t .n{color:var(--dim2)}
+
+.fig{width:100%;height:auto;display:block;margin-top:20px;background:#060606;border-radius:14px;border:1px solid var(--line)}
+.fig text{font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif;font-weight:500}
+.cap{font-size:12px;color:var(--dim2);margin:9px 2px 0;line-height:1.55}
+
+.ph{margin:20px 0 0}
+.ph img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line)}
+.ph figcaption{font-size:12px;color:var(--dim2);margin-top:9px;line-height:1.5}
+.grid2,.grid3{display:grid;gap:10px;margin-top:20px}
+.grid2{grid-template-columns:1fr 1fr}
+.grid3{grid-template-columns:repeat(3,1fr)}
+.grid2 .ph,.grid3 .ph{margin:0}
+@media(max-width:430px){.grid3{grid-template-columns:1fr}}
+
+details{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-size:13px;color:var(--dim);list-style:none;display:flex;
+  justify-content:space-between;align-items:center;padding:5px 0}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"＋";color:var(--dim2);font-size:15px}
+details[open] summary::after{content:"−"}
+details .spec{border-top:0;padding-top:10px;margin-top:4px}
+
+.aside{margin-top:20px;font-size:14px;color:var(--dim);line-height:1.65}
+.aside b{color:var(--fg);font-weight:600}
+.warnbox{margin-top:16px;font-size:13px;color:var(--dim2);line-height:1.6}
+.verdict{margin-top:18px;border-radius:14px;background:#1c1c1e;padding:18px;font-size:17px;font-weight:600;
+  line-height:1.45;opacity:0;transform:scale(.97);transition:all .6s var(--spring)}
+.verdict.on{opacity:1;transform:none}
+.verdict small{display:block;font-weight:400;font-size:13px;color:var(--dim);margin-top:8px;line-height:1.55}
+
+#end{padding:90px 0 0}
+#end h2{font-size:clamp(26px,7.2vw,40px)}
+#end ol{margin:28px 0 0;padding:0;list-style:none;counter-reset:n}
+#end li{counter-increment:n;padding:15px 0 15px 42px;border-bottom:1px solid var(--line);position:relative;font-size:15.5px}
+#end li::before{content:counter(n,decimal-leading-zero);position:absolute;left:0;top:16px;
+  font-size:11px;letter-spacing:.14em;color:var(--dim2);font-variant-numeric:tabular-nums}
+#end li:last-child{border-bottom:0}
+footer{color:var(--dim2);font-size:12px;text-align:center;padding:60px 0 0}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.card{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div id="bar"></div>
+<button id="snd" class="on">♪ 介面音效</button>
+
+<div id="hero">
+  <h1>收音靜靜</h1>
+  <p class="lede">八件你一定會撞到嘅事。</p>
+</div>
+
+<div class="task">
+  <h3>開始之前，先錄一段爛嘢</h3>
+  <p style="color:var(--dim);font-size:15px;margin:10px 0 0">
+    用你自己諗到<b style="color:var(--fg)">最好嘅方法</b>，攞部手機錄十五秒人聲。盡力做到最好。<br>
+    錄完戴耳機聽一次，再喺下面搵返你聽到嘅問題。</p>
+  <div class="diag">
+    <a href="#c1">聽落冇乜特別，我聽唔出有咩問題<span>01</span></a>
+    <a href="#c2">把聲好散、好遠、一堆沙沙聲<span>02</span></a>
+    <a href="#c3">太細聲 / 個錶紅晒，把聲爛咗<span>03</span></a>
+    <a href="#c4">得一邊耳仔有聲 / 把聲薄到似電話<span>04</span></a>
+    <a href="#c5">好空洞，好似喺廁所錄<span>05</span></a>
+    <a href="#c6">有嗡嗡聲、電流聲<span>06</span></a>
+    <a href="#c7">有啲高音嘅嘶聲好怪<span>07</span></a>
+    <a href="#c8">出咗街之後把聲又唔同咗<span>08</span></a>
+  </div>
+</div>
+
+<!-- 01 -->
+<section class="card" id="c1">
+  <div class="eyebrow">01 — 震動</div>
+  <h2>聲音就係空氣喺度震。<br>支咪，就係去接住嗰下震。</h2>
+
+  <div class="quiz" data-a="b">
+    <p class="q">支咪入面有一塊好薄嘅膜。佢係做乜嘅？</p>
+    <button class="opt" data-k="a">擋灰塵</button>
+    <button class="opt" data-k="b">畀空氣推佢郁，跟住郁法變成電</button>
+  </div>
+
+  <div class="toy">
+    <svg class="fig" viewBox="0 0 620 210" role="img" aria-label="由聲帶到電訊號">
+      <defs><marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M0 0L10 5L0 10z" fill="#5a5a5e"/></marker></defs>
+      <circle cx="58" cy="96" r="24" fill="#3a3a3c"/>
+      <path d="M34 142a24 24 0 0 1 48 0" fill="#3a3a3c"/>
+      <text x="58" y="182" fill="#8e8e93" font-size="12" text-anchor="middle">① 聲帶震</text>
+      <g stroke="#48484a">
+        <path d="M96 96h14M120 96h14M144 96h14M168 96h14M192 96h14" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+        <path d="M108 78v36M132 78v36M156 78v36M180 78v36M204 78v36" stroke-width="1" opacity=".35"/></g>
+      <text x="152" y="182" fill="#8e8e93" font-size="12" text-anchor="middle">② 空氣一疏一密</text>
+      <text x="152" y="52" fill="#5a5a5e" font-size="11" text-anchor="middle">冇嘢飛過嚟，淨係推</text>
+      <rect x="236" y="56" width="16" height="80" rx="8" fill="#2c2c2e" stroke="#5a5a5e" stroke-width="1.5"/>
+      <path d="M244 56c14 10 14 70 0 80" fill="none" stroke="#fff" stroke-width="2.5"/>
+      <text x="252" y="182" fill="#fff" font-size="12" text-anchor="middle">③ 咪膜跟住震</text>
+      <path d="M270 96h44" stroke="#5a5a5e" stroke-width="1.5" marker-end="url(#a1)" fill="none"/>
+      <rect x="322" y="70" width="72" height="52" rx="10" fill="#2c2c2e" stroke="#5a5a5e" stroke-width="1.5"/>
+      <path d="M338 96h12l6-14 8 28 6-14h14" fill="none" stroke="#7ee0a0" stroke-width="2"/>
+      <text x="358" y="182" fill="#8e8e93" font-size="12" text-anchor="middle">④ 變成電</text>
+      <path d="M402 96h40" stroke="#5a5a5e" stroke-width="1.5" marker-end="url(#a1)" fill="none"/>
+      <rect x="450" y="58" width="140" height="76" rx="10" fill="#000" stroke="#3a3a3c" stroke-width="1.5"/>
+      <path d="M458 96q14-26 28 0t28 0t28 0t28 0t20 0" fill="none" stroke="#fff" stroke-width="2"/>
+      <text x="520" y="182" fill="#8e8e93" font-size="12" text-anchor="middle">⑤ 存落部機</text>
+    </svg>
+    <p class="cap">由頭到尾都係同一下震，只係換咗四次身份：空氣 → 薄膜 → 電 → 數字。<b style="color:#fff">中間任何一步整衰咗，後面都補唔返。</b></p>
+
+    <canvas id="k1" height="160" style="margin-top:20px"></canvas>
+    <label class="sl"><span class="lab">震得幾快<span class="val" id="v1f">440 Hz</span></span>
+      <input type="range" id="r1f" min="0" max="1000" value="500"></label>
+    <label class="sl"><span class="lab">震得幾大力<span class="val" id="v1a">60%</span></span>
+      <input type="range" id="r1a" min="5" max="100" value="60"></label>
+    <div class="row"><button class="act" id="b1">播放</button></div>
+    <p class="aside">震得<b>快</b> = 高音。震得<b>大力</b> = 大聲。淨係呢兩樣。</p>
+
+    <div class="spec">
+      <h4>順手 — 你隻耳幾多歲</h4>
+      <div class="row" id="hz">
+        <button class="pill" data-i="0">8k</button>
+        <button class="pill" data-i="1">12k</button>
+        <button class="pill" data-i="2">14k</button>
+        <button class="pill" data-i="3">15k</button>
+        <button class="pill" data-i="4">17k</button>
+        <button class="pill" data-i="5">19k</button>
+      </div>
+      <div class="row" id="hq" style="display:none">
+        <button class="act off" id="hy">聽到</button>
+        <button class="act off" id="hn">聽唔到</button>
+      </div>
+      <div class="verdict" id="hv"></div>
+      <div class="warnbox">呢個係玩，唔係聽力測試。<b style="color:var(--fg)">播唔到 ≠ 你聽唔到</b> —— 好多手機喇叭出唔到 17k。</div>
+      <details><summary>Mosquito：用聽力趕人</summary>
+        <div class="aside">2005 年英國有人做咗個裝置，喺舖頭門口播 17kHz 趕走聚埋一堆嘅後生仔 —— 成年人聽唔到。後尾學生反過來攞嚟做手機鈴聲，喺堂上響，老師完全唔知。</div>
+      </details>
+    </div>
+  </div>
+
+  <p class="note">你聽唔到嘅嘢，你就唔會去 fix。所以之後要學識睇頻譜，唔好淨係信隻耳。</p>
+</section>
+
+<!-- 02 -->
+<section class="card" id="c2">
+  <div class="eyebrow">02 — 距離</div>
+  <h2>行前一步，<br>把聲乾淨一倍。</h2>
+
+  <div class="quiz" data-a="b">
+    <p class="q">支咪由 1 米移到 2 米，把聲會點？</p>
+    <button class="opt" data-k="a">細少少啫</button>
+    <button class="opt" data-k="b">細好多 —— 淨返大約四分一</button>
+  </div>
+
+  <div class="toy">
+    <canvas id="k2" height="180"></canvas>
+    <label class="sl"><span class="lab">咪同人嘅距離<span class="val" id="v2">0.50 m</span></span>
+      <input type="range" id="r2" min="25" max="400" value="50"></label>
+    <div class="row"><button class="act" id="b2">播放</button></div>
+    <div class="readout meta" id="m2">
+      <div>人聲<b id="o2s">100%</b></div>
+      <div>房間噪音<b id="o2n">冇變</b></div>
+      <div>聽唔聽得清<b id="o2r">清楚</b></div>
+    </div>
+    <p class="aside">郁個滑桿，留意兩件事：<b>人聲愈嚟愈細，但沙沙聲一直都喺度。</b>所以走遠咗，你唔止細聲咗 —— 係噪音佔咗上風。</p>
+
+    <div class="grid3">
+      <figure class="ph"><img src="img/mic-boom.jpg" alt="" loading="lazy" onerror="this.closest('figure').style.display='none'">
+        <figcaption>Boom · 頭頂 0.4m</figcaption></figure>
+      <figure class="ph"><img src="img/mic-lav.jpg" alt="" loading="lazy" onerror="this.closest('figure').style.display='none'">
+        <figcaption>領夾 · 0.2m</figcaption></figure>
+      <figure class="ph"><img src="img/mic-phone.jpg" alt="" loading="lazy" onerror="this.closest('figure').style.display='none'">
+        <figcaption>手機喺枱 · 1.2m</figcaption></figure>
+    </div>
+    <p class="cap">同一句對白，三個位，結果差好遠。器材貴唔貴，冇擺位重要。</p>
+
+    <svg class="fig" viewBox="0 0 620 216" role="img" aria-label="咪頭指向性">
+      <g fill="none" stroke="#2c2c2e" stroke-width="1" stroke-dasharray="3 4">
+        <circle cx="105" cy="108" r="56"/><circle cx="310" cy="108" r="56"/><circle cx="505" cy="108" r="56"/></g>
+      <circle cx="105" cy="108" r="50" fill="#64d2ff" fill-opacity=".16" stroke="#64d2ff" stroke-width="1.5"/>
+      <path transform="translate(310 108)" fill="#7ee0a0" fill-opacity=".18" stroke="#7ee0a0" stroke-width="1.5"
+        d="M0,-52 L13.2,-49.4 L24.2,-42 L31.4,-31.4 L33.8,-19.5 L31.6,-8.5 L26,0 L18.6,5 L11.3,6.5 L5.4,5.4 L1.8,3 L0.2,0.9 L0,0 L-0.2,0.9 L-1.8,3 L-5.4,5.4 L-11.3,6.5 L-18.6,5 L-26,0 L-31.6,-8.5 L-33.8,-19.5 L-31.4,-31.4 L-24.2,-42 L-13.2,-49.4 Z"/>
+      <path transform="translate(505 108)" fill="#ffffff" fill-opacity=".2" stroke="#fff" stroke-width="1.5"
+        d="M0,-52 L12.2,-45.6 L17.6,-30.5 L14.8,-14.8 L8.7,-5 L4.6,-1.2 L4,0 L3.9,1 L3.5,2 L2.8,2.8 L2,3.5 L1,3.9 L0,4 L-1,3.9 L-2,3.5 L-2.8,2.8 L-3.5,2 L-3.9,1 L-4,0 L-4.6,-1.2 L-8.7,-5 L-14.8,-14.8 L-17.6,-30.5 L-12.2,-45.6 Z"/>
+      <g fill="#fff"><circle cx="105" cy="108" r="4"/><circle cx="310" cy="108" r="4"/><circle cx="505" cy="108" r="4"/></g>
+      <g fill="#8e8e93" font-size="11" text-anchor="middle">
+        <text x="105" y="20">↑ 前</text><text x="310" y="20">↑ 前</text><text x="505" y="20">↑ 前</text></g>
+      <g font-size="12.5" text-anchor="middle">
+        <text x="105" y="196" fill="#64d2ff">Omni 全指向</text>
+        <text x="310" y="196" fill="#7ee0a0">Cardioid 心形</text>
+        <text x="505" y="196" fill="#fff">Shotgun 槍咪</text></g>
+      <g fill="#5a5a5e" font-size="11" text-anchor="middle">
+        <text x="105" y="212">連房間一齊收</text><text x="310" y="212">背後唔收</text><text x="505" y="212">對準先收到</text></g>
+    </svg>
+    <p class="cap">收到幾多，唔淨止睇距離，仲睇角度。槍咪對唔正等於冇。</p>
+
+    <details><summary>想知確實數字</summary>
+      <div class="aside">距離加倍，音量跌 <b>6dB</b>，能量剩返四分一。呢條叫平方反比定律 —— 同光一模一樣，行遠一倍，光暗四倍。</div>
+    </details>
+  </div>
+
+  <p class="note">移近支咪，永遠好過事後調大聲。事後調大聲，你連噪音一齊調大。</p>
+</section>
+
+<!-- 03 -->
+<section class="card" id="c3">
+  <div class="eyebrow">03 — 電平</div>
+  <h2>收音時爆咗，<br>就救唔返。</h2>
+
+  <div class="quiz" data-a="a">
+    <p class="q">錄嗰陣推爆咗，返到屋企拉細返，救唔救到？</p>
+    <button class="opt" data-k="a">救唔到，爛咗就爛咗</button>
+    <button class="opt" data-k="b">拉細返就冇事</button>
+  </div>
+
+  <div class="toy">
+    <canvas id="k3" height="190"></canvas>
+
+    <div class="meter"><div class="mfill" id="mfill"></div><div class="mmark"></div></div>
+    <div class="mscale">
+      <span style="left:0%">−60</span><span style="left:33%">−40</span><span style="left:66%">−20</span>
+      <span style="left:80%">−12</span><span style="left:90%">−6</span><span style="left:98%">0</span>
+    </div>
+    <div class="readout meta" id="m3" style="margin-top:14px">
+      <div>錶讀數<b id="o3f">−12.0 dB</b></div>
+      <div>狀態<b id="o3s">啱</b></div>
+    </div>
+
+    <label class="sl"><span class="lab">佢講嘢有幾大聲<span class="val" id="v3s">正常講嘢</span></span>
+      <input type="range" id="r3s" min="45" max="95" value="65"></label>
+    <label class="sl"><span class="lab">錄音機 Gain<span class="val" id="v3g">+40</span></span>
+      <input type="range" id="r3g" min="0" max="70" value="40"></label>
+    <div class="row">
+      <button class="act" id="b3">播放</button>
+      <button class="act off" id="b3f">事後拉細返</button>
+    </div>
+    <p class="aside">目標：個錶最大聲嗰下<b>剛剛掂到白線</b>（綠色頂）。入咗黃色 = 危險，入咗紅色 = 已經爛。</p>
+
+    <svg class="fig" viewBox="0 0 620 306" role="img" aria-label="錄音機上邊個位控制乜">
+      <g fill="#3a3a3c" stroke="#5a5a5e" stroke-width="1.5">
+        <g transform="translate(258 30) rotate(-30)"><rect x="-13" y="-30" width="26" height="46" rx="13"/></g>
+        <g transform="translate(362 30) rotate(30)"><rect x="-13" y="-30" width="26" height="46" rx="13"/></g></g>
+      <rect x="180" y="26" width="260" height="256" rx="22" fill="#1c1c1e" stroke="#3a3a3c" stroke-width="1.5"/>
+      <rect x="204" y="52" width="212" height="94" rx="9" fill="#000" stroke="#3a3a3c" stroke-width="1.5"/>
+      <rect x="215" y="70" width="190" height="13" rx="3" fill="#0f0f10"/>
+      <rect x="215" y="70" width="152" height="13" rx="3" fill="#7ee0a0"/>
+      <rect x="386" y="70" width="19" height="13" rx="3" fill="#ff453a" fill-opacity=".35"/>
+      <rect x="215" y="89" width="190" height="13" rx="3" fill="#0f0f10"/>
+      <rect x="215" y="89" width="146" height="13" rx="3" fill="#7ee0a0"/>
+      <rect x="386" y="89" width="19" height="13" rx="3" fill="#ff453a" fill-opacity=".35"/>
+      <path d="M367 66v40" stroke="#fff" stroke-width="1.5"/>
+      <text x="215" y="137" fill="#fff" font-size="13">−12.0 dB</text>
+      <text x="405" y="137" fill="#7ee0a0" font-size="11" text-anchor="end">24bit / 48k</text>
+      <circle cx="248" cy="196" r="27" fill="#0f0f10" stroke="#5a5a5e" stroke-width="2"/>
+      <path d="M248 196l14-19" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <text x="248" y="240" fill="#8e8e93" font-size="11" text-anchor="middle">GAIN</text>
+      <circle cx="368" cy="196" r="23" fill="#ff453a"/>
+      <text x="368" y="240" fill="#8e8e93" font-size="11" text-anchor="middle">REC</text>
+      <g fill="#0f0f10" stroke="#5a5a5e" stroke-width="1.5">
+        <circle cx="248" cy="266" r="9"/><circle cx="310" cy="266" r="9"/><circle cx="372" cy="266" r="9"/></g>
+      <g stroke="#48484a" stroke-width="1.2" fill="none" stroke-dasharray="3 3">
+        <path d="M150 88h50"/><path d="M150 196h64"/><path d="M470 266h-88"/><path d="M470 34h-90"/></g>
+      <g fill="#8e8e93" font-size="12">
+        <text x="144" y="84" text-anchor="end">個錶睇呢度</text>
+        <text x="144" y="192" text-anchor="end">Gain 喺呢度</text>
+        <text x="144" y="208" text-anchor="end" fill="#5a5a5e" font-size="11">唔係「咪嘅 dB」</text>
+        <text x="478" y="264">耳機</text>
+        <text x="478" y="280" fill="#5a5a5e" font-size="11">唔插＝盲錄</text>
+        <text x="478" y="38">咪頭</text></g>
+    </svg>
+    <p class="cap">你調嘅係機上面嘅 Gain。支咪本身冇得調。</p>
+
+    <details><summary>正式數字同前級 gain</summary>
+      <div class="spec">
+        <dl>
+          <dt>對白峰值</dt><dd>−12 dBFS</dd>
+          <dt>最爆嗰下</dt><dd>唔好過 −6 dBFS</dd>
+          <dt>自動 gain (AGC)</dt><dd>閂咗佢</dd>
+          <dt>動圈咪收對白</dt><dd>+50 ~ +60 dB</dd>
+          <dt>電容咪收對白</dt><dd>+30 ~ +45 dB</dd>
+          <dt>48V phantom</dt><dd>同大細聲無關</dd>
+        </dl>
+        <p class="aside">Phantom 係電容咪要電。開咗唔會大聲啲。</p>
+      </div>
+    </details>
+  </div>
+
+  <p class="note">寧願細聲，唔好爆。細聲拉得返，爆咗拉唔返。</p>
+</section>
+
+<!-- 04 -->
+<section class="card" id="c4">
+  <div class="eyebrow">04 — 相位</div>
+  <h2>AirPods 消噪，<br>同你把聲變薄，<br>係同一件事。</h2>
+
+  <div class="quiz" data-a="b">
+    <p class="q">兩條一模一樣嘅聲，其中一條上下倒轉再夾埋，會點？</p>
+    <button class="opt" data-k="a">大聲一倍</button>
+    <button class="opt" data-k="b">變到冇聲</button>
+  </div>
+
+  <div class="toy">
+    <p class="aside" style="margin:0 0 16px">收到噪音 → 計一條倒轉嘅波 → 播返出嚟 → 加埋等於零。</p>
+    <canvas id="k4" height="190"></canvas>
+    <label class="sl"><span class="lab">噪音頻率<span class="val" id="v4f">100 Hz</span></span>
+      <input type="range" id="r4f" min="0" max="1000" value="180"></label>
+    <label class="sl"><span class="lab">反相波遲咗幾多<span class="val" id="v4d">0.00 ms</span></span>
+      <input type="range" id="r4d" min="0" max="100" value="0"></label>
+    <div class="row">
+      <button class="act" id="b4">播放</button>
+      <button class="act off" id="b4a">消噪：開</button>
+    </div>
+    <div class="readout meta" id="m4">
+      <div>相位差<b id="o4p">0°</b></div>
+      <div>剩返<b id="o4r">0%</b></div>
+    </div>
+    <p class="aside">拉高頻率，消噪會失效 —— 所以 AirPods 殺得死港鐵隆隆聲，殺唔死隔籬枱講嘢。</p>
+    <details><summary>點解高頻消唔到</summary>
+      <div class="aside">低頻波長長，容易對準。高頻波長短，慢零點幾毫秒就已經對唔上 —— 唔單止消唔到，仲會<b>加大</b>。個「剩返」數字過咗 100% 就係咁。</div>
+    </details>
+
+    <svg class="fig" viewBox="0 0 620 252" role="img" aria-label="消噪耳機入面有乜">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0 0L10 5L0 10z" fill="#8e8e93"/></marker>
+        <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0 0L10 5L0 10z" fill="#7ee0a0"/></marker></defs>
+      <path d="M470 60c46 0 70 34 70 68 0 44-26 64-42 64-18 0-14-22-30-22-14 0-18 14-18 14"
+            fill="none" stroke="#3a3a3c" stroke-width="10" stroke-linecap="round"/>
+      <rect x="408" y="112" width="72" height="30" rx="6" fill="#141416"/>
+      <path d="M480 106v42" stroke="#5a5a5e" stroke-width="4" stroke-linecap="round"/>
+      <text x="498" y="168" fill="#5a5a5e" font-size="11">耳膜</text>
+      <rect x="316" y="94" width="76" height="66" rx="26" fill="#2c2c2e" stroke="#5a5a5e" stroke-width="1.5"/>
+      <rect x="384" y="114" width="32" height="26" rx="10" fill="#2c2c2e" stroke="#5a5a5e" stroke-width="1.5"/>
+      <g transform="translate(336 156) rotate(16)">
+        <rect x="-9" y="0" width="18" height="56" rx="9" fill="#2c2c2e" stroke="#5a5a5e" stroke-width="1.5"/></g>
+      <path d="M44 96q14-16 28 0t28 0t28 0t28 0t28 0t28 0" fill="none" stroke="#8e8e93" stroke-width="2"/>
+      <path d="M212 96h88" stroke="#8e8e93" stroke-width="1.5" marker-end="url(#ar)" fill="none"/>
+      <text x="44" y="78" fill="#8e8e93" font-size="12">環境噪音</text>
+      <path d="M44 210q14 16 28 0t28 0t28 0t28 0t28 0t28 0" fill="none" stroke="#7ee0a0" stroke-width="2"/>
+      <text x="44" y="234" fill="#7ee0a0" font-size="12">晶片計出嚟嘅反相波</text>
+      <path d="M212 210q40 0 60-40" stroke="#7ee0a0" stroke-width="1.5" fill="none" marker-end="url(#ag)"/>
+      <path d="M418 127h50" stroke="#48484a" stroke-width="2" fill="none"/>
+      <text x="446" y="118" fill="#7ee0a0" font-size="11" text-anchor="middle">＝ 靜</text>
+      <circle cx="322" cy="104" r="6.5" fill="#fff"/>
+      <g fill="none" stroke="#fff" stroke-width="1.6">
+        <circle cx="352" cy="127" r="7"/><circle cx="352" cy="127" r="13"/></g>
+      <circle cx="404" cy="127" r="5" fill="#64d2ff"/>
+      <g stroke="#48484a" stroke-width="1.1" stroke-dasharray="3 3" fill="none">
+        <path d="M322 104L286 56"/><path d="M352 110V56"/><path d="M404 122L438 56"/></g>
+      <g font-size="11.5">
+        <text x="286" y="48" fill="#fff" text-anchor="middle">① 外咪</text>
+        <text x="286" y="34" fill="#5a5a5e" text-anchor="middle">收噪音</text>
+        <text x="356" y="48" fill="#fff" text-anchor="middle">② 喇叭</text>
+        <text x="356" y="34" fill="#5a5a5e" text-anchor="middle">播反相波</text>
+        <text x="444" y="48" fill="#64d2ff" text-anchor="middle">③ 內咪</text>
+        <text x="444" y="34" fill="#5a5a5e" text-anchor="middle">睇下仲剩幾多</text></g>
+    </svg>
+    <p class="cap">佢唔係拎走噪音，係<b style="color:#fff">再加多一個聲</b>去抵消。</p>
+
+    <figure class="ph"><img src="img/two-mics.jpg" alt="" loading="lazy" onerror="this.closest('figure').style.display='none'">
+      <figcaption>兩支咪收同一個人 —— 意外版嘅消噪</figcaption></figure>
+
+    <div class="spec">
+      <h4>順手 — Mono、Stereo（一定要戴耳機）</h4>
+      <div class="row" id="pan">
+        <button class="pill on" data-p="m">Mono 兩邊一樣</button>
+        <button class="pill" data-p="l">淨左：人聲</button>
+        <button class="pill" data-p="r">淨右：鼓</button>
+        <button class="pill" data-p="s">Stereo</button>
+      </div>
+      <div class="row"><button class="act" id="b4s">播放</button></div>
+      <p class="aside">Stereo 就係左右擺唔同嘢。撳「淨左」淨係得人聲，撳「淨右」淨係得鼓。<br>
+        <b>交片之前撳一下 Mono 聽多次</b> —— IG、TikTok 好多時用單聲道播，撈埋一齊會出事。</p>
+    </div>
+  </div>
+
+  <p class="note">你支咪可能正喺度幫你做 noise cancelling —— 但取消緊嘅，係你要嗰把聲。</p>
+</section>
+
+<!-- 05 -->
+<section class="card" id="c5">
+  <div class="eyebrow">05 — 房間</div>
+  <h2>房間都會入鏡。<br>而且剪唔走。</h2>
+
+  <div class="quiz" data-a="a">
+    <p class="q">同一支咪、同一個人，喺禮堂同喺錄音室錄，分別大唔大？</p>
+    <button class="opt" data-k="a">完全兩回事</button>
+    <button class="opt" data-k="b">差唔多，反正同一把聲</button>
+  </div>
+
+  <div class="toy">
+    <div class="row" id="rm">
+      <button class="pill on" data-r="0">錄音室</button>
+      <button class="pill" data-r="1">課室</button>
+      <button class="pill" data-r="2">浴室</button>
+      <button class="pill" data-r="3">禮堂</button>
+    </div>
+    <label class="sl"><span class="lab">咪嘅距離<span class="val" id="v5">近</span></span>
+      <input type="range" id="r5" min="0" max="100" value="12"></label>
+    <div class="row">
+      <button class="act" id="b5">播放人聲</button>
+      <button class="act off" id="b5c">拍一下掌</button>
+    </div>
+    <canvas id="k5" height="130" style="margin-top:18px"></canvas>
+
+    <svg class="fig" viewBox="0 0 620 292" role="img" aria-label="直接聲同反射聲">
+      <g fill="none" stroke="#3a3a3c" stroke-width="2">
+        <rect x="20" y="30" width="270" height="180" rx="4"/><rect x="330" y="30" width="270" height="180" rx="4"/></g>
+      <g stroke="#48484a" stroke-width="1.2" stroke-dasharray="4 4" fill="none">
+        <path d="M70 120L160 30L240 120"/><path d="M70 120L160 210L240 120"/><path d="M70 120L290 66L240 120"/>
+        <path d="M380 120L470 30L430 120"/><path d="M380 120L470 210L430 120"/><path d="M380 120L600 66L430 120"/></g>
+      <g stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round">
+        <path d="M78 120h154"/><path d="M388 120h34"/></g>
+      <g fill="#8e8e93"><circle cx="70" cy="120" r="9"/><circle cx="380" cy="120" r="9"/></g>
+      <g fill="#fff"><rect x="236" y="106" width="9" height="28" rx="4.5"/><rect x="426" y="106" width="9" height="28" rx="4.5"/></g>
+      <g fill="#5a5a5e" font-size="11" text-anchor="middle">
+        <text x="70" y="146">人</text><text x="240" y="150">咪</text><text x="380" y="146">人</text><text x="430" y="150">咪</text></g>
+      <rect x="20" y="232" width="150" height="11" rx="5.5" fill="#fff"/>
+      <rect x="174" y="232" width="116" height="11" rx="5.5" fill="#48484a"/>
+      <text x="20" y="226" fill="#8e8e93" font-size="11">直接聲</text>
+      <text x="290" y="226" fill="#5a5a5e" font-size="11" text-anchor="end">反射聲</text>
+      <text x="155" y="266" fill="#ff6b5e" font-size="12.5" text-anchor="middle">咪企遠 · 空洞</text>
+      <rect x="330" y="232" width="232" height="11" rx="5.5" fill="#fff"/>
+      <rect x="566" y="232" width="34" height="11" rx="5.5" fill="#48484a"/>
+      <text x="330" y="226" fill="#8e8e93" font-size="11">直接聲</text>
+      <text x="600" y="226" fill="#5a5a5e" font-size="11" text-anchor="end">反射聲</text>
+      <text x="465" y="266" fill="#7ee0a0" font-size="12.5" text-anchor="middle">咪埋去 · 乾淨</text>
+      <text x="310" y="286" fill="#48484a" font-size="11" text-anchor="middle">反射路線一模一樣長 —— 變嘅淨係直接聲大咗幾多</text>
+    </svg>
+    <p class="cap">行前一步，等於把房間細咗一半。</p>
+
+    <div class="grid2">
+      <figure class="ph"><img src="img/room-hard.jpg" alt="" loading="lazy" onerror="this.closest('figure').style.display='none'">
+        <figcaption>硬地硬牆 · 最難收</figcaption></figure>
+      <figure class="ph"><img src="img/room-soft.jpg" alt="" loading="lazy" onerror="this.closest('figure').style.display='none'">
+        <figcaption>窗簾、地毯、雜物 · 好收好多</figcaption></figure>
+    </div>
+  </div>
+
+  <p class="note">要收唔到房間聲，唯一方法係埋去。</p>
+</section>
+
+<!-- 06 -->
+<section class="card" id="c6">
+  <div class="eyebrow">06 — 線</div>
+  <h2>數吓個插頭<br>有幾多條黑圈。</h2>
+
+  <div class="quiz" data-a="b">
+    <p class="q">要拉 20 米線收音，用邊種？</p>
+    <button class="opt" data-k="a">3.5mm，細條方便</button>
+    <button class="opt" data-k="b">XLR，長線唔怕雜音</button>
+  </div>
+
+  <div class="toy">
+    <svg class="fig" viewBox="0 0 620 400" role="img" aria-label="插頭嘅黑圈數目">
+      <!-- TS -->
+      <text x="20" y="26" fill="#8e8e93" font-size="12">1 條圈</text>
+      <rect x="20" y="40" width="46" height="28" rx="8" fill="#2c2c2e"/>
+      <rect x="66" y="47" width="120" height="14" rx="7" fill="#c7c7cc"/>
+      <rect x="124" y="47" width="7" height="14" fill="#0a0a0a"/>
+      <text x="205" y="59" fill="#fff" font-size="13">TS · 單聲道</text>
+      <text x="205" y="76" fill="#5a5a5e" font-size="11">2 個接點：聲 + 地</text>
+
+      <!-- TRS -->
+      <text x="20" y="122" fill="#8e8e93" font-size="12">2 條圈</text>
+      <rect x="20" y="136" width="46" height="28" rx="8" fill="#2c2c2e"/>
+      <rect x="66" y="143" width="120" height="14" rx="7" fill="#c7c7cc"/>
+      <rect x="118" y="143" width="7" height="14" fill="#0a0a0a"/>
+      <rect x="142" y="143" width="7" height="14" fill="#0a0a0a"/>
+      <text x="205" y="155" fill="#fff" font-size="13">TRS · Stereo</text>
+      <text x="205" y="172" fill="#5a5a5e" font-size="11">3 個接點：左 + 右 + 地</text>
+
+      <!-- TRRS -->
+      <text x="20" y="218" fill="#8e8e93" font-size="12">3 條圈</text>
+      <rect x="20" y="232" width="46" height="28" rx="8" fill="#2c2c2e"/>
+      <rect x="66" y="239" width="120" height="14" rx="7" fill="#c7c7cc"/>
+      <rect x="112" y="239" width="6" height="14" fill="#0a0a0a"/>
+      <rect x="132" y="239" width="6" height="14" fill="#0a0a0a"/>
+      <rect x="152" y="239" width="6" height="14" fill="#0a0a0a"/>
+      <text x="205" y="251" fill="#fff" font-size="13">TRRS · Stereo + 咪</text>
+      <text x="205" y="268" fill="#5a5a5e" font-size="11">4 個接點：左 + 右 + 地 + 咪（手機用）</text>
+
+      <path d="M20 296h580" stroke="#2c2c2e"/>
+
+      <!-- XLR -->
+      <circle cx="78" cy="352" r="38" fill="#1c1c1e" stroke="#5a5a5e" stroke-width="2.5"/>
+      <circle cx="78" cy="352" r="28" fill="#0a0a0a" stroke="#3a3a3c" stroke-width="1.2"/>
+      <circle cx="78" cy="336" r="6" fill="#c7c7cc"/>
+      <circle cx="64" cy="362" r="6" fill="#c7c7cc"/>
+      <circle cx="92" cy="362" r="6" fill="#c7c7cc"/>
+      <text x="140" y="332" fill="#fff" font-size="13">XLR · 3 支針</text>
+      <text x="140" y="350" fill="#7ee0a0" font-size="11">3 個接點：地 + 熱(+) + 冷(−)</text>
+      <text x="140" y="368" fill="#5a5a5e" font-size="11">一個聲道，但用晒三個位嚟防雜音</text>
+      <text x="140" y="386" fill="#8e8e93" font-size="11">＝ Mono，Balanced</text>
+    </svg>
+
+    <table class="t">
+      <tr><th>插頭</th><th>做乜</th><th>擋唔擋到雜音</th></tr>
+      <tr><td>1 圈 TS</td><td>單聲道</td><td class="n">Unbalanced · 唔擋到</td></tr>
+      <tr><td>2 圈 TRS</td><td>Stereo（左右）</td><td class="n">Unbalanced · 唔擋到</td></tr>
+      <tr><td>3 圈 TRRS</td><td>Stereo + 咪（手機）</td><td class="n">Unbalanced · 唔擋到</td></tr>
+      <tr><td>XLR 3 針</td><td>單聲道</td><td class="y">Balanced · 擋到</td></tr>
+    </table>
+    <p class="cap">關鍵唔係「幾多個接點」，係<b style="color:#fff">啲接點攞嚟做乜</b>。3.5mm 用晒去分左右聲道，冇位再做防雜音；XLR 放棄 stereo，三個位全部攞去擋雜音。</p>
+
+    <div class="row" id="cb" style="margin-top:22px">
+      <button class="pill on" data-c="u">3.5mm</button>
+      <button class="pill" data-c="b">XLR</button>
+    </div>
+    <canvas id="k6" height="240" style="margin-top:14px"></canvas>
+    <div class="row"><button class="act" id="b6">播放</button></div>
+    <p class="aside">Balanced 嘅第二條線載住反相訊號。兩條線沿途撈到一樣嘅雜音，收嗰頭一減 —— 雜音消失，訊號反而大一倍。<b>同第 04 格一樣嘅招數，不過今次幫你。</b></p>
+  </div>
+
+  <p class="note">長線、燈多、現場 —— XLR。</p>
+</section>
+
+<!-- 07 -->
+<section class="card" id="c7">
+  <div class="eyebrow">07 — 數碼</div>
+  <h2>最高質嘅<br>聲音檔案設定。</h2>
+
+  <div class="quiz" data-a="b">
+    <p class="q">人最高聽到 20kHz。一秒要影幾多次先夠還原？</p>
+    <button class="opt" data-k="a">2 萬次就夠</button>
+    <button class="opt" data-k="b">最少 4 萬次 —— 要兩倍</button>
+  </div>
+
+  <div class="toy">
+    <canvas id="k7" height="170"></canvas>
+    <label class="sl"><span class="lab">一秒影幾多次（取樣率）<span class="val" id="v7">44100</span></span>
+      <input type="range" id="r7" min="0" max="6" value="6"></label>
+    <label class="sl"><span class="lab">每次記幾細緻（位元深度）<span class="val" id="v7b">16 bit</span></span>
+      <input type="range" id="r7b" min="2" max="16" value="16"></label>
+    <div class="row"><button class="act" id="b7">播放</button></div>
+    <p class="cap srcst"></p>
+    <p class="aside">郁完滑桿再撳播放（再撳一次停）。聽住<b>人聲同 hi-hat</b> —— 拉低取樣率，高音會變到怪怪哋、金屬聲；拉低位元深度，靜嗰陣會浮起一層沙。</p>
+
+    <svg class="fig" viewBox="0 0 620 248" role="img" aria-label="菲林同取樣係同一件事">
+      <text x="40" y="24" fill="#8e8e93" font-size="12">影像 · 每秒影 24 次</text>
+      <rect x="40" y="34" width="540" height="76" rx="5" fill="#1c1c1e"/>
+      <g fill="#0a0a0a">
+        <rect x="50" y="38" width="12" height="8" rx="2"/><rect x="98" y="38" width="12" height="8" rx="2"/>
+        <rect x="146" y="38" width="12" height="8" rx="2"/><rect x="194" y="38" width="12" height="8" rx="2"/>
+        <rect x="242" y="38" width="12" height="8" rx="2"/><rect x="290" y="38" width="12" height="8" rx="2"/>
+        <rect x="338" y="38" width="12" height="8" rx="2"/><rect x="386" y="38" width="12" height="8" rx="2"/>
+        <rect x="434" y="38" width="12" height="8" rx="2"/><rect x="482" y="38" width="12" height="8" rx="2"/>
+        <rect x="530" y="38" width="12" height="8" rx="2"/>
+        <rect x="50" y="98" width="12" height="8" rx="2"/><rect x="98" y="98" width="12" height="8" rx="2"/>
+        <rect x="146" y="98" width="12" height="8" rx="2"/><rect x="194" y="98" width="12" height="8" rx="2"/>
+        <rect x="242" y="98" width="12" height="8" rx="2"/><rect x="290" y="98" width="12" height="8" rx="2"/>
+        <rect x="338" y="98" width="12" height="8" rx="2"/><rect x="386" y="98" width="12" height="8" rx="2"/>
+        <rect x="434" y="98" width="12" height="8" rx="2"/><rect x="482" y="98" width="12" height="8" rx="2"/>
+        <rect x="530" y="98" width="12" height="8" rx="2"/></g>
+      <g fill="#0a0a0a" stroke="#3a3a3c" stroke-width="1">
+        <rect x="52" y="50" width="78" height="44" rx="3"/><rect x="138" y="50" width="78" height="44" rx="3"/>
+        <rect x="224" y="50" width="78" height="44" rx="3"/><rect x="310" y="50" width="78" height="44" rx="3"/>
+        <rect x="396" y="50" width="78" height="44" rx="3"/><rect x="482" y="50" width="78" height="44" rx="3"/></g>
+      <g stroke="#8e8e93" stroke-width="1.6" fill="none" stroke-linecap="round">
+        <g transform="translate(91 72)"><circle r="14" stroke="#3a3a3c"/><path d="M0 0v-14M0 0l12 7M0 0l-12 7"/></g>
+        <g transform="translate(177 72) rotate(38)"><circle r="14" stroke="#3a3a3c"/><path d="M0 0v-14M0 0l12 7M0 0l-12 7"/></g>
+        <g transform="translate(263 72) rotate(76)"><circle r="14" stroke="#3a3a3c"/><path d="M0 0v-14M0 0l12 7M0 0l-12 7"/></g>
+        <g transform="translate(349 72) rotate(114)"><circle r="14" stroke="#3a3a3c"/><path d="M0 0v-14M0 0l12 7M0 0l-12 7"/></g>
+        <g transform="translate(435 72) rotate(152)"><circle r="14" stroke="#3a3a3c"/><path d="M0 0v-14M0 0l12 7M0 0l-12 7"/></g>
+        <g transform="translate(521 72) rotate(190)"><circle r="14" stroke="#3a3a3c"/><path d="M0 0v-14M0 0l12 7M0 0l-12 7"/></g></g>
+      <text x="310" y="136" fill="#fff" font-size="12.5" text-anchor="middle">一樣咁做 — 連續嘅嘢，一格一格影低</text>
+      <text x="40" y="166" fill="#8e8e93" font-size="12">聲音 · 每秒影 44,100 次</text>
+      <path d="M40 210h540" stroke="#1c1c1e" stroke-width="1"/>
+      <path d="M40 210q33-44 67 0t67 0t67 0t67 0t67 0t67 0t67 0t67 0" fill="none" stroke="#3a3a3c" stroke-width="2"/>
+      <g stroke="#48484a" stroke-width="1">
+        <path d="M57 210v-18M90 210v18M124 210v-18M157 210v18M191 210v-18M224 210v18M258 210v-18M291 210v18M325 210v-18M358 210v18M392 210v-18M425 210v18M459 210v-18M492 210v18M526 210v-18M559 210v18"/></g>
+      <g fill="#fff">
+        <circle cx="57" cy="192" r="3.4"/><circle cx="90" cy="228" r="3.4"/><circle cx="124" cy="192" r="3.4"/>
+        <circle cx="157" cy="228" r="3.4"/><circle cx="191" cy="192" r="3.4"/><circle cx="224" cy="228" r="3.4"/>
+        <circle cx="258" cy="192" r="3.4"/><circle cx="291" cy="228" r="3.4"/><circle cx="325" cy="192" r="3.4"/>
+        <circle cx="358" cy="228" r="3.4"/><circle cx="392" cy="192" r="3.4"/><circle cx="425" cy="228" r="3.4"/>
+        <circle cx="459" cy="192" r="3.4"/><circle cx="492" cy="228" r="3.4"/><circle cx="526" cy="192" r="3.4"/>
+        <circle cx="559" cy="228" r="3.4"/></g>
+    </svg>
+    <p class="cap">影得唔夠密，車輪會倒轉，高音會走樣。同一條定理，兩個媒介。</p>
+
+    <div class="spec">
+      <h4>你哋熟呢樣 — 車輪倒轉</h4>
+      <canvas id="k7w" height="140"></canvas>
+      <label class="sl"><span class="lab">Frame rate<span class="val" id="v7w">24 fps</span></span>
+        <input type="range" id="r7w" min="4" max="60" value="24"></label>
+      <p class="aside" style="margin-top:12px">真實轉速冇變過。變嘅淨係你影得夠唔夠密。</p>
+    </div>
+  </div>
+
+  <p class="note">44,100 係因為人聽到 20kHz，要兩倍有多。位元深度管細節同底噪：16-bit 夠聽，24-bit 錄音用。</p>
+</section>
+
+<!-- 08 -->
+<section class="card" id="c8">
+  <div class="eyebrow">08 — 出街</div>
+  <h2>推得幾響都冇用。<br>平台會拉返落嚟。</h2>
+
+  <div class="quiz" data-a="b">
+    <p class="q">你將條片推到好響先出街。YouTube 播出嚟，會唔會大聲過人？</p>
+    <button class="opt" data-k="a">會，響就係贏</button>
+    <button class="opt" data-k="b">唔會，佢會幫你拉返落嚟</button>
+  </div>
+
+  <div class="toy">
+    <p class="aside" style="margin:0">
+      <b>LUFS</b> 係量「人耳覺得有幾響」嘅單位 —— 唔係量最高嗰個尖，係量成首歌嘅感覺。
+      YouTube、Spotify 會將每一首歌一律調到大約 <b>−14 LUFS</b> 先播出嚟。
+    </p>
+    <p class="aside" style="margin-top:12px">
+      你聽緊嘅 K-pop —— NewJeans、ATEEZ 嗰類 —— 母帶通常推到 −9 至 −11 LUFS，即係好響。
+      但一上到 YouTube，一律拉返 −14。<b>即係佢同你條學生作業，播出嚟一樣咁大聲。</b>
+      分別淨係佢為咗響，畀咗幾多動態出去。
+    </p>
+
+    <canvas id="k8" height="190" style="margin-top:22px"></canvas>
+    <label class="sl"><span class="lab">你將條片推到幾響<span class="val" id="v8">−14 LUFS</span></span>
+      <input type="range" id="r8" min="-20" max="-6" value="-14"></label>
+    <div class="row" id="nm">
+      <button class="pill on" data-n="1">平台 normalization 開（真實情況）</button>
+      <button class="pill" data-n="0">閂</button>
+    </div>
+    <div class="row"><button class="act" id="b8">播放</button></div>
+    <p class="cap srcst"></p>
+    <div class="readout meta" id="m8">
+      <div>你推到<b id="o8a">−14 LUFS</b></div>
+      <div>播出嚟<b id="o8b">−14 LUFS</b></div>
+      <div>動態範圍<b id="o8c">—</b></div>
+    </div>
+    <p class="aside">推向右邊，睇住條波變扁、動態範圍跌。開住 normalization 播，你會發現<b>大聲程度冇變過</b> —— 你淨係輸咗起伏。撳「閂」就知道平台唔幫手嗰陣係點。</p>
+
+    <div class="spec">
+      <h4>各平台調到幾多</h4>
+      <svg class="fig" viewBox="0 0 620 274" style="margin-top:4px" role="img" aria-label="各平台響度目標">
+        <g font-size="12" text-anchor="end" fill="#8e8e93">
+          <text x="122" y="50">K-pop 母帶</text><text x="122" y="106">YouTube · Spotify</text>
+          <text x="122" y="150">Apple Music</text><text x="122" y="194">電視廣播</text><text x="122" y="238">Netflix</text></g>
+        <rect x="130" y="34" width="266" height="20" rx="10" fill="#ff453a" fill-opacity=".5"/>
+        <rect x="130" y="90" width="203" height="20" rx="10" fill="#ffffff"/>
+        <rect x="130" y="134" width="177" height="20" rx="10" fill="#8e8e93"/>
+        <rect x="130" y="178" width="89" height="20" rx="10" fill="#48484a"/>
+        <rect x="130" y="222" width="38" height="20" rx="10" fill="#48484a"/>
+        <g font-size="11.5" fill="#5a5a5e">
+          <text x="406" y="49">−9 ~ −11</text><text x="343" y="105" fill="#fff">−14</text>
+          <text x="317" y="149">−16</text><text x="229" y="193">−23</text><text x="178" y="237">−27</text></g>
+        <path d="M392 62v14h-59" stroke="#ff6b5e" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>
+        <path d="M341 76l-10-5v10z" fill="#ff6b5e"/>
+        <text x="388" y="76" fill="#ff6b5e" font-size="11" text-anchor="end">上到 YouTube 會被拉返落嚟</text>
+        <path d="M130 258h480" stroke="#1c1c1e"/>
+        <text x="130" y="272" fill="#48484a" font-size="11">← 細　　　　　　　　響度　　　　　　　　大 →</text>
+      </svg>
+      <details><summary>準確數字</summary>
+        <dl>
+          <dt>YouTube</dt><dd>−14 LUFS / 峰值 −1</dd>
+          <dt>Spotify</dt><dd>−14 LUFS</dd>
+          <dt>Apple Music</dt><dd>−16 LUFS</dd>
+          <dt>TikTok / IG</dt><dd>冇公布，照瞄 −14</dd>
+          <dt>電視廣播</dt><dd>−23 LUFS</dd>
+          <dt>Netflix</dt><dd>−27 LKFS</dd>
+        </dl>
+      </details>
+    </div>
+
+    <div class="spec">
+      <h4>交片前，三秒 checklist</h4>
+      <dl><dt>1</dt><dd>撳 mono 聽一次</dd><dt>2</dt><dd>峰值唔過 −1</dd><dt>3</dt><dd>響度落喺 −14 附近</dd></dl>
+    </div>
+  </div>
+
+  <p class="note">唔使鬥響。鬥響你一定輸 —— 輸嘅係動態。</p>
+</section>
+
+<footer>影像課 · 收音單元</footer>
+
+<script>
+/* ── audio core ── */
+let ac=null; const active=new Set();
+function A(){ if(!ac) ac=new (window.AudioContext||window.webkitAudioContext)();
+  if(ac.state==='suspended') ac.resume(); return ac; }
+function stopAll(x){ [...active].forEach(p=>{ if(p!==x) p.stop(); }); }
+function reg(p){ active.add(p); return p; }
+function unreg(p){ active.delete(p); }
+
+let sfx=true;
+const sndBtn=document.getElementById('snd');
+sndBtn.onclick=()=>{ sfx=!sfx; sndBtn.classList.toggle('on',sfx);
+  sndBtn.textContent=(sfx?'♪':'✕')+' 介面音效'; if(sfx) blip(880,.03,.05); };
+function blip(f,dur,vol){ if(!sfx) return;
+  const c=A(),o=c.createOscillator(),g=c.createGain();
+  o.type='sine'; o.frequency.value=f; g.gain.value=0;
+  o.connect(g); g.connect(c.destination); const t=c.currentTime;
+  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+.006);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.start(t); o.stop(t+dur+.02); }
+const uiClick=()=>blip(1500,.045,.035), uiOk=()=>{blip(880,.07,.05);setTimeout(()=>blip(1320,.11,.045),70);}, uiNo=()=>blip(196,.14,.05);
+document.addEventListener('pointerdown',e=>{ if(e.target.closest('button')&&!e.target.closest('#snd')) uiClick(); },{passive:true});
+
+function makeVoice(){
+  const c=A(), out=c.createGain(); out.gain.value=0;
+  const osc=c.createOscillator(); osc.type='sawtooth'; osc.frequency.value=118;
+  const vib=c.createOscillator(); vib.frequency.value=4.6;
+  const vg=c.createGain(); vg.gain.value=3.5; vib.connect(vg); vg.connect(osc.frequency);
+  const mix=c.createGain(); mix.gain.value=.9;
+  const F=[[660,9],[1180,11],[2540,13]], amp=[1,.55,.3], bps=[];
+  F.forEach((f,i)=>{ const bp=c.createBiquadFilter(); bp.type='bandpass';
+    bp.frequency.value=f[0]; bp.Q.value=f[1];
+    const g=c.createGain(); g.gain.value=amp[i];
+    osc.connect(bp); bp.connect(g); g.connect(mix); bps.push(bp); });
+  mix.connect(out); osc.start(); vib.start();
+  let tm=null, alive=true;
+  const syl=[[.18,1],[.13,.75],[.22,1],[.11,.6],[.19,.9],[.26,1]];
+  (function phrase(){ if(!alive) return; const t0=c.currentTime; let t=t0+.05;
+    syl.forEach((s,i)=>{ const lv=s[1]*.55;
+      out.gain.setValueAtTime(.0001,t); out.gain.exponentialRampToValueAtTime(lv,t+.035);
+      out.gain.setValueAtTime(lv,t+s[0]*.55); out.gain.exponentialRampToValueAtTime(.0001,t+s[0]);
+      osc.frequency.setValueAtTime(108+(i%3)*14+(i===2?18:0),t);
+      bps[0].frequency.setValueAtTime(520+(i%4)*130,t);
+      bps[1].frequency.setValueAtTime(1050+(i%3)*230,t);
+      t+=s[0]+.055; });
+    tm=setTimeout(phrase,(t-t0+.55)*1000); })();
+  return { node:out, kill(){ alive=false; clearTimeout(tm);
+    try{osc.stop();vib.stop();}catch(e){} out.disconnect(); } };
+}
+function makeDrum(){
+  const c=A(), out=c.createGain(); out.gain.value=1;
+  const nb=c.createBuffer(1,c.sampleRate*0.3,c.sampleRate), nd=nb.getChannelData(0);
+  for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
+  let step=0, alive=true;
+  const tm=setInterval(()=>{ if(!alive) return; const t=c.currentTime;
+    if(step%4===0||step%4===2){ const o=c.createOscillator(), g=c.createGain();
+      o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(48,t+.12);
+      g.gain.setValueAtTime(.7,t); g.gain.exponentialRampToValueAtTime(.001,t+.24);
+      o.connect(g); g.connect(out); o.start(t); o.stop(t+.3); }
+    { const s=c.createBufferSource(); s.buffer=nb;
+      const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=7000;
+      const g=c.createGain(); g.gain.setValueAtTime(.18,t); g.gain.exponentialRampToValueAtTime(.001,t+.05);
+      s.connect(hp); hp.connect(g); g.connect(out); s.start(t); s.stop(t+.08); }
+    step++; },220);
+  return { node:out, kill(){ alive=false; clearInterval(tm); out.disconnect(); } };
+}
+function makeNoise(v){
+  const c=A(), n=c.sampleRate*2, b=c.createBuffer(1,n,c.sampleRate), d=b.getChannelData(0);
+  for(let i=0;i<n;i++) d[i]=Math.random()*2-1;
+  const s=c.createBufferSource(); s.buffer=b; s.loop=true;
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1600;
+  const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=90;
+  const g=c.createGain(); g.gain.value=v;
+  s.connect(hp); hp.connect(lp); lp.connect(g); s.start();
+  return { node:g, gain:g, kill(){ try{s.stop();}catch(e){} g.disconnect(); } };
+}
+
+/* ── 合成一段有人聲旋律嘅音樂（畀 07 / 08 用） ── */
+let MUSIC=null;
+/* 人聲合成：聲門脈衝 → 共振峰串聯濾波 → 輻射微分
+   加咗元音滑移、抖動、氣聲、齒音起音，先似人唱嘢。 */
+function musicBuffer(){
+  if(MUSIC) return MUSIC;
+  const c=A(), sr=c.sampleRate, spb=0.6, dur=5.6, n=Math.floor(sr*dur);
+  const buf=c.createBuffer(1,n,sr), d=buf.getChannelData(0);
+  const V={a:[730,1090,2440,3400], e:[530,1840,2480,3500], i:[270,2290,3010,3700],
+           o:[570,840,2410,3300],  u:[300,870,2240,3200]};
+  const BW=[70,105,135,175];
+  // [起拍, 長度(拍), 起始元音, 結束元音, 半音, 音量, 有冇齒音起音]
+  const notes=[[0,1.0,'u','a',  0,.55,1],[1,0.5,'a','e',  3,.72,1],
+               [1.5,0.5,'e','i',5,.78,1],[2,1.5,'i','a',  7,1.0,1],
+               [3.5,0.5,'a','e',5,.80,0],[4,1.0,'e','o',  3,.92,1],
+               [5,0.8,'o','u',  0,.62,1],[5.9,1.8,'a','a',-2,.85,1]];
+  let seed=2463534242>>>0;
+  const rnd=()=>{ seed^=seed<<13; seed>>>=0; seed^=seed>>>17; seed^=seed<<5; seed>>>=0;
+                  return seed/4294967296*2-1; };
+  const y1=[0,0,0,0], y2=[0,0,0,0];
+  const co=[[0,0,0],[0,0,0],[0,0,0],[0,0,0]];
+  let prev=0, phase=0, jit=1, F=[600,1200,2500,3400];
+  let hpz=0;
+  const BLK=32;
+  for(let i0=0;i0<n;i0+=BLK){
+    // ── 控制率：搵當前音符、更新共振峰係數 ──
+    const tc=i0/sr, bc=tc/spb;
+    let ni=-1;
+    for(let k=0;k<notes.length;k++){ const q=notes[k];
+      if(bc>=q[0] && bc<q[0]+q[1]){ ni=k; break; } }
+    let env=0, f0=0, sib=0;
+    if(ni>=0){
+      const q=notes[ni], lt=(bc-q[0])*spb, ln=q[1]*spb;
+      env=Math.min(1,lt/0.045)*Math.min(1,(ln-lt)/0.07)*q[5];
+      f0=220*Math.pow(2,q[4]/12)*(1+0.013*Math.sin(2*Math.PI*5.4*lt));
+      const u=Math.min(1,lt/(ln*0.5)), A1=V[q[2]], A2=V[q[3]];
+      for(let k=0;k<4;k++) F[k]=A1[k]+(A2[k]-A1[k])*u;
+      if(q[6] && lt<0.055) sib=Math.pow(1-lt/0.055,1.5)*0.55*q[5];
+    }
+    for(let k=0;k<4;k++){
+      const r=Math.exp(-Math.PI*BW[k]/sr), th=2*Math.PI*F[k]/sr;
+      const a1=2*r*Math.cos(th), a2=-r*r;
+      co[k][0]=1-a1-a2; co[k][1]=a1; co[k][2]=a2;
+    }
+    // ── 音訊率 ──
+    const end=Math.min(n,i0+BLK);
+    for(let i=i0;i<end;i++){
+      const t=i/sr, beat=t/spb;
+      let src=0;
+      if(env>0){
+        phase+=f0*jit/sr;
+        if(phase>=1){ phase-=1; jit=1+0.009*rnd(); }
+        const ph=phase;
+        let g=0;
+        if(ph<0.42) g=0.5*(1-Math.cos(Math.PI*ph/0.42));
+        else if(ph<0.60) g=Math.cos(Math.PI*(ph-0.42)/0.36);
+        src=(g-0.33)*env*(1+0.045*rnd()) + rnd()*0.016*env;
+      }
+      let x=src;
+      for(let k=0;k<4;k++){
+        const y=co[k][0]*x+co[k][1]*y1[k]+co[k][2]*y2[k];
+        y2[k]=y1[k]; y1[k]=y; x=y;
+      }
+      let s=(x-0.96*prev)*2.4; prev=x;
+      // 齒音：高通雜訊，唔經共振峰
+      if(sib>0){ const nn=rnd(); hpz=0.86*hpz+0.14*nn; s+=(nn-hpz)*sib; }
+      // 鼓
+      const kb=Math.floor(beat/2)*2, kt=(beat-kb)*spb;
+      if(kt<0.32){ const kf=150*Math.exp(-kt*22)+46;
+        s+=Math.sin(2*Math.PI*kf*kt)*Math.exp(-kt*15)*0.45; }
+      const hb=Math.floor(beat*2)/2, ht=(beat-hb)*spb;
+      if(ht<0.07){ const nn=rnd(); hpz=0.8*hpz+0.2*nn; s+=(nn-hpz)*Math.exp(-ht*70)*0.42; }
+      // 低音
+      const bb=Math.floor(beat/2)*2, bt=(beat-bb)*spb;
+      const bn=[0,-5,-7,-12][Math.floor(bb/2)%4];
+      s+=Math.sin(2*Math.PI*110*Math.pow(2,bn/12)*t)*Math.min(1,bt*40)*Math.exp(-bt*2.0)*0.34;
+      d[i]=s;
+    }
+  }
+  let mx=0; for(let i=0;i<n;i++){ const q=Math.abs(d[i]); if(q>mx) mx=q; }
+  const g=0.85/(mx||1); for(let i=0;i<n;i++) d[i]*=g;
+  MUSIC=buf; return buf;
+}
+function degrade(src,fs,bits){
+  const c=A(), sr=c.sampleRate, st=Math.max(1,Math.round(sr/fs));
+  const out=c.createBuffer(1,src.length,sr);
+  const a=src.getChannelData(0), o=out.getChannelData(0);
+  const lv=Math.pow(2,bits-1); let hold=0;
+  for(let i=0;i<a.length;i++){ if(i%st===0) hold=a[i];
+    o[i]= bits<16 ? Math.round(hold*lv)/lv : hold; }
+  return out;
+}
+function playBuf(b,gain,onend){
+  stopAll(); const c=A(), s=c.createBufferSource(); s.buffer=b;
+  const g=c.createGain(); g.gain.value=gain==null?.9:gain;
+  s.connect(g); g.connect(c.destination); s.start();
+  let done=false;
+  const fin=()=>{ if(done) return; done=true; unreg(p); if(onend) onend(); };
+  const p=reg({stop(){ try{s.stop()}catch(e){} g.disconnect(); fin(); }});
+  s.onended=fin; return p;
+}
+
+function fit(cv){
+  const r=window.devicePixelRatio||1, w=cv.clientWidth||320;
+  if(!cv.dataset.h) cv.dataset.h=cv.getAttribute('height');
+  const h=+cv.dataset.h, W=Math.round(w*r), H=Math.round(h*r);
+  if(cv.width!==W||cv.height!==H){ cv.width=W; cv.height=H; }
+  cv.style.height=h+'px';
+  const g=cv.getContext('2d'); g.setTransform(r,0,0,r,0,0);
+  return {g,w,h};
+}
+const bg=(g,w,h)=>{ g.fillStyle='#000'; g.fillRect(0,0,w,h); };
+const mid=(g,w,h)=>{ g.strokeStyle='#1c1c1e'; g.lineWidth=1; g.beginPath(); g.moveTo(0,h/2); g.lineTo(w,h/2); g.stroke(); };
+function reveal(id){ const e=document.getElementById(id); if(e) e.classList.add('on'); }
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){ e.target.classList.add('in');
+    requestAnimationFrame(()=>window.dispatchEvent(new Event('resize'))); }}),{threshold:.08});
+document.querySelectorAll('.card').forEach(c=>io.observe(c));
+addEventListener('scroll',()=>{ const d=document.documentElement;
+  document.getElementById('bar').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%'; },{passive:true});
+
+document.querySelectorAll('.quiz').forEach(q=>{
+  const ans=q.dataset.a, toy=q.parentElement.querySelector('.toy');
+  q.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>{
+    if(q.dataset.done) return; q.dataset.done='1';
+    const ok=b.dataset.k===ans;
+    b.classList.add(ok?'ok':'bad');
+    if(!ok) q.querySelector('.opt[data-k="'+ans+'"]').classList.add('ans');
+    q.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+    setTimeout(()=>ok?uiOk():uiNo(),40);
+    toy.classList.add('open');
+    toy.style.maxHeight=toy.scrollHeight+'px';
+    toy.addEventListener('transitionend',function te(ev){
+      if(ev.propertyName==='max-height'){ toy.style.maxHeight='none'; toy.removeEventListener('transitionend',te); }});
+    setTimeout(()=>window.dispatchEvent(new Event('resize')),60);
+  }));
+});
+
+/* ── 素材：audio/sample.*（真錄人聲）；搵唔到就用合成 fallback ── */
+let SAMPLE=null, TRIED=false;
+const SAMPLE_URLS=['audio/sample.mp3','audio/sample.m4a','audio/sample.wav','audio/sample.ogg'];
+async function loadSample(){
+  if(TRIED) return SAMPLE;
+  TRIED=true; const c=A();
+  for(const u of SAMPLE_URLS){
+    try{
+      const r=await fetch(u+'?v=coindrop',{cache:'no-cache'}); if(!r.ok) continue;
+      const dec=await c.decodeAudioData(await r.arrayBuffer());
+      const maxN=Math.min(dec.length, Math.floor(c.sampleRate*62));
+      const out=c.createBuffer(1,maxN,c.sampleRate), o=out.getChannelData(0);
+      const ch=dec.numberOfChannels, L=dec.getChannelData(0), R=ch>1?dec.getChannelData(1):null;
+      let mx=0;
+      for(let i=0;i<maxN;i++){ const v=R?(L[i]+R[i])/2:L[i]; o[i]=v; const q=Math.abs(v); if(q>mx) mx=q; }
+      const g=mx>0?.85/mx:1;
+      for(let i=0;i<maxN;i++) o[i]*=g;
+      SAMPLE=out; break;
+    }catch(e){}
+  }
+  document.querySelectorAll('.srcst').forEach(e=>{
+    e.textContent = SAMPLE ? '' : '（搵唔到 audio/sample，暫時用合成示範音樂）';
+  });
+  return SAMPLE;
+}
+function srcBuf(){ return SAMPLE||musicBuffer(); }
+
+/* ── 01 ── */
+(function(){
+  const cv=document.getElementById('k1'), rf=document.getElementById('r1f'), ra=document.getElementById('r1a'),
+        vf=document.getElementById('v1f'), va=document.getElementById('v1a'), b=document.getElementById('b1');
+  const F=()=>Math.round(60*Math.pow(2000/60, rf.value/1000));
+  let p=null;
+  function draw(){ const {g,w,h}=fit(cv); bg(g,w,h); mid(g,w,h);
+    const f=F(), a=ra.value/100, cyc=1.2+(f/2000)*11;
+    g.strokeStyle='#fff'; g.lineWidth=2.5; g.lineJoin='round'; g.beginPath();
+    for(let x=0;x<=w;x++){ const y=h/2-Math.sin(x/w*cyc*Math.PI*2)*(h/2-14)*a; x?g.lineTo(x,y):g.moveTo(x,y); }
+    g.stroke(); vf.textContent=f+' Hz'; va.textContent=ra.value+'%';
+    if(p){ p.o.frequency.setTargetAtTime(f,ac.currentTime,.02); p.g.gain.setTargetAtTime(a*.22,ac.currentTime,.02); } }
+  rf.oninput=draw; ra.oninput=draw; addEventListener('resize',draw); draw();
+  b.onclick=()=>{ if(p){p.stop();return;} stopAll();
+    const c=A(),o=c.createOscillator(),g=c.createGain();
+    o.frequency.value=F(); g.gain.value=0; o.connect(g); g.connect(c.destination); o.start();
+    g.gain.setTargetAtTime(ra.value/100*.22,c.currentTime,.03);
+    p=reg({o,g,stop(){ g.gain.setTargetAtTime(0,ac.currentTime,.03);
+      setTimeout(()=>{try{o.stop()}catch(e){} g.disconnect();},140);
+      unreg(p); p=null; b.textContent='播放'; b.classList.remove('off'); }});
+    b.textContent='停止'; b.classList.add('off'); };
+
+  const AGE=[
+    {f:8000,n:'8 kHz',say:'……你係咪校長？',sub:'8k 都要靠估嘅話，真係去做個正式檢查好啲。'},
+    {f:12000,n:'12 kHz',say:'耳仔大概 50 歲。',sub:'條片入面嘅高頻嘶聲，你已經完全聽唔到。'},
+    {f:14000,n:'14 kHz',say:'耳仔 40 幾。',sub:'典型成年人。剪片時要靠頻譜多過靠耳。'},
+    {f:15000,n:'15 kHz',say:'耳仔 30 幾。',sub:'開始有啲嘢喺度消失緊，而你唔會察覺。'},
+    {f:17000,n:'17 kHz',say:'24 歲以下。',sub:'你聽到你老師聽唔到嘅嘢。'},
+    {f:19000,n:'19 kHz',say:'20 歲以下。恭喜。',sub:'呢個係人生入面聽力最好嘅幾年。用嚟做啲有用嘢。'}];
+  let hp=null,last=-1,best=-1;
+  const hq=document.getElementById('hq'), hv=document.getElementById('hv');
+  document.querySelectorAll('#hz .pill').forEach(btn=>{ btn.onclick=()=>{
+    stopAll(); if(hp) hp.stop();
+    const i=+btn.dataset.i, c=A(), o=c.createOscillator(), g=c.createGain();
+    o.frequency.value=AGE[i].f; g.gain.value=0; o.connect(g); g.connect(c.destination); o.start();
+    g.gain.setTargetAtTime(.16,c.currentTime,.06);
+    document.querySelectorAll('#hz .pill').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on'); last=i; hq.style.display='flex';
+    hp=reg({stop(){ g.gain.setTargetAtTime(0,ac.currentTime,.06);
+      setTimeout(()=>{try{o.stop()}catch(e){} g.disconnect();},240); unreg(hp); hp=null; }});
+    setTimeout(()=>{ if(hp) hp.stop(); },2200); }; });
+  function verdict(){ if(best<0){ hv.innerHTML='<b>全部聽唔到？</b><small>好可能係部機出唔到，唔係你隻耳。換副耳機再試。</small>';
+      hv.classList.add('on'); return; }
+    const a=AGE[best]; hv.innerHTML=a.say+'<small>聽到 '+a.n+'。'+a.sub+'</small>'; hv.classList.add('on'); }
+  document.getElementById('hy').onclick=()=>{ if(last<0)return; if(last>best) best=last; verdict(); uiOk(); };
+  document.getElementById('hn').onclick=()=>{ if(last<0)return; verdict(); };
+})();
+
+/* ── 02 ── */
+(function(){
+  const cv=document.getElementById('k2'), r=document.getElementById('r2'), v=document.getElementById('v2'),
+        os=document.getElementById('o2s'), on=document.getElementById('o2n'), orr=document.getElementById('o2r'),
+        b=document.getElementById('b2');
+  let p=null;
+  const D=()=>r.value/100, DB=()=>-20*Math.log10(D()/.5);
+  function draw(){ const {g,w,h}=fit(cv); bg(g,w,h);
+    const d=D(), db=DB(), px=44+(d/4)*(w-96);
+    g.fillStyle='#fff'; g.beginPath(); g.arc(30,h/2-16,11,0,7); g.fill(); g.fillRect(21,h/2-3,18,28);
+    g.strokeStyle='#2c2c2e'; g.lineWidth=1.5;
+    for(let i=1;i<=6;i++){ g.globalAlpha=1-i/7; g.beginPath(); g.arc(30,h/2,i*26,-1.05,1.05); g.stroke(); }
+    g.globalAlpha=1;
+    g.fillStyle='#fff'; g.fillRect(px-4,h/2-28,8,36); g.beginPath(); g.arc(px,h/2-28,8,0,7); g.fill();
+    g.strokeStyle='#2c2c2e'; g.lineWidth=1; g.beginPath(); g.moveTo(30,h-18); g.lineTo(px,h-18); g.stroke();
+    g.fillStyle='#8e8e93'; g.font='500 12px -apple-system,sans-serif'; g.textAlign='center';
+    g.fillText(d.toFixed(2)+' m',(30+px)/2,h-25);
+    v.textContent=d.toFixed(2)+' m';
+    const pct=Math.round(Math.pow(10,db/20)*100);
+    os.textContent=pct+'%'; on.textContent='冇變';
+    const snr=34+db;
+    orr.textContent = snr>26?'清楚' : snr>16?'開始矇' : '聽唔清';
+    orr.className = snr>26?'ok' : snr>16?'warn' : 'hot';
+    if(p) p.vg.gain.setTargetAtTime(Math.pow(10,db/20)*.5,ac.currentTime,.05); }
+  r.oninput=()=>{ draw(); reveal('m2'); }; addEventListener('resize',draw); draw();
+  b.onclick=()=>{ if(p){p.stop();return;} stopAll(); reveal('m2');
+    const c=A(), vo=makeVoice(), no=makeNoise(.012), vg=c.createGain();
+    vg.gain.value=Math.pow(10,DB()/20)*.5;
+    vo.node.connect(vg); vg.connect(c.destination); no.node.connect(c.destination);
+    p=reg({vg,stop(){ vo.kill(); no.kill(); vg.disconnect(); unreg(p); p=null;
+      b.textContent='播放'; b.classList.remove('off'); }});
+    b.textContent='停止'; b.classList.add('off'); };
+})();
+
+/* ── 03 ── */
+(function(){
+  const cv=document.getElementById('k3'), rs=document.getElementById('r3s'), rg=document.getElementById('r3g'),
+        vs=document.getElementById('v3s'), vgL=document.getElementById('v3g'),
+        of=document.getElementById('o3f'), ost=document.getElementById('o3s'),
+        fill=document.getElementById('mfill'), b=document.getElementById('b3'), bf=document.getElementById('b3f');
+  let p=null, post=0;
+  const FS=()=>(+rs.value-65)+(+rg.value-40)-12;
+  const LOUD=v=>v<52?'細聲講':v<62?'細聲':v<72?'正常講嘢':v<82?'大聲講':'嗌';
+  function draw(){
+    const {g,w,h}=fit(cv); bg(g,w,h);
+    const fs=FS(), clipped=fs>0, amp=Math.pow(10,fs/20);
+    const top=h*.1, bot=h*.9, ch=(bot-top)/2, cy=(top+bot)/2;
+    const z1=Math.pow(10,-6/20), z2=Math.pow(10,-18/20);
+    g.fillStyle='rgba(126,224,160,.09)';
+    g.fillRect(0,cy-z1*ch,w,(z1-z2)*ch); g.fillRect(0,cy+z2*ch,w,(z1-z2)*ch);
+    g.strokeStyle='#2c2c2e'; g.setLineDash([3,5]); g.lineWidth=1;
+    [top,bot].forEach(y=>{ g.beginPath(); g.moveTo(0,y); g.lineTo(w,y); g.stroke(); });
+    g.setLineDash([]);
+    g.lineWidth=2.5; g.lineJoin='round'; g.beginPath();
+    for(let x=0;x<=w;x++){ let s=Math.sin(x/w*Math.PI*6)*amp; s=Math.max(-1,Math.min(1,s));
+      if(post) s*=Math.pow(10,-12/20);
+      const y=cy-s*ch; x?g.lineTo(x,y):g.moveTo(x,y); }
+    g.strokeStyle=clipped?'#ff453a':'#fff'; g.stroke();
+    g.fillStyle='#5a5a5e'; g.font='500 11px -apple-system,sans-serif'; g.textAlign='left';
+    g.fillText('0 dB 上限',6,top-5);
+
+    vs.textContent=LOUD(+rs.value);
+    vgL.textContent='+'+rg.value;
+    const shown=clipped?0:fs;
+    of.textContent=shown.toFixed(1)+' dB'; of.className=clipped?'hot':'';
+    const pos=Math.max(0,Math.min(100,(60+shown)/60*100));
+    fill.style.width=pos+'%';
+    fill.className='mfill'+(clipped||shown>-6?' peak':(shown>-12?' warn':''));
+    const good=fs<=-8&&fs>=-20;
+    ost.textContent=clipped?'爆咗':good?'啱':fs<-20?'太細':'太大';
+    ost.className=clipped?'hot':good?'ok':'warn';
+    if(p) p.set();
+  }
+  rs.oninput=()=>{draw();reveal('m3');}; rg.oninput=()=>{draw();reveal('m3');};
+  addEventListener('resize',draw); draw();
+  function shaper(){ const c=A(), ws=c.createWaveShaper(), n=1024, cu=new Float32Array(n);
+    for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; cu[i]=Math.max(-.82,Math.min(.82,x)); }
+    ws.curve=cu; return ws; }
+  b.onclick=()=>{ if(p){p.stop();return;} stopAll(); reveal('m3');
+    const c=A(), vo=makeVoice(), pre=c.createGain(), ws=shaper(), out=c.createGain();
+    vo.node.connect(pre); pre.connect(ws); ws.connect(out); out.connect(c.destination);
+    p=reg({ set(){ pre.gain.setTargetAtTime(Math.pow(10,(FS()+12)/20)*.9,ac.currentTime,.04);
+        out.gain.setTargetAtTime(post?Math.pow(10,-12/20):1,ac.currentTime,.04); },
+      stop(){ vo.kill(); pre.disconnect(); ws.disconnect(); out.disconnect();
+        unreg(p); p=null; b.textContent='播放'; b.classList.remove('off'); }});
+    p.set(); b.textContent='停止'; b.classList.add('off'); };
+  bf.onclick=()=>{ post=post?0:1; bf.textContent=post?'已拉細（仲係爛）':'事後拉細返'; draw(); if(p) p.set(); };
+})();
+
+/* ── 04 ── */
+(function(){
+  const cv=document.getElementById('k4'), rf=document.getElementById('r4f'), rd=document.getElementById('r4d'),
+        vf=document.getElementById('v4f'), vd=document.getElementById('v4d'),
+        op=document.getElementById('o4p'), orr=document.getElementById('o4r'),
+        b=document.getElementById('b4'), ba=document.getElementById('b4a');
+  let p=null, anc=true;
+  const F=()=>Math.round(60*Math.pow(4000/60, rf.value/1000)), D=()=>+rd.value/20, HW=.25;
+  const amount=()=>{ if(!anc) return 1; const d=(D()+HW)/1000; return Math.abs(2*Math.sin(Math.PI*F()*d)); };
+  function draw(){ const {g,w,h}=fit(cv); bg(g,w,h);
+    const f=F(), cyc=3.4, a=h*.115, shift=(D()+HW)/1000*f*Math.PI*2;
+    const rows=[h*.2,h*.5,h*.83], labs=['噪音','反相波（遲咗）','你耳仔聽到'];
+    rows.forEach((y,i)=>{ g.beginPath();
+      for(let x=0;x<=w;x++){ const t=x/w*cyc*Math.PI*2;
+        let val = i===0?Math.sin(t) : i===1?(anc?-Math.sin(t-shift):0) : (anc?Math.sin(t)-Math.sin(t-shift):Math.sin(t));
+        const yy=y-val*a*(i===2?.6:1); x?g.lineTo(x,yy):g.moveTo(x,yy); }
+      const last=i===2, q=amount();
+      g.strokeStyle=last?(q<.3?'#7ee0a0':q>1.4?'#ff453a':'#64d2ff'):'#48484a';
+      g.lineWidth=last?2.5:1.5; g.lineJoin='round'; g.stroke();
+      g.fillStyle='#5a5a5e'; g.font='500 11px -apple-system,sans-serif'; g.textAlign='left';
+      g.fillText(labs[i],6,y-a-8); });
+    vf.textContent=f+' Hz'; vd.textContent=D().toFixed(2)+' ms';
+    op.textContent=(((D()+HW)/1000*f*360)%360).toFixed(0)+'°';
+    const q=amount(); orr.textContent=Math.round(q*100)+'%';
+    orr.className=q<.3?'ok':q>1.4?'hot':'cool';
+    if(p) p.set(); }
+  rf.oninput=()=>{draw();reveal('m4');}; rd.oninput=()=>{draw();reveal('m4');};
+  addEventListener('resize',draw); draw();
+  b.onclick=()=>{ if(p){p.stop();return;} stopAll(); reveal('m4');
+    const c=A(), o=c.createOscillator(), g1=c.createGain(), dl=c.createDelay(.05), g2=c.createGain(), out=c.createGain();
+    o.type='sine'; o.frequency.value=F(); g1.gain.value=.18; g2.gain.value=-.18;
+    o.connect(g1); g1.connect(out); o.connect(dl); dl.connect(g2); g2.connect(out);
+    out.connect(c.destination); o.start();
+    p=reg({ set(){ o.frequency.setTargetAtTime(F(),ac.currentTime,.02);
+        dl.delayTime.setTargetAtTime((D()+HW)/1000,ac.currentTime,.02);
+        g2.gain.setTargetAtTime(anc?-.18:0,ac.currentTime,.03); },
+      stop(){ try{o.stop()}catch(e){} out.disconnect(); unreg(p); p=null;
+        b.textContent='播放'; b.classList.remove('off'); }});
+    p.set(); b.textContent='停止'; b.classList.add('off'); };
+  ba.onclick=()=>{ anc=!anc; ba.textContent=anc?'消噪：開':'消噪：閂'; ba.classList.toggle('off',!anc); draw(); reveal('m4'); };
+
+  /* mono / stereo：左＝人聲，右＝鼓 */
+  const bs=document.getElementById('b4s'); let sp=null, mode='m';
+  document.querySelectorAll('#pan .pill').forEach(btn=>btn.onclick=()=>{
+    document.querySelectorAll('#pan .pill').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on'); mode=btn.dataset.p; if(sp) sp.set(mode); });
+  bs.onclick=()=>{ if(sp){sp.stop();return;} stopAll();
+    const c=A(), vo=makeVoice(), dr=makeDrum(), mg=c.createChannelMerger(2);
+    const vL=c.createGain(), vR=c.createGain(), dL=c.createGain(), dR=c.createGain();
+    [vL,vR,dL,dR].forEach(g=>g.gain.value=0);
+    vo.node.connect(vL); vo.node.connect(vR); dr.node.connect(dL); dr.node.connect(dR);
+    vL.connect(mg,0,0); dL.connect(mg,0,0); vR.connect(mg,0,1); dR.connect(mg,0,1);
+    mg.connect(c.destination);
+    sp=reg({ set(m){
+        const v=(a,b2,cc,d)=>{ vL.gain.value=a; vR.gain.value=b2; dL.gain.value=cc; dR.gain.value=d; };
+        if(m==='m') v(.75,.75,.75,.75);
+        if(m==='l') v(1,0,0,0);
+        if(m==='r') v(0,0,0,1);
+        if(m==='s') v(1,0,0,1); },
+      stop(){ vo.kill(); dr.kill(); [vL,vR,dL,dR].forEach(g=>g.disconnect()); mg.disconnect();
+        unreg(sp); sp=null; bs.textContent='播放'; bs.classList.remove('off'); }});
+    sp.set(mode); bs.textContent='停止'; bs.classList.add('off'); };
+})();
+
+/* ── 05 ── */
+(function(){
+  const cv=document.getElementById('k5'), r=document.getElementById('r5'), v=document.getElementById('v5'),
+        b=document.getElementById('b5'), bc=document.getElementById('b5c');
+  const ROOM=[{n:'錄音室',t:.25,br:.3},{n:'課室',t:.85,br:.55},{n:'浴室',t:1.3,br:1},{n:'禮堂',t:2.6,br:.45}];
+  let idx=0,p=null;
+  function ir(s){ const c=A(), len=Math.floor(c.sampleRate*s.t), b2=c.createBuffer(2,len,c.sampleRate);
+    for(let ch=0;ch<2;ch++){ const d=b2.getChannelData(ch); let lp=0;
+      for(let i=0;i<len;i++){ const n=(Math.random()*2-1)*Math.pow(1-i/len,2.2);
+        lp+=(n-lp)*(.1+s.br*.8); d[i]=s.br>.7?n:lp; } }
+    const cv2=c.createConvolver(); cv2.buffer=b2; return cv2; }
+  function draw(){ const {g,w,h}=fit(cv); bg(g,w,h);
+    const s=ROOM[idx], m=r.value/100;
+    g.strokeStyle='#2c2c2e'; g.lineWidth=1; g.beginPath(); g.moveTo(16,h-16); g.lineTo(w-6,h-16); g.stroke();
+    g.strokeStyle='#fff'; g.lineWidth=2; g.beginPath();
+    for(let x=16;x<=w-6;x++){ const t=(x-16)/(w-22)*3;
+      const e=Math.exp(-t/(s.t/2.2))*(.15+m*.85);
+      x===16?g.moveTo(x,h-16-e*(h-40)):g.lineTo(x,h-16-e*(h-40)); }
+    g.stroke();
+    g.fillStyle='#5a5a5e'; g.font='500 11px -apple-system,sans-serif'; g.textAlign='left';
+    g.fillText(s.n+' · 餘響 '+s.t.toFixed(2)+' 秒',16,16);
+    v.textContent=m<.25?'近':m<.6?'中':'遠'; }
+  document.querySelectorAll('#rm .pill').forEach(btn=>btn.onclick=()=>{
+    document.querySelectorAll('#rm .pill').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on'); idx=+btn.dataset.r; draw();
+    if(p&&p.isV){ p.stop(); start(); } });
+  r.oninput=()=>{ draw(); if(p&&p.setMix) p.setMix(r.value/100); };
+  addEventListener('resize',draw); draw();
+  function chain(){ const c=A(), dry=c.createGain(), wet=c.createGain(), cv2=ir(ROOM[idx]), out=c.createGain();
+    dry.connect(out); wet.connect(cv2); cv2.connect(out); out.connect(c.destination);
+    const setMix=m=>{ dry.gain.setTargetAtTime(1-m*.55,ac.currentTime,.06);
+                      wet.gain.setTargetAtTime(m*2.2+.25,ac.currentTime,.06); };
+    setMix(r.value/100); return {dry,wet,out,setMix}; }
+  function start(){ stopAll(); const vo=makeVoice(), c2=chain();
+    vo.node.connect(c2.dry); vo.node.connect(c2.wet);
+    p=reg({isV:1,setMix:c2.setMix,stop(){ vo.kill(); c2.out.disconnect(); unreg(p); p=null;
+      b.textContent='播放人聲'; b.classList.remove('off'); }});
+    b.textContent='停止'; b.classList.add('off'); }
+  b.onclick=()=>{ p&&p.isV?p.stop():start(); };
+  bc.onclick=()=>{ stopAll(); const c=A(), c2=chain(), len=Math.floor(c.sampleRate*.02);
+    const bu=c.createBuffer(1,len,c.sampleRate), d=bu.getChannelData(0);
+    for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,6);
+    const s=c.createBufferSource(); s.buffer=bu; s.connect(c2.dry); s.connect(c2.wet); s.start();
+    setTimeout(()=>c2.out.disconnect(),(ROOM[idx].t+.6)*1000); };
+})();
+
+/* ── 06 ── */
+(function(){
+  const cv=document.getElementById('k6'), b=document.getElementById('b6');
+  let bal=false,p=null,t0=performance.now();
+  document.querySelectorAll('#cb .pill').forEach(btn=>btn.onclick=()=>{
+    document.querySelectorAll('#cb .pill').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on'); bal=btn.dataset.c==='b'; if(p) p.set(); });
+  const nz=(x,ph)=>Math.sin(x*.09+ph)*.55+Math.sin(x*.23+ph*1.7)*.3, sg=x=>Math.sin(x*.045);
+  (function loop(){ const {g,w,h}=fit(cv); bg(g,w,h);
+    const ph=(performance.now()-t0)/260, a=17;
+    const rows=bal?[h*.17,h*.43,h*.79]:[h*.28,h*.72];
+    const labs=bal?['線 1：訊號 + 雜音','線 2：反相訊號 + 同一份雜音','收嗰頭：線1 − 線2']
+                  :['一條線：訊號 + 雜音','收嗰頭：原樣'];
+    rows.forEach((y,i)=>{ g.beginPath();
+      for(let x=0;x<=w;x++){ let val;
+        if(!bal) val=sg(x)+nz(x,ph)*.5;
+        else val=i===0?sg(x)+nz(x,ph)*.5:i===1?-sg(x)+nz(x,ph)*.5:2*sg(x);
+        const yy=y-val*a; x?g.lineTo(x,yy):g.moveTo(x,yy); }
+      const last=i===rows.length-1;
+      g.strokeStyle=last?(bal?'#7ee0a0':'#ff453a'):'#48484a';
+      g.lineWidth=last?2.5:1.5; g.lineJoin='round'; g.stroke();
+      g.fillStyle='#5a5a5e'; g.font='500 11px -apple-system,sans-serif'; g.textAlign='left';
+      g.fillText(labs[i],6,y-a-9); });
+    requestAnimationFrame(loop); })();
+  b.onclick=()=>{ if(p){p.stop();return;} stopAll();
+    const c=A(), vo=makeVoice(), hum=c.createGain(); hum.gain.value=0; const oss=[];
+    [50,150,250,350].forEach((f,i)=>{ const o=c.createOscillator(); o.type='sawtooth';
+      o.frequency.value=f; const g=c.createGain(); g.gain.value=[.1,.07,.045,.03][i];
+      o.connect(g); g.connect(hum); o.start(); oss.push(o); });
+    vo.node.connect(c.destination); hum.connect(c.destination);
+    p=reg({ set(){ hum.gain.setTargetAtTime(bal?0:1,ac.currentTime,.15); },
+      stop(){ vo.kill(); oss.forEach(o=>{try{o.stop()}catch(e){}}); hum.disconnect();
+        unreg(p); p=null; b.textContent='播放'; b.classList.remove('off'); }});
+    p.set(); b.textContent='停止'; b.classList.add('off'); };
+})();
+
+/* ── 07 ── */
+(function(){
+  const cv=document.getElementById('k7'), r=document.getElementById('r7'), v=document.getElementById('v7'),
+        rb=document.getElementById('r7b'), vb=document.getElementById('v7b'), b=document.getElementById('b7');
+  const RATES=[2000,4000,6000,8000,12000,22050,44100];
+  const rate=()=>RATES[+r.value];
+  function draw(){ const {g,w,h}=fit(cv); bg(g,w,h); mid(g,w,h);
+    const fs=rate(), bits=+rb.value;
+    g.strokeStyle='#3a3a3c'; g.lineWidth=1.5; g.beginPath();
+    for(let x=0;x<=w;x++){ const y=h/2-Math.sin(x/w*Math.PI*5)*(h/2-20); x?g.lineTo(x,y):g.moveTo(x,y); }
+    g.stroke();
+    const n=Math.max(3,Math.round(w/(44100/fs)/1.2)), st=w/n, lv=Math.pow(2,bits-1);
+    g.strokeStyle='#fff'; g.lineWidth=2.5; g.beginPath();
+    for(let i=0;i<=n;i++){ const x=i*st; const s=Math.round(Math.sin(x/w*Math.PI*5)*lv)/lv;
+      const y=h/2-s*(h/2-20); i===0?g.moveTo(x,y):g.lineTo(x,y); g.lineTo(Math.min(w,x+st),y); }
+    g.stroke();
+    g.fillStyle='#fff';
+    for(let i=0;i<=n;i++){ const x=i*st; const s=Math.round(Math.sin(x/w*Math.PI*5)*lv)/lv;
+      g.beginPath(); g.arc(x,h/2-s*(h/2-20),3,0,7); g.fill(); }
+    v.textContent=fs.toLocaleString(); vb.textContent=bits+' bit'; }
+  r.oninput=draw; rb.oninput=draw; addEventListener('resize',draw); draw();
+  let cur=null;
+  const reset=()=>{ cur=null; b.textContent='播放'; b.classList.remove('off'); };
+  b.onclick=async()=>{
+    if(cur){ cur.stop(); return; }
+    b.textContent='準備緊…'; await loadSample();
+    cur=playBuf(degrade(srcBuf(),rate(),+rb.value),.9,reset);
+    b.textContent='停止'; b.classList.add('off');
+  };
+  r.addEventListener('change',()=>{ if(cur) cur.stop(); });
+  rb.addEventListener('change',()=>{ if(cur) cur.stop(); });
+
+  const wc=document.getElementById('k7w'), rw=document.getElementById('r7w'), vw=document.getElementById('v7w');
+  let lastCap=0, capAng=0;
+  (function wheel(){ const {g,w,h}=fit(wc); bg(g,w,h);
+    const fps=+rw.value, now=performance.now(), ang=(now/1000)*2*Math.PI*6;
+    if(now-lastCap>=1000/fps){ lastCap=now; capAng=ang; }
+    const cx=w/2, cy=h/2, R=Math.min(h/2-12,50);
+    g.strokeStyle='#2c2c2e'; g.lineWidth=2; g.beginPath(); g.arc(cx,cy,R,0,7); g.stroke();
+    g.strokeStyle='#fff'; g.lineWidth=2.5; g.lineCap='round';
+    for(let i=0;i<6;i++){ const a=capAng+i*Math.PI/3;
+      g.beginPath(); g.moveTo(cx,cy); g.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R); g.stroke(); }
+    vw.textContent=fps+' fps'; requestAnimationFrame(wheel); })();
+})();
+
+/* ── 08 ── */
+(function(){
+  const cv=document.getElementById('k8'), r=document.getElementById('r8'), v=document.getElementById('v8'),
+        oa=document.getElementById('o8a'), ob=document.getElementById('o8b'), oc=document.getElementById('o8c'),
+        b=document.getElementById('b8');
+  let norm=1, cache=null;
+  document.querySelectorAll('#nm .pill').forEach(btn=>btn.onclick=()=>{
+    document.querySelectorAll('#nm .pill').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on'); norm=+btn.dataset.n; build(); });
+  const rmsdb=a=>{ let s=0; for(let i=0;i<a.length;i++) s+=a[i]*a[i]; return 20*Math.log10(Math.sqrt(s/a.length)+1e-9); };
+  function build(){
+    const c=A(), src=srcBuf(), a=src.getChannelData(0), n=src.length;
+    const base=rmsdb(a), target=+r.value, g=Math.pow(10,(target-base)/20), k=1.6;
+    const sq=new Float32Array(n);
+    for(let i=0;i<n;i++) sq[i]=Math.tanh(a[i]*g*k)/Math.tanh(k);
+    const after=rmsdb(sq);
+    let pk=0; for(let i=0;i<n;i++){ const q=Math.abs(sq[i]); if(q>pk) pk=q; }
+    const dyn=20*Math.log10(pk+1e-9)-after;
+    const ng=Math.pow(10,((norm?-14:target)-after)/20)*0.9;
+    const play=c.createBuffer(1,n,c.sampleRate), po=play.getChannelData(0);
+    for(let i=0;i<n;i++) po[i]=Math.max(-1,Math.min(1,sq[i]*ng));
+    cache={play,sq};
+    v.textContent=target+' LUFS'; oa.textContent=target+' LUFS';
+    ob.textContent=(norm?-14:target)+' LUFS'; ob.className=norm?'ok':'warn';
+    oc.textContent=dyn.toFixed(1)+' dB'; oc.className=dyn<7?'hot':dyn<11?'warn':'ok';
+    draw();
+  }
+  function draw(){
+    const {g,w,h}=fit(cv); bg(g,w,h); mid(g,w,h);
+    g.strokeStyle='#2c2c2e'; g.setLineDash([3,5]); g.lineWidth=1;
+    g.beginPath(); g.moveTo(0,9); g.lineTo(w,9); g.moveTo(0,h-9); g.lineTo(w,h-9); g.stroke(); g.setLineDash([]);
+    if(!cache){ g.fillStyle='#48484a'; g.font='500 12px -apple-system,sans-serif'; g.textAlign='center';
+      g.fillText('撳播放', w/2, h/2-10); return; }
+    const a=cache.sq, n=a.length, step=Math.max(1,Math.floor(n/w));
+    g.strokeStyle='#7ee0a0'; g.lineWidth=1; g.beginPath();
+    for(let x=0;x<w;x++){ let mx=0;
+      for(let i=x*step;i<(x+1)*step&&i<n;i++){ const q=Math.abs(a[i]); if(q>mx) mx=q; }
+      g.moveTo(x+.5,h/2-mx*(h/2-10)); g.lineTo(x+.5,h/2+mx*(h/2-10)); }
+    g.stroke();
+  }
+  r.oninput=()=>{ if(TRIED){ build(); reveal('m8'); } };
+  addEventListener('resize',draw); draw();
+  let cur=null;
+  const reset=()=>{ cur=null; b.textContent='播放'; b.classList.remove('off'); };
+  b.onclick=async()=>{
+    if(cur){ cur.stop(); return; }
+    b.textContent='準備緊…'; await loadSample(); build(); reveal('m8');
+    cur=playBuf(cache.play,1,reset);
+    b.textContent='停止'; b.classList.add('off');
+  };
+  r.addEventListener('change',()=>{ if(cur) cur.stop(); });
+})();
+</script>
+</body>
+</html>
