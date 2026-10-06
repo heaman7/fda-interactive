@@ -1,0 +1,2898 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>180度法則互動課</title>
+<meta name="description" content="互動電影課：軸線、三機位、視線匹配、多機剪接，同埋越軸之後連戲點樣出錯。">
+<meta property="og:title" content="180度法則互動課">
+<meta property="og:description" content="互動電影課：軸線、三機位、視線匹配、多機剪接，同埋越軸之後連戲點樣出錯。">
+<meta name="theme-color" content="#1C2833">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 13a12 12 0 0 0 24 0z' fill='%2334C77D' fill-opacity='.35'/%3E%3Cline x1='1' y1='13' x2='31' y2='13' stroke='%237B4DFF' stroke-width='2.6' stroke-dasharray='4 3'/%3E%3Ccircle cx='10' cy='13' r='3.6' fill='%23E7A33D'/%3E%3Ccircle cx='22' cy='13' r='3.6' fill='%233868BA'/%3E%3Crect x='13' y='23' width='7' height='5' rx='1.4' fill='%231A2430'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+HK:wght@400;500;700;900&display=swap">
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+img { max-width: 100%; }
+/* Layout: a long-form illustrated lesson. Every illustration sits on a dark "board";
+   the page chrome around it is quiet paper, so the pictures carry the colour. */
+:root {
+  --bg: #ECEDE6;
+  --surface: #FAFAF6;
+  --surface-2: #F2F2EC;
+  --ink: #1A2430;
+  --ink-2: #445162;
+  --muted: #677282;
+  --rule: #D6D9CF;
+  --accent: #6A44E4;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(106, 68, 228, .10);
+  --ok: #1B8753;
+  --ok-soft: rgba(27, 135, 83, .12);
+  --bad: #CF323B;
+  --bad-soft: rgba(207, 50, 59, .10);
+  --alert-band: #F6E7E2;
+  --a: #A86A12;
+  --b: #2C5DB1;
+  --board: #1C2833;
+  --board-2: #26384A;
+  --board-ink: #F3EBDC;
+  --board-muted: #A7B3BE;
+  --shadow: 0 1px 2px rgba(16, 24, 32, .06), 0 14px 32px -16px rgba(16, 24, 32, .28);
+  --font-display: "Fredoka", "Noto Sans HK", "Noto Sans CJK HK", "PingFang HK", "Microsoft JhengHei", sans-serif;
+  --font-body: "Noto Sans HK", "Noto Sans CJK HK", "PingFang HK", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --r: 16px;
+  --gutter: clamp(16px, 4vw, 40px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E141A; --surface: #151D25; --surface-2: #1B252F; --ink: #E8ECEE; --ink-2: #B9C2CB; --muted: #8995A1; --rule: #28333E;
+    --accent: #A58BFF; --accent-ink: #150D30; --accent-soft: rgba(165, 139, 255, .15);
+    --ok: #4CCB8D; --ok-soft: rgba(76, 203, 141, .14); --bad: #FF6970; --bad-soft: rgba(255, 105, 112, .13); --alert-band: #221316;
+    --a: #F0B04F; --b: #7BA7F3;
+    --board: #0A1117; --board-2: #1A2835; --board-ink: #F3EBDC; --board-muted: #97A3AE;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 14px 32px -16px rgba(0, 0, 0, .7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E141A; --surface: #151D25; --surface-2: #1B252F; --ink: #E8ECEE; --ink-2: #B9C2CB; --muted: #8995A1; --rule: #28333E;
+  --accent: #A58BFF; --accent-ink: #150D30; --accent-soft: rgba(165, 139, 255, .15);
+  --ok: #4CCB8D; --ok-soft: rgba(76, 203, 141, .14); --bad: #FF6970; --bad-soft: rgba(255, 105, 112, .13); --alert-band: #221316;
+  --a: #F0B04F; --b: #7BA7F3;
+  --board: #0A1117; --board-2: #1A2835; --board-ink: #F3EBDC; --board-muted: #97A3AE;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 14px 32px -16px rgba(0, 0, 0, .7);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.75;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+.wrap { max-width: 1200px; margin: 0 auto; padding-inline: var(--gutter); }
+h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.2; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+kbd { font-family: var(--font-mono); font-size: .78em; padding: 1px 6px; border-radius: 5px; border: 1px solid var(--rule); background: var(--surface); box-shadow: 0 1px 0 var(--rule); }
+.a-txt { color: var(--a); font-weight: 700; }
+.b-txt { color: var(--b); font-weight: 700; }
+.ok-txt { color: var(--ok); font-weight: 700; }
+.bad-txt { color: var(--bad); font-weight: 700; }
+.line-txt { color: var(--accent); font-weight: 700; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.2) blur(10px); -webkit-backdrop-filter: saturate(1.2) blur(10px);
+  border-bottom: 1px solid var(--rule);
+}
+.topbar .wrap { display: flex; align-items: center; gap: 14px; min-height: 52px; }
+.brand { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; white-space: nowrap; text-decoration: none; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.brand-mark { width: 26px; height: 26px; flex: none; }
+.toc { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; min-width: 0; margin-left: auto; }
+.toc::-webkit-scrollbar { display: none; }
+.toc a {
+  flex: none; text-decoration: none; color: var(--ink-2); font-size: .86rem; font-weight: 500;
+  padding: 5px 11px; border-radius: 999px; display: flex; gap: 6px; align-items: center; white-space: nowrap;
+}
+.toc a .n { font-family: var(--font-display); font-weight: 600; color: var(--muted); }
+.toc a:hover { background: var(--surface-2); color: var(--ink); }
+.toc a.on { background: var(--ink); color: var(--bg); }
+.toc a.on .n { color: inherit; opacity: .7; }
+.toc a.hot:not(.on) { color: var(--bad); }
+@media (max-width: 720px) { .brand-text { display: none; } .toc a { padding: 5px 9px; font-size: .82rem; } }
+
+/* ---------- hero ---------- */
+.hero { padding-block: clamp(28px, 5vw, 64px) clamp(36px, 5vw, 64px); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(24px, 4vw, 56px); align-items: center; }
+@media (max-width: 900px) { .hero-grid { grid-template-columns: minmax(0, 1fr); } }
+.eyebrow { font-size: .82rem; font-weight: 700; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+.hero h1 { font-weight: 900; font-size: clamp(2.8rem, 7vw, 5rem); letter-spacing: -.01em; margin-top: 10px; display: flex; align-items: baseline; gap: .12em; flex-wrap: wrap; }
+.hero h1 .deg { font-family: var(--font-display); font-weight: 700; color: var(--accent); letter-spacing: -.02em; }
+.hero .lead { font-size: clamp(1.05rem, 1.6vw, 1.2rem); color: var(--ink-2); margin-top: 16px; max-width: 36em; }
+.hero-keys { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.hero-keys span { font-size: .9rem; padding: 6px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--rule); }
+.hero-keys b { font-family: var(--font-display); }
+.hero-cta { display: inline-flex; margin-top: 24px; align-items: center; gap: 10px; font-weight: 700; color: var(--bad); text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 2px; }
+
+/* ---------- boards & monitors ---------- */
+.board { background: var(--board); color: var(--board-ink); border-radius: var(--r); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+:root[data-theme="dark"] .board { outline: 1px solid var(--rule); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .board { outline: 1px solid var(--rule); } }
+.board::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: var(--grain); background-size: 192px; mix-blend-mode: overlay; opacity: .22; border-radius: inherit; }
+figure { margin: 0; }
+.hero-fig { padding: 10px; }
+.screen { position: relative; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: #2A3440; max-width: 100%; }
+.screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero-fig figcaption, .board-cap { font-size: .86rem; color: var(--board-muted); padding: 10px 6px 2px; line-height: 1.6; }
+.hero-tag { position: absolute; transform: translate(-50%, -50%); font-family: var(--font-display); font-weight: 600; font-size: clamp(.7rem, 1.2vw, .9rem); padding: 3px 10px; border-radius: 999px; white-space: nowrap; pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,.25); transition: left .2s linear, top .2s linear; }
+.hero-tag.line { background: #7B4DFF; color: #fff; }
+.hero-tag.ok { background: #2FA36B; color: #fff; }
+.hero-tag.bad { background: #E5484D; color: #fff; }
+
+.monitor { background: #10161C; border-radius: 12px; padding: 7px; box-shadow: var(--shadow); min-width: 0; position: relative; transition: box-shadow .25s; color: #E9EEF2; }
+.monitor.bad { box-shadow: 0 0 0 3px #E5484D, var(--shadow); }
+.monitor.neutral { box-shadow: 0 0 0 3px #7B4DFF, var(--shadow); }
+.mon-bar { display: flex; align-items: center; gap: 7px; padding: 1px 3px 7px; font-size: .78rem; min-width: 0; }
+.mon-bar b { font-family: var(--font-mono); font-weight: 700; letter-spacing: .04em; font-size: .74rem; }
+.mon-name { color: #B8C3CD; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.mon-lens { font-family: var(--font-mono); font-size: .7rem; color: #8995A1; margin-left: auto; white-space: nowrap; }
+.cam-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; box-shadow: 0 0 0 2px rgba(255,255,255,.18); }
+.cam-dot.c1 { background: #C9D2DB; } .cam-dot.c2 { background: #E7A33D; } .cam-dot.c3 { background: #4D80D6; }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: .72rem; font-weight: 700; white-space: nowrap; line-height: 1.5; }
+.chip.ok { background: #1F7A4D; color: #E6FFF1; }
+.chip.bad { background: #D23A41; color: #fff; }
+.chip.neutral { background: #6A44E4; color: #fff; }
+.chip.ref { background: #3A4654; color: #E9EEF2; }
+.mon-read { font-size: .8rem; color: #C9D2DB; padding: 7px 3px 1px; display: flex; gap: 10px; flex-wrap: wrap; min-height: 1.8em; }
+.mon-read .ga { color: #F2B24D; font-weight: 700; } .mon-read .gb { color: #7BA7F3; font-weight: 700; }
+.mon-read .warn { color: #FF8A8F; font-weight: 700; }
+
+/* ---------- sections ---------- */
+.sec { padding-block: clamp(48px, 7vw, 96px); border-top: 1px solid var(--rule); }
+.sec-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 18px; align-items: center; margin-bottom: clamp(18px, 3vw, 30px); }
+.sec-num { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 5vw, 3.6rem); line-height: 1; color: var(--accent); grid-row: span 2; }
+.sec-head h2 { font-size: clamp(1.55rem, 3.2vw, 2.3rem); font-weight: 900; }
+.sec-sub { color: var(--muted); font-size: .92rem; font-weight: 500; }
+.sec-sub i { font-style: normal; font-family: var(--font-display); font-weight: 500; letter-spacing: .02em; }
+.prose { max-width: 40em; color: var(--ink-2); }
+.prose p + p { margin-top: .9em; }
+.prose strong { color: var(--ink); }
+.grid-2 { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(20px, 3.5vw, 48px); align-items: start; }
+@media (max-width: 900px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } }
+.keys { display: grid; gap: 10px; margin-top: 22px; padding: 0; list-style: none; }
+.keys li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; }
+.keys li .k { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; font-weight: 800; font-size: .85rem; }
+.keys li .k.line { background: var(--accent-soft); color: var(--accent); }
+.keys li .k.ok { background: var(--ok-soft); color: var(--ok); }
+.keys li .k.bad { background: var(--bad-soft); color: var(--bad); }
+.hint { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; font-size: .92rem; color: var(--ink-2); background: var(--surface); border: 1px dashed var(--rule); border-radius: 12px; padding: 10px 14px; }
+.hint svg { flex: none; margin-top: 3px; }
+
+/* buttons */
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn {
+  border: 1px solid var(--rule); background: var(--surface); border-radius: 999px; padding: 7px 14px; cursor: pointer;
+  font-size: .9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 7px; line-height: 1.3; transition: background .15s, border-color .15s, transform .1s;
+}
+.btn:hover { border-color: var(--ink-2); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.bad.on { background: var(--bad); border-color: var(--bad); color: #fff; }
+.btn.ok.on { background: var(--ok); border-color: var(--ok); color: #fff; }
+.btn .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: .5; }
+.btn.small { padding: 5px 11px; font-size: .84rem; }
+.seg-label { font-size: .8rem; font-weight: 700; color: var(--muted); letter-spacing: .06em; margin-right: 4px; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: .88rem; font-weight: 600; color: var(--ink-2); user-select: none; padding: 4px 2px; }
+.toggle input { appearance: none; -webkit-appearance: none; width: 34px; height: 20px; border-radius: 999px; background: var(--rule); position: relative; cursor: pointer; margin: 0; transition: background .2s; flex: none; }
+.toggle input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+.toggle input:checked { background: var(--accent); }
+.toggle input:checked::after { transform: translateX(14px); }
+
+/* ---------- plans ---------- */
+.plan-board { padding: 10px; }
+.plan-board > svg { display: block; width: 100%; height: auto; touch-action: none; }
+.plan-board > svg .cam { cursor: grab; }
+.plan-board > svg .cam:active { cursor: grabbing; }
+.plan-board > svg .cam:focus { outline: none; }
+.plan-board > svg .cam:focus-visible .cam-ring { stroke: #fff; stroke-width: 6; }
+.plan-board > svg .char:focus { outline: none; }
+.plan-board > svg .char:focus-visible ellipse { stroke: #fff; stroke-width: 5; }
+.plan-board > svg .char.drag { cursor: grab; }
+.plan-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8rem; color: var(--board-muted); padding: 8px 6px 2px; }
+.plan-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.plan-legend i { width: 14px; height: 4px; border-radius: 2px; display: inline-block; }
+
+/* §1 */
+.fig-ctrl { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+/* §2 sandbox */
+.sandbox { display: grid; grid-template-columns: minmax(0, 11fr) minmax(0, 13fr); grid-template-areas: "plan mons" "ctrl mons" "verd mons"; grid-template-rows: auto auto 1fr; gap: 14px 18px; align-items: start; }
+.sb-plan { grid-area: plan; } .sandbox .mons { grid-area: mons; } .sandbox .sb-ctrl { grid-area: ctrl; margin-top: 2px; } .sandbox .verdict-bar { grid-area: verd; margin-top: 0; }
+@media (max-width: 960px) { .sandbox { grid-template-columns: minmax(0, 1fr); grid-template-areas: "plan" "ctrl" "mons" "verd"; grid-template-rows: none; } }
+.mons { display: grid; gap: 12px; min-width: 0; }
+.mon-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+@media (max-width: 560px) {
+  .mon-row { gap: 8px; }
+  .mon-row .monitor { padding: 5px; }
+  .mon-row .mon-name, .mon-row .mon-lens { display: none; }
+  .mon-row .mon-read { font-size: .72rem; gap: 4px 6px; }
+  .mon-row .mon-read .warn { display: none; }
+}
+.sb-ctrl { display: grid; gap: 12px; margin-top: 18px; }
+.sb-ctrl .btn-row { gap: 6px; }
+.roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 26px; }
+@media (max-width: 820px) { .roles { grid-template-columns: minmax(0, 1fr); } }
+.role { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 14px 16px; }
+.role h3 { font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+.role h3 .cam-dot { box-shadow: none; }
+.role h3 .cam-dot.c1 { background: #3A4654; }
+.role p { font-size: .9rem; color: var(--ink-2); margin-top: 6px; }
+.role .sub { font-family: var(--font-mono); font-size: .72rem; color: var(--muted); font-weight: 500; }
+.verdict-bar { display: flex; align-items: flex-start; gap: 10px; margin-top: 16px; padding: 12px 16px; border-radius: 12px; background: var(--ok-soft); color: var(--ink); font-weight: 600; font-size: .95rem; transition: background .25s; }
+.verdict-bar.bad { background: var(--bad-soft); }
+.verdict-bar .vi { font-size: 1.1rem; flex: none; line-height: 1.5; }
+.verdict-bar > span:last-child { flex: 1; min-width: 0; line-height: 1.6; }
+
+/* §3 eyeline */
+.cutpair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; }
+.cut-icon { display: grid; place-items: center; gap: 2px; color: var(--muted); font-size: .7rem; font-weight: 700; letter-spacing: .08em; }
+.eye-verdict { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; margin-top: 14px; }
+.eye-arrow { display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 1.05rem; }
+.eye-arrow .big { font-family: var(--font-display); font-size: 1.8rem; line-height: 1; transition: transform .35s cubic-bezier(.3,1.4,.5,1); display: inline-block; }
+.eye-arrow .big.flip { transform: scaleX(-1); }
+.eye-mid { font-weight: 800; padding: 6px 14px; border-radius: 999px; white-space: nowrap; }
+.eye-mid.ok { background: var(--ok-soft); color: var(--ok); }
+.eye-mid.bad { background: var(--bad-soft); color: var(--bad); }
+.mind { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: center; margin-top: 18px; background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; padding: 16px 18px; }
+.mind svg { max-width: 360px; }
+.mind svg { width: 100%; height: auto; display: block; }
+.mind h3 { font-size: .95rem; }
+.mind p { font-size: .9rem; color: var(--ink-2); margin-top: 4px; }
+.eye-row2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(16px, 3vw, 40px); margin-top: 18px; align-items: center; }
+@media (max-width: 900px) { .eye-row2 { grid-template-columns: minmax(0, 1fr); } }
+.eye-row2 .mind { margin-top: 0; }
+.board .eye-mid.ok { background: rgba(52, 199, 125, .2); color: #8BE8B7; }
+.board .eye-mid.bad { background: rgba(240, 70, 75, .24); color: #FFA3A7; }
+
+/* §4 failures */
+.sec-alert { background: var(--alert-band); }
+.must { display: inline-flex; align-items: center; gap: 6px; background: var(--bad); color: #fff; font-size: .78rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; letter-spacing: .06em; vertical-align: middle; margin-left: 10px; }
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 22px 0 18px; }
+.tab { border: 1.5px solid var(--rule); background: var(--surface); border-radius: 12px; padding: 9px 14px; cursor: pointer; text-align: left; font-weight: 700; display: grid; gap: 0; line-height: 1.35; }
+.tab small { font-weight: 500; color: var(--muted); font-size: .78rem; }
+.tab[aria-selected="true"] { border-color: var(--bad); background: var(--bad); color: #fff; }
+.tab[aria-selected="true"] small { color: rgba(255,255,255,.85); }
+.case { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 18px; align-items: start; }
+@media (max-width: 960px) { .case { grid-template-columns: minmax(0, 1fr); } }
+.case-rows { display: grid; gap: 14px; min-width: 0; }
+.case-row { background: var(--surface); border-radius: 16px; padding: 12px; border: 1.5px solid var(--rule); min-width: 0; }
+.case-row.ok { border-color: color-mix(in srgb, var(--ok) 45%, var(--rule)); }
+.case-row.bad { border-color: color-mix(in srgb, var(--bad) 55%, var(--rule)); }
+.row-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.row-tag { font-weight: 800; font-size: .9rem; padding: 3px 12px; border-radius: 999px; }
+.row-tag.ok { background: var(--ok); color: #fff; }
+.row-tag.bad { background: var(--bad); color: #fff; }
+.row-note { font-size: .92rem; color: var(--ink-2); font-weight: 600; }
+.shotpair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; }
+.shot { min-width: 0; }
+.shot .screen { border-radius: 9px; }
+.shot-lab { font-size: .76rem; color: var(--muted); margin-top: 5px; font-family: var(--font-mono); display: flex; gap: 6px; align-items: center; }
+.row-result { margin-top: 10px; font-size: .92rem; display: flex; gap: 8px; align-items: flex-start; }
+.row-result .ri { flex: none; font-weight: 800; }
+.case-side { display: grid; gap: 14px; min-width: 0; }
+.feel { background: var(--surface); border-radius: 16px; padding: 16px; border: 1.5px solid var(--rule); }
+.feel h3 { font-size: .9rem; color: var(--muted); letter-spacing: .04em; }
+.feel p { font-size: 1.02rem; margin-top: 6px; font-weight: 600; line-height: 1.65; }
+.feel .also { font-size: .88rem; color: var(--ink-2); font-weight: 400; margin-top: 10px; }
+
+/* §5 edit suite */
+.suite { background: var(--board); border-radius: 20px; padding: clamp(12px, 2vw, 20px); color: var(--board-ink); box-shadow: var(--shadow); position: relative; }
+.suite-top { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-bottom: 14px; }
+.suite .btn { background: var(--board-2); border-color: #3A4B5C; color: var(--board-ink); }
+.suite .btn:hover { border-color: #8193A5; }
+.suite .btn.on { background: var(--board-ink); color: #16202A; border-color: var(--board-ink); }
+.suite .btn.bad.on { background: #E5484D; color: #fff; border-color: #E5484D; }
+.suite .btn.ok.on { background: #2FA36B; color: #fff; border-color: #2FA36B; }
+.suite .seg-label { color: var(--board-muted); }
+.suite .toggle { color: var(--board-muted); }
+.suite .toggle input { background: #3A4B5C; }
+.suite .toggle input:checked { background: #A58BFF; }
+.edit-view { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 250px); gap: 12px; align-items: start; }
+.edit-view .angles { grid-template-columns: minmax(0, 1fr); margin-top: 0; }
+.edit-view.two { grid-template-columns: minmax(0, 1fr); }
+.edit-view.two .angles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .edit-view { grid-template-columns: minmax(0, 1fr); } .edit-view .angles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .angle .ang-top span:not(.cam-dot):not(.bad-dot) { display: none; } .angle .ang-top .chip { padding: 1px 5px; } }
+.programs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.programs.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (max-width: 760px) { .programs.two { grid-template-columns: minmax(0, 1fr); } }
+.prog { background: #0B0F13; }
+.prog .mon-bar b { color: #FF8A8F; }
+.prog-screen { position: relative; }
+.sub-line { position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%); max-width: 90%; text-align: center; font-weight: 700; font-size: clamp(.8rem, 1.7vw, 1.15rem); color: #fff; text-shadow: 0 1px 2px #000, 0 0 8px rgba(0,0,0,.8); line-height: 1.4; pointer-events: none; }
+.sub-line .who { margin-right: .4em; }
+.sub-line .who.A { color: #F7BE5E; } .sub-line .who.B { color: #8CB6FF; }
+.callout { position: absolute; left: 3%; right: 3%; top: 4%; display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border-radius: 10px; font-size: clamp(.74rem, 1.4vw, .95rem); font-weight: 700; line-height: 1.45; opacity: 0; transform: translateY(-6px); transition: opacity .2s, transform .2s; pointer-events: none; }
+.callout.show { opacity: 1; transform: none; }
+.callout.bad { background: rgba(214, 45, 54, .94); color: #fff; }
+.callout.ok { background: rgba(28, 122, 76, .92); color: #fff; }
+.callout.neutral { background: rgba(106, 68, 228, .92); color: #fff; }
+.flash { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 0 transparent; transition: box-shadow .35s; border-radius: 10px; }
+.flash.bad { box-shadow: inset 0 0 0 5px #E5484D; }
+.flash.ok { box-shadow: inset 0 0 0 4px #2FA36B; }
+.angles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.angle { border: 2px solid transparent; background: #0B0F13; border-radius: 12px; padding: 6px; cursor: pointer; text-align: left; color: var(--board-ink); min-width: 0; transition: border-color .15s; }
+.angle:hover { border-color: #5B6D80; }
+.angle.live { border-color: #FF5A61; }
+.angle .ang-top { display: flex; gap: 6px; align-items: center; font-size: .76rem; padding: 0 2px 6px; min-width: 0; }
+.angle .ang-top kbd { background: #243241; border-color: #3A4B5C; color: #F3EBDC; box-shadow: none; }
+.angle .ang-top span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.angle .screen { border-radius: 7px; }
+.angle .bad-dot { margin-left: auto; }
+.transport { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.tc { font-family: var(--font-mono); font-size: .95rem; font-weight: 700; letter-spacing: .03em; background: #0B0F13; padding: 6px 12px; border-radius: 8px; color: #FF8A8F; font-variant-numeric: tabular-nums; }
+.tc small { color: #6F7F8F; font-weight: 500; }
+.transport .grow { flex: 1; }
+.tl { margin-top: 14px; background: #0E151C; border-radius: 12px; padding: 8px 10px 10px; position: relative; user-select: none; -webkit-user-select: none; }
+.tl-grid { display: grid; grid-template-columns: 38px minmax(0, 1fr); row-gap: 6px; column-gap: 8px; }
+.tl-label { font-family: var(--font-mono); font-size: .72rem; color: #8193A5; display: flex; align-items: center; font-weight: 700; }
+.tl-lane { position: relative; height: 46px; background: #151F29; border-radius: 6px; overflow: hidden; }
+.tl-lane.v { height: 58px; }
+.tl-ruler { position: relative; height: 44px; cursor: pointer; touch-action: none; }
+.tl-tick { position: absolute; bottom: 0; width: 1px; background: #3A4B5C; height: 6px; }
+.tl-tick.major { height: 11px; background: #6F7F8F; }
+.tl-tick-l { position: absolute; top: 21px; transform: translateX(-50%); font-family: var(--font-mono); font-size: .64rem; color: #6F7F8F; font-variant-numeric: tabular-nums; }
+.tl-mark { position: absolute; top: 1px; transform: translateX(-50%); width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; font-size: .72rem; font-weight: 800; cursor: pointer; border: 0; padding: 0; z-index: 3; }
+.tl-mark.ok { background: #1F7A4D; color: #E6FFF1; }
+.tl-mark.bad { background: #E5484D; color: #fff; }
+.tl-mark.neutral { background: #6A44E4; color: #fff; }
+.clip { position: absolute; top: 3px; bottom: 3px; border-radius: 6px; border: 0; padding: 0 6px 0 4px; display: flex; align-items: center; gap: 6px; overflow: hidden; cursor: pointer; font-size: .74rem; font-weight: 700; color: #0E151C; text-align: left; min-width: 0; transition: filter .15s; }
+.clip:hover { filter: brightness(1.08); }
+.clip.sel { box-shadow: inset 0 0 0 2px #fff; }
+.clip.k1 { background: #C9D2DB; } .clip.k2 { background: #E7A33D; } .clip.k3 { background: #5C8FE0; color: #fff; }
+.clip canvas { height: calc(100% - 6px); aspect-ratio: 16/9; border-radius: 3px; flex: none; display: block; }
+.clip .cl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.clip.narrow canvas { display: none; }
+.clip.narrow .cl { font-size: .66rem; }
+.cutline { position: absolute; top: 0; bottom: 0; width: 3px; transform: translateX(-50%); background: #E5484D; z-index: 2; pointer-events: none; }
+.aclip { position: absolute; top: 5px; bottom: 5px; border-radius: 5px; overflow: hidden; display: flex; align-items: center; padding: 0 6px; font-size: .7rem; font-weight: 700; color: #0E151C; white-space: nowrap; }
+.aclip.A { background: #E7A33D; } .aclip.B { background: #5C8FE0; color: #fff; }
+.aclip canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .35; }
+.aclip span { position: relative; overflow: hidden; text-overflow: ellipsis; }
+.playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #FF3B45; pointer-events: none; z-index: 4; transform: translateX(-1px); }
+.playhead::before { content: ""; position: absolute; top: 0; left: 50%; width: 14px; height: 14px; transform: translateX(-50%); background: #FF3B45; clip-path: polygon(0 0, 100% 0, 100% 55%, 50% 100%, 0 55%); }
+.tl-over { position: absolute; top: 0; bottom: 0; left: 46px; right: 0; pointer-events: none; }
+.cutlist { display: grid; gap: 6px; margin-top: 14px; }
+.cutlist h3 { font-size: .9rem; color: var(--board-muted); letter-spacing: .04em; margin-bottom: 4px; }
+.cut-item { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 10px; align-items: start; background: #0E151C; border-radius: 10px; padding: 8px 12px; border: 1px solid transparent; cursor: pointer; text-align: left; color: var(--board-ink); font-size: .88rem; line-height: 1.55; }
+.cut-item:hover { border-color: #3A4B5C; }
+.cut-item .tcs { font-family: var(--font-mono); font-size: .76rem; color: #8193A5; padding-top: 2px; font-variant-numeric: tabular-nums; }
+.cut-item .pair { font-weight: 700; white-space: nowrap; }
+.cut-item.bad { border-color: rgba(229, 72, 77, .5); }
+.cut-item.bad .why { color: #FFB3B6; }
+.cut-item.ok .why { color: #A9E8C6; }
+.cut-item.neutral .why { color: #CBBDFF; }
+@media (max-width: 620px) { .tl-tick-l.minor { display: none; } .cut-item { grid-template-columns: auto minmax(0, 1fr); } .cut-item .why { grid-column: 1 / -1; } }
+.suite-help { font-size: .84rem; color: var(--board-muted); margin-top: 12px; line-height: 1.7; }
+.score { margin-left: auto; font-weight: 700; font-size: .9rem; display: flex; gap: 8px; align-items: center; }
+
+/* §6 crossing */
+.methods { display: grid; gap: 16px; margin-top: 22px; }
+.method { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(16px, 3vw, 36px); align-items: center; background: var(--surface); border: 1px solid var(--rule); border-radius: 20px; padding: clamp(14px, 2vw, 22px); }
+@media (max-width: 860px) { .method { grid-template-columns: minmax(0, 1fr); } }
+.m-text { display: grid; gap: 12px; align-content: start; }
+.m-text h3 { font-size: 1.15rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.m-text h3 .n { font-family: var(--font-display); color: var(--ok); font-weight: 700; font-size: 1.3rem; }
+.m-text p { font-size: .95rem; color: var(--ink-2); }
+.m-text .weak { color: var(--muted); font-size: .76rem; font-weight: 700; border: 1px solid var(--rule); padding: 1px 8px; border-radius: 999px; }
+.fig-cap { max-width: 440px; width: 100%; justify-self: center; }
+.strip-labels { margin-top: 8px; font-size: .74rem; color: var(--board-muted); text-align: center; line-height: 1.45; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 860px) { .cards { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 18px; padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.card h3 { font-size: 1.12rem; display: flex; align-items: center; gap: 10px; }
+.card h3 .n { font-family: var(--font-display); color: var(--ok); font-weight: 700; }
+.card p { font-size: .93rem; color: var(--ink-2); }
+.card .weak { color: var(--muted); font-size: .78rem; font-weight: 700; border: 1px solid var(--rule); padding: 1px 8px; border-radius: 999px; }
+.card-fig { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: center; }
+@media (max-width: 520px) { .card-fig { grid-template-columns: minmax(0, 1fr); } }
+.strip3 { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px; align-items: center; }
+.strip3 .cut-icon svg { width: 16px; }
+.board.pad { padding: 10px; }
+.break-note { margin-top: 20px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; background: var(--surface); border: 1px solid var(--rule); border-radius: 18px; padding: 18px; align-items: start; }
+.break-note .ico { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-size: 1.3rem; font-weight: 800; }
+.break-note h3 { font-size: 1.05rem; }
+.break-note p { color: var(--ink-2); font-size: .94rem; margin-top: 6px; }
+
+/* recap */
+.recap-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; counter-reset: q; }
+@media (max-width: 860px) { .recap-grid { grid-template-columns: minmax(0, 1fr); } }
+.q { background: var(--surface); border: 1px solid var(--rule); border-radius: 18px; padding: 18px; }
+.q .qn { font-family: var(--font-display); font-weight: 700; font-size: 2rem; color: var(--accent); line-height: 1; }
+.q h3 { font-size: 1.1rem; margin-top: 10px; }
+.q p { font-size: .93rem; color: var(--ink-2); margin-top: 6px; }
+.foot { padding-block: 28px 44px; color: var(--muted); font-size: .84rem; border-top: 1px solid var(--rule); }
+
+/* plan drawing animation (§1) */
+.draw-anim .ax-line { animation: drawline 1.1s ease forwards; }
+@keyframes drawline { from { stroke-dashoffset: var(--dl, 2000); } to { stroke-dashoffset: 0; } }
+.fade-anim { animation: fadein .6s ease both; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .draw-anim .ax-line, .fade-anim { animation: none; } }
+
+/* dark-board controls */
+.board .btn { background: var(--board-2); border-color: #3A4B5C; color: var(--board-ink); }
+.board .btn:hover { border-color: #8193A5; }
+.board .btn.primary { background: var(--board-ink); color: #16202A; border-color: var(--board-ink); }
+[hidden] { display: none !important; }
+
+/* §1 build-up animation */
+#plan1.play .lay-gaze { animation: fadein .5s .15s both; }
+#plan1.play .lay-axis .ax { transform-box: fill-box; transform-origin: center; animation: growx 1s .7s both; }
+#plan1.play .lay-arc .arcpath { stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: dash 1.1s 1.8s forwards; }
+#plan1.play .lay-arc g { animation: fadein .4s 2.7s both; }
+#plan1.play .lay-zones { animation: fadein .7s 2.5s both; }
+#plan1.play .lay-labels { animation: fadein .5s 3.1s both; }
+#plan1.play .lay-cams, #plan1.play .lay-fov { animation: fadein .5s 3.4s both; }
+@keyframes growx { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes dash { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { #plan1.play * { animation: none !important; } }
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-cut" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></g></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6.5 4.5h4v15h-4zM13.5 4.5h4v15h-4z" fill="currentColor"/></symbol>
+  <symbol id="i-start" viewBox="0 0 24 24"><path d="M5 5h2.5v14H5zM19 5v14L8.5 12z" fill="currentColor"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M17.5 5v14L7 12z" fill="currentColor"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M6.5 5v14L17 12z" fill="currentColor"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12M11 11.5v-2a1.5 1.5 0 0 1 3 0V12M14 10.5a1.5 1.5 0 0 1 3 0V12M17 11.5a1.5 1.5 0 0 1 3 0v3.5a6 6 0 0 1-6 6h-1.2a6 6 0 0 1-4.6-2.2L5.3 15.4a1.6 1.6 0 0 1 2.5-2L8 13.6"/></g></symbol>
+</svg>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="回到頂部">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 13a12 12 0 0 0 24 0z" fill="#34C77D" opacity=".28"/><path d="M4 13a12 12 0 0 0 24 0" fill="none" stroke="#2FA36B" stroke-width="2"/><line x1="1" y1="13" x2="31" y2="13" stroke="#7B4DFF" stroke-width="2.6" stroke-dasharray="4 3"/><circle cx="10" cy="13" r="3.6" fill="#E7A33D"/><circle cx="22" cy="13" r="3.6" fill="#3868BA"/><rect x="13" y="23" width="7" height="5" rx="1.4" fill="currentColor"/></svg>
+      <span class="brand-text">180° 法則</span>
+    </a>
+    <nav class="toc" aria-label="章節">
+      <a href="#s1"><span class="n">1</span>條線</a>
+      <a href="#s2"><span class="n">2</span>三機位</a>
+      <a href="#s3"><span class="n">3</span>視線</a>
+      <a href="#s4" class="hot"><span class="n">4</span>越軸出事</a>
+      <a href="#s5"><span class="n">5</span>剪接</a>
+      <a href="#s6"><span class="n">6</span>點樣過線</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">電影語言 · 場面調度 · 剪接</p>
+      <h1><span class="deg">180°</span><span>法則</span></h1>
+      <p class="lead">兩個人對話，中間有條睇唔見嘅線。攝影機留喺線嘅同一邊，觀眾就知道邊個喺左、邊個望緊邊個；一<strong>越軸</strong>，畫面就亂。</p>
+      <div class="hero-keys"><span><b>1</b> 條軸線</span><span><b>3</b> 部機</span><span><b>180°</b> 範圍</span></div>
+      <a class="hero-cta" href="#s4">直接睇：越軸會點錯 ↓</a>
+    </div>
+    <figure class="board hero-fig">
+      <div class="screen" id="heroScreen">
+        <canvas id="heroCanvas" role="img" aria-label="插畫：六十年代冰室，雨夜，西裝男 A 同旗袍女 B 對坐，紫色虛線穿過兩人視線，地上前半邊綠色、後半邊紅色"></canvas>
+        <span class="hero-tag line" id="tagLine">軸線 The Line</span>
+        <span class="hero-tag ok" id="tagOk">✓ 攝影機企呢邊</span>
+        <span class="hero-tag bad" id="tagBad">✗ 越軸區</span>
+      </div>
+      <figcaption>六十年代冰室，落緊雨。<b style="color:#F2B24D">A</b> 同 <b style="color:#7BA7F3">B</b> 之間嘅紫色虛線就係軸線；地上綠色嗰半邊，係攝影機可以企嘅 180°。</figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section class="sec" id="s1">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">1</span><h2>條線喺邊？</h2><p class="sec-sub"><i>The Line · Axis of Action</i>　軸線</p></header>
+      <div class="grid-2">
+        <div class="prose">
+          <p>第一步係搵<strong class="line-txt">軸線</strong>：將兩個角色之間嘅<strong>視線</strong>連埋，再向兩邊無限延長。</p>
+          <p>條線將場景切開兩半。攝影機揀咗一邊，就可以喺嗰邊嘅<strong>半圓（180°）</strong>入面任擺。</p>
+          <ul class="keys">
+            <li><span class="k line">—</span><span><strong>軸線 = 視線</strong>：條線穿過兩個人對眼。</span></li>
+            <li><span class="k ok">✓</span><span><strong>同一邊</strong>：Master 企邊，之後所有鏡頭跟住。</span></li>
+            <li><span class="k bad">✗</span><span><strong>越軸</strong>：有部機走咗去另一邊。</span></li>
+          </ul>
+          <div class="hint"><svg width="20" height="20" aria-hidden="true"><use href="#i-hand"/></svg><span>拖吓 <strong>A、B</strong>：條線跟住人走。再將<strong>攝影機</strong>拖過條線，睇吓綠紅點對調。</span></div>
+        </div>
+        <figure class="board plan-board">
+          <svg id="plan1" role="img" aria-label="平面圖：A、B 兩個角色、穿過佢哋嘅軸線、同攝影機嗰邊嘅 180 度範圍"></svg>
+          <div class="plan-legend"><span><i style="background:#7B4DFF"></i>軸線</span><span><i style="background:#34C77D"></i>攝影機嗰邊（180°）</span><span><i style="background:#F0464B"></i>越軸區</span></div>
+          <div class="fig-ctrl">
+            <button class="btn small" id="p1Play"><svg width="14" height="14" aria-hidden="true"><use href="#i-play"/></svg>睇動畫</button>
+            <button class="btn small" id="p1Reset">↺ 重設</button>
+          </div>
+          <p class="board-cap" id="p1Read" aria-live="polite"></p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="sec" id="s2">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">2</span><h2>三部機點擺：Master ＋ 兩個近鏡</h2><p class="sec-sub"><i>Triangle System</i>　三角形機位</p></header>
+      <div class="prose">
+        <p><strong>Cam 1</strong> 影全景（Master），<strong>Cam 2</strong>、<strong>Cam 3</strong> 影 <span class="a-txt">A</span>、<span class="b-txt">B</span> 近鏡。三部機成三角形，全部企喺軸線<strong>同一邊</strong>。</p>
+      </div>
+      <div class="sandbox" style="margin-top:22px">
+        <figure class="board plan-board sb-plan">
+          <svg id="plan2" role="img" aria-label="可拖動嘅平面圖：三部攝影機、兩個角色、軸線同 180 度範圍"></svg>
+          <div class="plan-legend"><span><i style="background:#7B4DFF"></i>軸線</span><span><i style="background:#34C77D"></i>180° 可擺位範圍</span><span><i style="background:#F0464B"></i>越軸區</span><span><i style="background:#8A5A3A"></i>燈／工作人員</span></div>
+        </figure>
+        <div class="mons">
+          <div class="monitor" id="m1">
+            <div class="mon-bar"><span class="cam-dot c1"></span><b>CAM 1</b><span class="mon-name">Master 全景</span><span class="mon-lens" data-lens></span><span class="chip ref" data-chip>基準</span></div>
+            <div class="screen"><canvas role="img" aria-label="Cam 1 畫面"></canvas></div>
+            <div class="mon-read" data-read></div>
+          </div>
+          <div class="mon-row">
+            <div class="monitor" id="m2">
+              <div class="mon-bar"><span class="cam-dot c2"></span><b>CAM 2</b><span class="mon-name">CU A 近鏡</span><span class="mon-lens" data-lens></span><span class="chip ok" data-chip>✓</span></div>
+              <div class="screen"><canvas role="img" aria-label="Cam 2 畫面"></canvas></div>
+              <div class="mon-read" data-read></div>
+            </div>
+            <div class="monitor" id="m3">
+              <div class="mon-bar"><span class="cam-dot c3"></span><b>CAM 3</b><span class="mon-name">CU B 近鏡</span><span class="mon-lens" data-lens></span><span class="chip ok" data-chip>✓</span></div>
+              <div class="screen"><canvas role="img" aria-label="Cam 3 畫面"></canvas></div>
+              <div class="mon-read" data-read></div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-ctrl">
+        <div class="btn-row" id="presetBtns"><span class="seg-label">擺位</span>
+          <button class="btn small on" data-preset="std">✓ 標準三角形</button>
+          <button class="btn small" data-preset="ots">✓ 過肩 OTS 版</button>
+          <button class="btn small bad" data-preset="x3">✗ Cam 3 越軸</button>
+          <button class="btn small bad" data-preset="x2">✗ Cam 2 越軸</button>
+          <button class="btn small bad" data-preset="xm">✗ Master 越軸</button>
+        </div>
+        <div class="btn-row">
+          <label class="toggle"><input type="checkbox" id="optGaze" checked>視線箭嘴</label>
+          <label class="toggle"><input type="checkbox" id="optFov" checked>鏡頭視野</label>
+          <label class="toggle"><input type="checkbox" id="optTape" checked>地上貼住條軸線</label>
+          <label class="toggle"><input type="checkbox" id="optZones">畫面顯示安全區</label>
+        </div>
+      </div>
+        <div class="verdict-bar" id="sbVerdict" aria-live="polite"></div>
+      </div>
+      <div class="hint"><svg width="20" height="20" aria-hidden="true"><use href="#i-hand"/></svg><span><strong>拖動平面圖上嘅攝影機</strong>（或者 Tab 揀中再按方向鍵），試吓將 Cam 3 拖過紫色線。</span></div>
+      <div class="roles">
+        <div class="role"><h3><span class="cam-dot c1"></span>Cam 1 · Master</h3><p class="sub">WIDE · 兩人全景</p><p>觀眾嘅「地圖」：<span class="a-txt">A</span> 喺左、<span class="b-txt">B</span> 喺右。Master 企邊，成場戲就用嗰邊。</p></div>
+        <div class="role"><h3><span class="cam-dot c2"></span>Cam 2 · CU A</h3><p class="sub">CLOSE-UP · 影 A</p><p>企喺 <span class="b-txt">B</span> 嗰邊影 <span class="a-txt">A</span>：A 喺畫面左邊，望<strong>右</strong>。</p></div>
+        <div class="role"><h3><span class="cam-dot c3"></span>Cam 3 · CU B</h3><p class="sub">CLOSE-UP · 影 B</p><p>企喺 <span class="a-txt">A</span> 嗰邊影 <span class="b-txt">B</span>：B 喺畫面右邊，望<strong>左</strong>。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="sec" id="s3">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">3</span><h2>點解會連到戲？睇視線</h2><p class="sec-sub"><i>Eyeline Match</i>　視線匹配</p></header>
+      <div class="grid-2">
+        <div class="prose">
+          <p>觀眾睇唔到成個片場，只係靠「<strong>角色望邊個方向</strong>」喺腦入面砌返個空間。</p>
+          <p><span class="a-txt">A</span> 望<strong>右</strong>，下一格 <span class="b-txt">B</span> 望<strong>左</strong>：兩條視線對上，觀眾就覺得佢哋對住講嘢，呢個就係<strong>視線匹配（eyeline match）</strong>。</p>
+          <p>兩部近鏡同一邊，效果<strong>自動</strong>出現；位置、方向、視線前後一致，就係「連戲」。</p>
+          <div class="btn-row" style="margin-top:20px">
+            <button class="btn ok on" id="eyeOk">✓ 兩部近鏡同一邊</button>
+            <button class="btn bad" id="eyeBad">✗ Cam 3 過咗線</button>
+          </div>
+        </div>
+        <div>
+          <div class="board pad">
+            <div class="cutpair">
+              <div class="shot"><div class="screen"><canvas id="eyeA" role="img" aria-label="CU A 畫面"></canvas></div><div class="shot-lab" style="color:var(--board-muted)"><span class="cam-dot c2"></span>CAM 2 · CU A</div></div>
+              <div class="cut-icon" style="color:var(--board-muted)"><svg width="20" height="20" aria-hidden="true"><use href="#i-cut"/></svg>CUT</div>
+              <div class="shot"><div class="screen"><canvas id="eyeB" role="img" aria-label="CU B 畫面"></canvas></div><div class="shot-lab" style="color:var(--board-muted)"><span class="cam-dot c3"></span><span id="eyeBLab">CAM 3 · CU B</span></div></div>
+            </div>
+            <div class="eye-verdict">
+              <div class="eye-arrow"><span style="color:#F2B24D">A 望</span><span class="big" style="color:#F2B24D">→</span></div>
+              <span class="eye-mid ok" id="eyeMid">對望 ✓</span>
+              <div class="eye-arrow"><span class="big" id="eyeArrB" style="color:#7BA7F3">←</span><span style="color:#7BA7F3">B 望</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="eye-row2">
+          <div class="mind">
+            <svg id="mindSvg" viewBox="0 0 220 120" role="img" aria-label="觀眾想像中兩個角色嘅位置"></svg>
+            <div><h3>觀眾腦入面砌出嚟嘅空間</h3><p id="mindTxt"></p></div>
+          </div>
+          <div class="board plan-board"><svg id="plan3" role="img" aria-label="細平面圖：Cam 2 同 Cam 3 嘅位置"></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="sec sec-alert" id="s4">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num" style="color:var(--bad)">4</span><h2>越軸會點錯？<span class="must">最重要</span></h2><p class="sec-sub"><i>Crossing the Line</i>　四種常見錯誤</p></header>
+      <div class="prose"><p>同一場戲、<strong>同一個剪接</strong>，淨係一部機擺錯邊，觀眾就會「唔知邊個喺邊」。上面跟法則，下面越咗軸。</p></div>
+      <div class="tabs" role="tablist" aria-label="越軸錯誤類型">
+        <button class="tab" role="tab" aria-selected="true" data-case="0">① 視線唔接<small>唔似對望</small></button>
+        <button class="tab" role="tab" aria-selected="false" data-case="1">② 位置跳轉<small>人突然換邊</small></button>
+        <button class="tab" role="tab" aria-selected="false" data-case="2">③ 動作方向反轉<small>好似推返轉頭</small></button>
+        <button class="tab" role="tab" aria-selected="false" data-case="3">④ 背景穿崩<small>好似換咗地方</small></button>
+      </div>
+      <div class="case" role="tabpanel" id="casePanel">
+        <div class="case-rows">
+          <div class="case-row ok">
+            <div class="row-head"><span class="row-tag ok">✓ 跟法則</span><span class="row-note" data-note="ok"></span></div>
+            <div class="shotpair">
+              <div class="shot"><div class="screen"><canvas data-v="ok0" role="img"></canvas></div><div class="shot-lab" data-lab="ok0"></div></div>
+              <div class="cut-icon"><svg width="20" height="20" aria-hidden="true"><use href="#i-cut"/></svg>CUT</div>
+              <div class="shot"><div class="screen"><canvas data-v="ok1" role="img"></canvas></div><div class="shot-lab" data-lab="ok1"></div></div>
+            </div>
+            <div class="row-result" data-res="ok"></div>
+          </div>
+          <div class="case-row bad">
+            <div class="row-head"><span class="row-tag bad">✗ 越軸</span><span class="row-note" data-note="bad"></span></div>
+            <div class="shotpair">
+              <div class="shot"><div class="screen"><canvas data-v="bad0" role="img"></canvas></div><div class="shot-lab" data-lab="bad0"></div></div>
+              <div class="cut-icon"><svg width="20" height="20" aria-hidden="true"><use href="#i-cut"/></svg>CUT</div>
+              <div class="shot"><div class="screen"><canvas data-v="bad1" role="img"></canvas></div><div class="shot-lab" data-lab="bad1"></div></div>
+            </div>
+            <div class="row-result" data-res="bad"></div>
+          </div>
+        </div>
+        <aside class="case-side">
+          <div class="board plan-board"><svg id="plan4" role="img" aria-label="細平面圖：正確同越軸嘅機位"></svg>
+            <div class="plan-legend"><span><i style="background:#34C77D"></i>✓ 機位</span><span><i style="background:#F0464B"></i>✗ 越軸機位</span></div>
+          </div>
+          <div class="feel"><h3>觀眾會覺得</h3><p data-feel></p><p class="also" data-also></p></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="sec" id="s5">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">5</span><h2>剪接：三部機同時拍，剪得幾爽？</h2><p class="sec-sub"><i>Multicam Editing</i>　剪接時間線</p></header>
+      <div class="grid-2" style="margin-bottom:22px">
+        <div class="prose"><p>三部機同步拍同一個 take，剪接就好似 <strong>multicam</strong>：同一秒有三個角度任揀。</p><p>點切都係 <span class="a-txt">A</span> 喺左望右、<span class="b-txt">B</span> 喺右望左，剪接師可以專心揀<strong>表演同節奏</strong>。</p></div>
+        <div class="prose"><p><strong>點玩：</strong>播緊時撳 <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd>（或者旁邊三個角度）即時切鏡；暫停時撳就換走嗰段。<kbd>空白鍵</kbd> 播放，<kbd>←</kbd> <kbd>→</kbd> 跳剪接點。</p><p>再轉做 <strong class="bad-txt">✗ Cam 3 越軸</strong>：同一個剪接，時間線即刻紅晒。</p></div>
+      </div>
+      <div class="suite" id="suite">
+        <div class="suite-top">
+          <span class="seg-label">拍攝版本</span>
+          <div class="btn-row" id="verBtns">
+            <button class="btn small ok on" data-ver="std">✓ 跟足 180°</button>
+            <button class="btn small bad" data-ver="x3">✗ Cam 3 越軸</button>
+            <button class="btn small bad" data-ver="xm">✗ Master 越軸</button>
+            <button class="btn small" data-ver="sb">你嘅沙盤擺位</button>
+          </div>
+          <label class="toggle" id="cmpWrap"><input type="checkbox" id="cmpToggle" checked>並排對照正確版</label>
+        </div>
+        <div class="edit-view">
+        <div class="programs" id="programs">
+          <div class="monitor prog" id="pgRef" hidden>
+            <div class="mon-bar"><b>PGM</b><span class="mon-name">✓ 跟足 180°（對照）</span><span class="mon-lens" data-cam></span></div>
+            <div class="screen prog-screen"><canvas role="img" aria-label="對照版節目畫面"></canvas><div class="sub-line" data-sub></div><div class="callout" data-callout></div><div class="flash" data-flash></div></div>
+          </div>
+          <div class="monitor prog" id="pgCur">
+            <div class="mon-bar"><b>PGM</b><span class="mon-name" data-vername>✓ 跟足 180°</span><span class="mon-lens" data-cam></span></div>
+            <div class="screen prog-screen"><canvas role="img" aria-label="節目畫面"></canvas><div class="sub-line" data-sub></div><div class="callout" data-callout></div><div class="flash" data-flash></div></div>
+          </div>
+        </div>
+        <div class="angles" id="angles">
+          <button class="angle" data-cam="1" aria-label="切去 Cam 1 Master"><div class="ang-top"><kbd>1</kbd><span class="cam-dot c1"></span><span>Master</span><span class="bad-dot" data-st></span></div><div class="screen"><canvas></canvas></div></button>
+          <button class="angle" data-cam="2" aria-label="切去 Cam 2 CU A"><div class="ang-top"><kbd>2</kbd><span class="cam-dot c2"></span><span>CU A</span><span class="bad-dot" data-st></span></div><div class="screen"><canvas></canvas></div></button>
+          <button class="angle" data-cam="3" aria-label="切去 Cam 3 CU B"><div class="ang-top"><kbd>3</kbd><span class="cam-dot c3"></span><span>CU B</span><span class="bad-dot" data-st></span></div><div class="screen"><canvas></canvas></div></button>
+        </div>
+        </div>
+        <div class="transport">
+          <button class="btn small" id="tStart" aria-label="回到開頭"><svg width="14" height="14" aria-hidden="true"><use href="#i-start"/></svg></button>
+          <button class="btn small" id="tPrev" aria-label="上一個剪接點"><svg width="14" height="14" aria-hidden="true"><use href="#i-prev"/></svg>剪接點</button>
+          <button class="btn primary" id="tPlay"><svg width="16" height="16" aria-hidden="true"><use href="#i-play"/></svg><span>播放</span></button>
+          <button class="btn small" id="tNext" aria-label="下一個剪接點">剪接點<svg width="14" height="14" aria-hidden="true"><use href="#i-next"/></svg></button>
+          <span class="tc" id="tc">00:00:00:00</span>
+          <span class="grow"></span>
+          <button class="btn small" id="tBlade"><svg width="14" height="14" aria-hidden="true"><use href="#i-cut"/></svg>喺播放頭剪一刀</button>
+          <button class="btn small" id="tReset">↺ 還原預設剪接</button>
+        </div>
+        <div class="tl" id="tl">
+          <div class="tl-grid">
+            <span></span><div class="tl-ruler" id="tlRuler"></div>
+            <span class="tl-label">V1</span><div class="tl-lane v" id="laneV"></div>
+            <span class="tl-label">A1</span><div class="tl-lane" id="laneA"></div>
+            <span class="tl-label">A2</span><div class="tl-lane" id="laneB"></div>
+          </div>
+          <div class="tl-over" id="tlOver"><div class="playhead" id="playhead"></div></div>
+        </div>
+        <div class="cutlist" id="cutlist" aria-live="polite"></div>
+        <p class="suite-help">V1 係畫面（顏色 = 邊部機），A1、A2 係對白。時間尺上嘅小方格係剪接點：✓ 順、✗ 越軸。撳清單可以重播嗰一刀。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="sec" id="s6">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">6</span><h2>真係要過線，點算？</h2><p class="sec-sub"><i>Crossing the Line Properly</i>　合法過線</p></header>
+      <div class="prose"><p>法則保護嘅係觀眾嘅方向感。只要觀眾<strong>親眼睇到</strong>條線點變，就可以過線。</p></div>
+      <div class="methods">
+        <article class="method">
+          <div class="m-text">
+            <h3><span class="n">A</span>鏡頭一路移過去</h3>
+            <p><strong>喺同一個鏡頭入面</strong>用軌道或者 Steadicam 由一邊行去另一邊。觀眾見到空間轉動就唔會亂；之後跟新嗰邊。</p>
+            <div class="btn-row"><button class="btn small primary" id="dollyPlay"><svg width="14" height="14" aria-hidden="true"><use href="#i-play"/></svg><span>播：Steadicam 繞過去</span></button></div>
+          </div>
+          <div class="card-fig">
+            <div class="board pad"><div class="screen"><canvas id="dollyCv" role="img" aria-label="移動鏡頭畫面"></canvas></div></div>
+            <div class="board plan-board"><svg id="planDolly" role="img" aria-label="移動鏡頭路線平面圖"></svg></div>
+          </div>
+        </article>
+        <article class="method">
+          <div class="m-text">
+            <h3><span class="n">B</span>中性鏡頭：企喺條線上面拍</h3>
+            <p>中間插一個<strong>喺軸線上</strong>拍嘅鏡頭：角色望住鏡頭附近，冇左右方向，等於「重設」。</p>
+          </div>
+          <div class="board pad">
+            <div class="strip3">
+              <div class="shot"><div class="screen"><canvas id="nv1" role="img" aria-label="Cam 3 南邊 CU B"></canvas></div></div>
+              <div class="cut-icon" style="color:var(--board-muted)"><svg width="16" height="16" aria-hidden="true"><use href="#i-cut"/></svg></div>
+              <div class="shot"><div class="screen"><canvas id="nv2" role="img" aria-label="中性鏡頭"></canvas></div></div>
+              <div class="cut-icon" style="color:var(--board-muted)"><svg width="16" height="16" aria-hidden="true"><use href="#i-cut"/></svg></div>
+              <div class="shot"><div class="screen"><canvas id="nv3" role="img" aria-label="Cam 3 北邊 CU B"></canvas></div></div>
+            </div>
+            <div class="strip3 strip-labels">
+              <span>① 南邊<br>B 望 ←</span><span></span><span style="color:#CBBDFF">② 軸線上<br>B 望鏡頭 ◎</span><span></span><span>③ 北邊<br>B 望 →</span>
+            </div>
+          </div>
+        </article>
+        <article class="method">
+          <div class="m-text">
+            <h3><span class="n">C</span>角色走位，條線跟住轉</h3>
+            <p>條線跟住人走。B 起身行去窗邊，新軸線由 A 連去 B，180° 範圍跟住轉；觀眾睇住佢行，唔會亂。</p>
+            <div class="btn-row"><button class="btn small primary" id="walkPlay"><svg width="14" height="14" aria-hidden="true"><use href="#i-play"/></svg><span>播：B 起身行去窗邊</span></button></div>
+          </div>
+          <div class="board plan-board fig-cap"><svg id="planWalk" role="img" aria-label="角色走位令軸線轉向嘅平面圖"></svg></div>
+        </article>
+        <article class="method">
+          <div class="m-text">
+            <h3><span class="n">D</span>插入鏡頭過渡 <span class="weak">效果較弱</span></h3>
+            <p>切去一個細節（杯咖啡）轉移注意力，返嚟先換邊。用得，但唔係萬能。</p>
+          </div>
+          <div class="board pad fig-cap"><div class="screen"><canvas id="insertCv" role="img" aria-label="插入鏡頭：枱面上 A 嘅咖啡杯"></canvas></div></div>
+        </article>
+      </div>
+      <div class="break-note">
+        <div class="ico">!</div>
+        <div><h3>刻意越軸都得，但要有理由</h3><p>有導演會故意越軸製造不安或者心理轉變，例如 Kubrick《閃靈》（The Shining）洗手間嗰場；小津安二郎亦經常唔跟。前提係：你知道自己喺度犯規。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="recap">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">✓</span><h2>開機前，問自己三條問題</h2><p class="sec-sub">Checklist</p></header>
+      <div class="recap-grid">
+        <div class="q"><div class="qn">01</div><h3>條線喺邊？</h3><p>兩個角色之間嘅視線；角色一郁，條線跟住郁。</p></div>
+        <div class="q"><div class="qn">02</div><h3>我企喺邊一邊？</h3><p>由 Master 決定，之後所有鏡頭留喺同一邊。</p></div>
+        <div class="q"><div class="qn">03</div><h3>真係要過線？</h3><p>用鏡頭移動、中性鏡頭或者角色走位。剪接時再檢查：A 望 →，B 就要望 ←。</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="foot"><div class="wrap">每格畫面都係按攝影機位置即時畫出嚟。角色、場景同對白都係原創。</div></footer>
+
+<script>
+/* =====================================================================
+   180° 法則 v2 — flat illustrated camera renderer
+   1960s Hong Kong café on a rainy night (original characters & set)
+   World: x = east, y = up, z = south (metres). A sits west, B sits east.
+   ===================================================================== */
+'use strict';
+
+/* ---------- vector helpers ---------- */
+const UP = [0, 1, 0];
+const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const mul = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
+const madd = (a, b, s) => [a[0] + b[0] * s, a[1] + b[1] * s, a[2] + b[2] * s];
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const len = a => Math.hypot(a[0], a[1], a[2]);
+const norm = a => { const l = len(a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
+const centroid = ps => { const c = [0, 0, 0]; for (const p of ps) { c[0] += p[0]; c[1] += p[1]; c[2] += p[2]; } return mul(c, 1 / ps.length); };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const lerp3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const rad = d => d * Math.PI / 180;
+function mulberry(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ---------- palette (fixed "artwork" colours) ---------- */
+const PAL = {
+  ceiling: '#2A2622',
+  paint: '#6E9985', paintLine: '#628A77',
+  tile: '#2F5E4F', tileHi: '#3B6D5C', grout: '#244A3D',
+  rail: '#5A3925',
+  wpaint: '#C79E68', wpaintLine: '#B48C59',
+  wood: '#5C3925', woodLine: '#3F2518', woodHi: '#77492F',
+  pillar: '#D9C8A5', pillarDk: '#BCA883',
+  floorA: '#D8CBB0', floorB: '#4B6558',
+  frame: '#24463A', frameHi: '#3A6655',
+  sky1: '#142337', sky2: '#24425C',
+  bldgFar: '#1F3446', bldgNear: '#2A4560', lit: '#F2C46A', litDim: '#B98B47',
+  neonR: '#FF5252', neonG: '#52FFA8', neonP: '#FF72B8', neonC: '#7FE9FF',
+  marble: '#EEEAE2', vein: '#BDB4A5', marbleEdge: '#CFC6B6', iron: '#262628',
+  chair: '#4E2F1D', chairHi: '#70482F', chairDk: '#381F11',
+  lampOut: '#2D5A4A', lampIn: '#FFE4A8', bulb: '#FFF7DA',
+  cup: '#FBFAF6', cupRim: '#2E7A5A', coffee: '#4E2E1E',
+  counterTop: '#E4D6BE', glassF: 'rgba(170,215,220,0.28)', glassE: 'rgba(235,252,252,0.6)',
+  metal: '#ABA79C', metalDk: '#7E7B72', phone: '#A92C2A',
+  board: '#F0E3C5', boardInk: '#B0281F',
+  paper: '#EEE3C8', inkMid: '#6F7672', inkDark: '#3F4643', seal: '#B5332B',
+  gold: '#C9A04A', mirror: '#3A5656',
+  stand: '#26282B', softbox: '#FFF5D8',
+  ink: '#1F2A36', shadow: 'rgba(22,14,8,0.30)',
+  axis: '#7B4DFF', ok: '#2FA36B', bad: '#E5484D',
+};
+
+/* ---------- characters (original 1960s couple) ---------- */
+const CH = {
+  A: { id: 'A', base: [-0.98, 0, 0], F: [1, 0, 0], style: 'man', build: { sh: 0.188, hip: 0.158, arm: 0.18, dep: 0.108 },
+    col: { top: '#AE7743', topDk: '#8B5C31', shirt: '#F2EEE5', tie: '#2A2630', skin: '#EDC29C', skinDk: '#D29F78', hair: '#0F0D0C', hairHi: '#4A4440',
+      pants: '#2B2A33', pantsDk: '#201F27', leg: '#2B2A33', shoe: '#121113', mouth: '#7C3A33', brow: '#1A1614' } },
+  B: { id: 'B', base: [0.98, 0, 0], F: [-1, 0, 0], style: 'woman', build: { sh: 0.158, hip: 0.152, arm: 0.152, dep: 0.096 },
+    col: { top: '#2E4D99', topDk: '#223A77', pattern: '#8EADEF', piping: '#ECDDB4', skin: '#F2C9A9', skinDk: '#D7A583', hair: '#21150F', hairHi: '#6B4C3A',
+      pants: '#2E4D99', pantsDk: '#223A77', leg: '#E2B796', shoe: '#701E27', mouth: '#B0222E', brow: '#2A1A12', pearl: '#FFF7E6' } },
+};
+for (const k in CH) CH[k].S = norm(cross(CH[k].F, UP));
+const TABLE = { r: 0.42, y: 0.77, th: 0.035 };
+const TABLE_Y = TABLE.y;
+const HEAD_R = 0.118;
+const LAMP = [0, 1.74, 0];
+
+function joints(ch, p) {
+  p = p || {};
+  const F = ch.F, S = ch.S, b = ch.base, B = ch.build;
+  const lean = 0.12 + (p.lean || 0);
+  const hip = [b[0], 0.50, b[2]];
+  const shC = add(hip, [F[0] * 0.47 * Math.sin(lean), 0.47 * Math.cos(lean), F[2] * 0.47 * Math.sin(lean)]);
+  const headC = add(shC, [F[0] * 0.035, 0.218 + (p.breathe || 0) * 0.006, F[2] * 0.035]);
+  const yaw = p.headYaw || 0, pitch = p.headPitch || 0;
+  const Fy = norm(add(mul(F, Math.cos(yaw)), mul(S, Math.sin(yaw))));
+  const Sh = norm(cross(Fy, UP));
+  const Fh = norm(add(mul(Fy, Math.cos(pitch)), [0, -Math.sin(pitch), 0]));
+  const Uh = norm(cross(Sh, Fh));
+  const shL = add(madd(shC, S, -B.arm), [0, -0.012, 0]);
+  const shR = add(madd(shC, S, B.arm), [0, -0.012, 0]);
+  const elb = (sh, s) => add(add(madd(sh, S, s * 0.04), [0, -0.18, 0]), mul(F, 0.17));
+  const hand = s => add(add(madd(b, F, 0.60), [0, 0.80, 0]), mul(S, s * 0.112));
+  let hL = hand(-1), hR = hand(1);
+  if (p.handR) hR = add(hR, p.handR);
+  if (p.handL) hL = add(hL, p.handL);
+  const hipL = madd(hip, S, -0.095), hipR = madd(hip, S, 0.095);
+  const knee = h => add(madd(h, F, 0.40), [0, 0.03, 0]);
+  const kL = knee(hipL), kR = knee(hipR);
+  const ank = k => add(madd(k, F, 0.06), [0, -0.45, 0]);
+  const aL = ank(kL), aR = ank(kR);
+  const toe = a => add(madd(a, F, 0.12), [0, -0.02, 0]);
+  const T = [];
+  for (const [c, w] of [[hip, B.hip], [shC, B.sh]])
+    for (const [ss, ff] of [[-1, -1], [1, -1], [1, 1], [-1, 1]])
+      T.push(add(add(c, mul(S, ss * w)), mul(F, ff * B.dep)));
+  return { hip, shC, headC, Fh, Uh, Sh, shL, shR, elL: elb(shL, -1), elR: elb(shR, 1), hL, hR, hipL, hipR, kL, kR, aL, aR, tL: toe(aL), tR: toe(aR), T };
+}
+const TORSO_EDGES = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+const TORSO_FACES = [[0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7], [4, 5, 6, 7]];
+const HEAD = { A: joints(CH.A).headC, B: joints(CH.B).headC };
+const EYE = { A: add(HEAD.A, [0, 0.015, 0]), B: add(HEAD.B, [0, 0.015, 0]) };
+
+/* ---------- camera ---------- */
+function makeCam(pos, target, vfov, W, H) {
+  const f = norm(sub(target, pos));
+  let r = cross(f, UP); if (len(r) < 1e-6) r = [1, 0, 0]; r = norm(r);
+  const u = cross(r, f);
+  const fpx = (H / 2) / Math.tan(rad(vfov) / 2);
+  const cam = { pos, f, r, u, W, H, fpx, near: 0.03, vfov };
+  cam.toCam = p => { const d = sub(p, pos); return [dot(d, r), dot(d, u), dot(d, f)]; };
+  cam.pc = c => [W / 2 + c[0] / c[2] * fpx, H / 2 - c[1] / c[2] * fpx, c[2]];
+  cam.proj = p => { const c = cam.toCam(p); return c[2] < cam.near ? null : cam.pc(c); };
+  cam.depth = p => dot(sub(p, pos), f);
+  cam.dist = p => len(sub(p, pos));
+  return cam;
+}
+
+/* ---------- 2D primitives with clipping ---------- */
+function clipNear(cs, n) {
+  const out = [];
+  for (let i = 0; i < cs.length; i++) {
+    const a = cs[i], b = cs[(i + 1) % cs.length];
+    const ia = a[2] >= n, ib = b[2] >= n;
+    if (ia) out.push(a);
+    if (ia !== ib) { const t = (n - a[2]) / (b[2] - a[2]); out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, n]); }
+  }
+  return out;
+}
+function clipY(poly, y, above) {
+  const out = []; const k = p => above ? p[1] >= y : p[1] <= y;
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i], b = poly[(i + 1) % poly.length], ia = k(a), ib = k(b);
+    if (ia) out.push(a);
+    if (ia !== ib) { const t = (y - a[1]) / (b[1] - a[1]); out.push(lerp3(a, b, t)); }
+  }
+  return out;
+}
+function polyS(cam, pts) {
+  if (!pts || pts.length < 3) return null;
+  const cs = clipNear(pts.map(cam.toCam), cam.near);
+  return cs.length < 3 ? null : cs.map(cam.pc);
+}
+function segS(cam, a, b) {
+  let ca = cam.toCam(a), cb = cam.toCam(b); const n = cam.near;
+  if (ca[2] < n && cb[2] < n) return null;
+  if (ca[2] < n) { const t = (n - ca[2]) / (cb[2] - ca[2]); ca = [ca[0] + (cb[0] - ca[0]) * t, ca[1] + (cb[1] - ca[1]) * t, n]; }
+  else if (cb[2] < n) { const t = (n - cb[2]) / (ca[2] - cb[2]); cb = [cb[0] + (ca[0] - cb[0]) * t, cb[1] + (ca[1] - cb[1]) * t, n]; }
+  return [cam.pc(ca), cam.pc(cb)];
+}
+function path(ctx, pts) { ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.closePath(); }
+function fillP(ctx, pts, color) { if (!pts || pts.length < 3) return; path(ctx, pts); ctx.fillStyle = color; ctx.fill(); }
+function fillRound(ctx, pts, color, w) { if (!pts) return; path(ctx, pts); ctx.fillStyle = color; ctx.fill(); if (w > 0) { ctx.lineJoin = 'round'; ctx.lineWidth = w; ctx.strokeStyle = color; ctx.stroke(); } }
+function hull2(pts) {
+  const p = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if (p.length < 3) return p;
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], up = [];
+  for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  up.pop(); lo.pop(); return lo.concat(up);
+}
+function hullOf(cam, verts) {
+  const pts = []; for (const v of verts) { const q = cam.proj(v); if (q) pts.push(q); }
+  return pts.length >= 3 ? hull2(pts) : null;
+}
+function ring(c, r, n, y) { const out = []; for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; out.push([c[0] + Math.cos(a) * r, y === undefined ? c[1] : y, c[2] + Math.sin(a) * r]); } return out; }
+function limb(ctx, cam, a, b, w, color, cap) {
+  const s = segS(cam, a, b); if (!s) return;
+  const z = cam.depth(mid(a, b)); if (z < cam.near) return;
+  ctx.strokeStyle = color; ctx.lineWidth = w * cam.fpx / z; ctx.lineCap = cap || 'round';
+  ctx.beginPath(); ctx.moveTo(s[0][0], s[0][1]); ctx.lineTo(s[1][0], s[1][1]); ctx.stroke();
+}
+function ball(ctx, cam, p, r, color) {
+  const q = cam.proj(p); if (!q) return;
+  ctx.beginPath(); ctx.arc(q[0], q[1], Math.max(0.4, r * cam.fpx / q[2]), 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+}
+function strokePts(ctx, cam, pts, w, color, closed) {
+  const q = pts.map(cam.proj); if (q.some(v => !v)) return;
+  const z = cam.depth(centroid(pts)); if (z < cam.near) return;
+  ctx.strokeStyle = color; ctx.lineWidth = w * cam.fpx / z; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); if (closed) ctx.closePath(); ctx.stroke();
+}
+/* stroke only the part of a polyline that lies above / below a height (for painter's layering at the table top) */
+function strokeSplit(ctx, cam, pts, w, color, above, y) {
+  y = y === undefined ? TABLE_Y : y;
+  const runs = []; let cur = [];
+  const keep = p => above ? p[1] >= y : p[1] < y;
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i];
+    if (i > 0) { const a = pts[i - 1]; if (keep(a) !== keep(p)) { const t = (y - a[1]) / (p[1] - a[1]); const m = lerp3(a, p, t); cur.push(m); if (cur.length > 1 && keep(a)) runs.push(cur); cur = [m]; } }
+    if (keep(p)) cur.push(p);
+  }
+  if (cur.length > 1) runs.push(cur.filter(p => true));
+  for (const r of runs) if (r.length > 1) strokePts(ctx, cam, r, w, color, false);
+}
+function splitY(verts, edges, y) {
+  const lo = [], hi = [];
+  for (const v of verts) (v[1] < y ? lo : hi).push(v);
+  for (const [i, j] of edges) {
+    const a = verts[i], b = verts[j];
+    if ((a[1] < y) !== (b[1] < y)) { const t = (y - a[1]) / (b[1] - a[1]); const p = lerp3(a, b, t); lo.push(p); hi.push(p); }
+  }
+  return { lo, hi };
+}
+function boxV(c, ax, ay, az, hx, hy, hz) {
+  const v = [];
+  for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1])
+    v.push(add(add(add(c, mul(ax, sx * hx)), mul(ay, sy * hy)), mul(az, sz * hz)));
+  return v;
+}
+const BOX_F = [[0, 1, 3, 2], [4, 6, 7, 5], [0, 4, 5, 1], [2, 3, 7, 6], [0, 2, 6, 4], [1, 5, 7, 3]];
+function drawBox(ctx, cam, v, colors) {
+  const bc = centroid(v);
+  for (const f of BOX_F) {
+    const q = f.map(i => v[i]);
+    const c = centroid(q);
+    let n = norm(cross(sub(q[1], q[0]), sub(q[3], q[0])));
+    if (dot(n, sub(c, bc)) < 0) n = mul(n, -1);
+    if (dot(n, sub(cam.pos, c)) <= 0) continue;
+    let col = n[1] > 0.7 ? colors.top : n[1] < -0.7 ? (colors.bottom || colors.side) : colors.side;
+    if (colors.frontN && dot(n, colors.frontN) > 0.7) col = colors.front;
+    else if (colors.sideB && Math.abs(n[0]) > 0.7) col = colors.sideB;
+    fillP(ctx, polyS(cam, q), col);
+  }
+}
+
+/* ---------- room ---------- */
+const ROOM = { x0: -4, x1: 4, z0: -3.5, z1: 3.5, h: 3.0 };
+const WALLS = {
+  N: { o: [-4, 0, -3.5], u: [1, 0, 0], n: [0, 0, 1], L: 8, segs: [[0, 8, 'cool']], dado: 0.7 },
+  S: { o: [4, 0, 3.5], u: [-1, 0, 0], n: [0, 0, -1], L: 8, segs: [[0, 8, 'warm']], dado: 1.0 },
+  W: { o: [-4, 0, 3.5], u: [0, 0, -1], n: [1, 0, 0], L: 7, segs: [[0, 3.5, 'warm'], [3.5, 7, 'cool']], dado: 1.0 },
+  E: { o: [4, 0, -3.5], u: [0, 0, 1], n: [-1, 0, 0], L: 7, segs: [[0, 3.5, 'cool'], [3.5, 7, 'warm']], dado: 1.0 },
+};
+const wp = (w, u, v, off = 0) => [w.o[0] + w.u[0] * u + w.n[0] * off, v, w.o[2] + w.u[2] * u + w.n[2] * off];
+const wq = (w, u0, v0, u1, v1, off = 0) => [wp(w, u0, v0, off), wp(w, u1, v0, off), wp(w, u1, v1, off), wp(w, u0, v1, off)];
+function wfill(ctx, cam, w, u0, v0, u1, v1, col, off = 0.004) { fillP(ctx, polyS(cam, wq(w, u0, v0, u1, v1, off)), col); }
+function wpoly(ctx, cam, w, uv, col, off = 0.006) { fillP(ctx, polyS(cam, uv.map(([u, v]) => wp(w, u, v, off))), col); }
+function wline(ctx, cam, w, u0, v0, u1, v1, col, px, off = 0.004) {
+  const s = segS(cam, wp(w, u0, v0, off), wp(w, u1, v1, off)); if (!s) return;
+  ctx.strokeStyle = col; ctx.lineWidth = px; ctx.lineCap = 'butt';
+  ctx.beginPath(); ctx.moveTo(s[0][0], s[0][1]); ctx.lineTo(s[1][0], s[1][1]); ctx.stroke();
+}
+function wellipse(ctx, cam, w, uc, vc, ru, rv, col, off = 0.006, n = 30) {
+  const pts = []; for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; pts.push(wp(w, uc + Math.cos(a) * ru, vc + Math.sin(a) * rv, off)); }
+  fillP(ctx, polyS(cam, pts), col);
+}
+function wtext(ctx, cam, w, u0, v0, u1, v1, text, font, col, glow, S, off) {
+  off = off || 0.02;
+  const TL = cam.proj(wp(w, u0, v1, off)), TR = cam.proj(wp(w, u1, v1, off)), BL = cam.proj(wp(w, u0, v0, off));
+  if (!TL || !TR || !BL) return;
+  ctx.save();
+  ctx.font = font; ctx.textBaseline = 'top';
+  const m = ctx.measureText(text); const tw = m.width || 1, th = parseFloat(font.match(/(\d+)px/)[1]);
+  ctx.setTransform((TR[0] - TL[0]) / tw, (TR[1] - TL[1]) / tw, (BL[0] - TL[0]) / th, (BL[1] - TL[1]) / th, TL[0], TL[1]);
+  if (glow) { ctx.shadowColor = col; ctx.shadowBlur = 16 * S; ctx.fillStyle = col; ctx.fillText(text, 0, 0); ctx.shadowBlur = 6 * S; ctx.fillText(text, 0, 0); ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255,255,255,0.72)'; ctx.fillText(text, 0, 0); }
+  else { ctx.fillStyle = col; ctx.fillText(text, 0, 0); }
+  ctx.restore();
+}
+const HANZI = '700 100px "Noto Sans HK", "Noto Sans CJK HK", "PingFang HK", sans-serif';
+function wtextV(ctx, cam, w, u0, v1, size, text, col, glow, S, off) {
+  [...text].forEach((ch, i) => wtext(ctx, cam, w, u0, v1 - (i + 1) * size, u0 + size, v1 - i * size, ch, HANZI, col, glow, S, off));
+}
+
+/* deterministic street scenes for the two shop windows */
+const WIN = [{ u0: 0.95, u1: 3.25 }, { u0: 4.75, u1: 7.05 }];
+const WIN_V0 = 0.78, WIN_V1 = 2.5;
+const STREET = WIN.map((_, wi) => {
+  const rnd = mulberry(21 + wi * 13); const blds = [];
+  for (const layer of [0, 1]) {
+    let u = -0.02;
+    while (u < 1) {
+      const w = (layer ? 0.16 : 0.1) + rnd() * (layer ? 0.18 : 0.14);
+      const h = (layer ? 0.48 : 0.66) + rnd() * (layer ? 0.36 : 0.3);
+      const wins = [];
+      const cols = Math.max(2, Math.floor(w / 0.05)), rows = Math.floor(h / 0.08);
+      for (let r = 1; r < rows; r++) for (let c = 0; c < cols; c++) if (rnd() < (layer ? 0.42 : 0.25)) wins.push([u + (c + 0.3) * w / cols, r * 0.08, layer]);
+      blds.push({ layer, u0: u, u1: Math.min(1.02, u + w), h, wins });
+      u += w + 0.004;
+    }
+  }
+  const rain = []; for (let i = 0; i < 46; i++) rain.push([rnd(), rnd(), 0.05 + rnd() * 0.07]);
+  return { blds, rain };
+});
+const SIGNS = [
+  { win: 0, u: 0.72, v: 0.7, txt: '旅店', col: PAL.neonR, size: 0.13 },
+  { win: 1, u: 0.12, v: 0.72, txt: '洋服', col: PAL.neonG, size: 0.12 },
+  { win: 1, u: 0.68, v: 0.6, txt: '茶樓', col: PAL.neonP, size: 0.12 },
+];
+
+function drawWallBase(ctx, cam, S, w, u0, u1, kind) {
+  const dh = kind === 'cool' ? w.dado : 1.0;
+  if (kind === 'cool') {
+    wfill(ctx, cam, w, u0, 0, u1, ROOM.h, PAL.paint, 0);
+    for (let u = u0 + 0.6; u < u1; u += 1.2) wline(ctx, cam, w, u, dh + 0.06, u, ROOM.h, PAL.paintLine, 1.1 * S);
+    wfill(ctx, cam, w, u0, 0, u1, dh, PAL.tile, 0.002);
+    for (let v = 0.15; v < dh - 0.01; v += 0.15) wline(ctx, cam, w, u0, v, u1, v, PAL.grout, 1 * S);
+    for (let u = u0 + 0.15; u < u1; u += 0.15) wline(ctx, cam, w, u, 0.0, u, dh, PAL.grout, 1 * S);
+    wfill(ctx, cam, w, u0, dh, u1, dh + 0.06, PAL.rail, 0.008);
+  } else {
+    wfill(ctx, cam, w, u0, 0, u1, ROOM.h, PAL.wpaint, 0);
+    for (let u = u0 + 0.6; u < u1; u += 1.2) wline(ctx, cam, w, u, dh + 0.06, u, ROOM.h, PAL.wpaintLine, 1.1 * S);
+    wfill(ctx, cam, w, u0, 0, u1, dh, PAL.wood, 0.002);
+    for (let u = u0 + 0.45; u < u1 - 0.05; u += 0.45) { wfill(ctx, cam, w, u - 0.36, 0.14, u - 0.04, dh - 0.12, PAL.woodHi, 0.004); }
+    wfill(ctx, cam, w, u0, dh, u1, dh + 0.06, PAL.rail, 0.008);
+  }
+  wfill(ctx, cam, w, u0, 0, u1, 0.1, PAL.woodLine, 0.006);
+}
+
+function drawWindows(ctx, cam, S, rainT) {
+  const N = WALLS.N;
+  WIN.forEach((win, wi) => {
+    const U = u => win.u0 + (win.u1 - win.u0) * u, V = v => WIN_V0 + (WIN_V1 - WIN_V0) * v;
+    const sc = STREET[wi];
+    wfill(ctx, cam, N, win.u0, WIN_V0, win.u1, WIN_V1, PAL.sky2, 0.004);
+    wfill(ctx, cam, N, win.u0, V(0.55), win.u1, WIN_V1, PAL.sky1, 0.0045);
+    for (const b of sc.blds) {
+      const top = b.h;
+      wfill(ctx, cam, N, U(Math.max(0, b.u0)), V(0), U(Math.min(1, b.u1)), V(Math.min(1, top)), b.layer ? PAL.bldgNear : PAL.bldgFar, 0.005 + b.layer * 0.001);
+      for (const [wu, wv] of b.wins) if (wu > 0 && wu < 0.97 && wv < Math.min(1, top) - 0.04) wfill(ctx, cam, N, U(wu), V(wv), U(wu) + 0.04, V(wv) + 0.06, b.layer ? PAL.lit : PAL.litDim, 0.0072);
+    }
+    // street glow at the bottom
+    wfill(ctx, cam, N, win.u0, WIN_V0, win.u1, V(0.08), 'rgba(255,150,70,0.42)', 0.0075);
+    // neon signs
+    for (const s of SIGNS) if (s.win === wi) {
+      const n = [...s.txt].length;
+      wfill(ctx, cam, N, U(s.u) - 0.025, V(s.v) - n * s.size - 0.03, U(s.u) + s.size + 0.025, V(s.v) + 0.03, 'rgba(12,16,24,0.85)', 0.0078);
+      wtextV(ctx, cam, N, U(s.u), V(s.v), s.size, s.txt, s.col, true, S, 0.0082);
+    }
+    // rain
+    ctx.save(); ctx.strokeStyle = 'rgba(210,230,255,0.45)'; ctx.lineWidth = Math.max(1, 1.1 * S); ctx.lineCap = 'round';
+    for (const [ru, rv, rl] of sc.rain) {
+      const vv = ((rv - (rainT || 0) * 0.9) % 1 + 1) % 1;
+      const a = cam.proj(wp(N, U(ru), V(vv), 0.009)), b = cam.proj(wp(N, U(ru) - 0.025, V(vv) - rl * 1.7, 0.009));
+      if (a && b) { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+    }
+    ctx.restore();
+    // frames: outer, mullions, transom with small panes, sill
+    const t = 0.07, tv = V(0.78);
+    for (const [a, b, c, d] of [[win.u0 - t, WIN_V0 - t, win.u1 + t, WIN_V0], [win.u0 - t, WIN_V1, win.u1 + t, WIN_V1 + t], [win.u0 - t, WIN_V0, win.u0, WIN_V1], [win.u1, WIN_V0, win.u1 + t, WIN_V1]]) wfill(ctx, cam, N, a, b, c, d, PAL.frame, 0.012);
+    for (const f of [1 / 3, 2 / 3]) wfill(ctx, cam, N, U(f) - 0.022, WIN_V0, U(f) + 0.022, WIN_V1, PAL.frame, 0.012);
+    wfill(ctx, cam, N, win.u0, tv - 0.02, win.u1, tv + 0.02, PAL.frame, 0.012);
+    for (let k = 1; k < 9; k++) if (k % 3) wfill(ctx, cam, N, U(k / 9) - 0.01, tv, U(k / 9) + 0.01, WIN_V1, PAL.frameHi, 0.0115);
+    wfill(ctx, cam, N, win.u0 - t - 0.05, WIN_V0 - t - 0.045, win.u1 + t + 0.05, WIN_V0 - t, PAL.rail, 0.04);
+  });
+}
+
+function drawRoom(ctx, cam, S, opts) {
+  const N = WALLS.N, So = WALLS.S, W = WALLS.W, E = WALLS.E;
+  for (const k in WALLS) { const w = WALLS[k]; for (const [u0, u1, kind] of w.segs) drawWallBase(ctx, cam, S, w, u0, u1, kind); }
+  // pillars at the split
+  for (const w of [W, E]) {
+    wfill(ctx, cam, w, 3.33, 0, 3.67, ROOM.h, PAL.pillar, 0.014);
+    wfill(ctx, cam, w, 3.33, 0, 3.4, ROOM.h, PAL.pillarDk, 0.016);
+    wfill(ctx, cam, w, 3.6, 0, 3.67, ROOM.h, PAL.pillarDk, 0.016);
+  }
+  drawWindows(ctx, cam, S, opts.rainT);
+  // pier clock between the windows
+  wellipse(ctx, cam, N, 4, 1.9, 0.22, 0.22, PAL.rail, 0.01);
+  wellipse(ctx, cam, N, 4, 1.9, 0.18, 0.18, '#F6EEDA', 0.012);
+  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; wellipse(ctx, cam, N, 4 + Math.cos(a) * 0.145, 1.9 + Math.sin(a) * 0.145, 0.012, 0.012, PAL.ink, 0.014, 8); }
+  wline(ctx, cam, N, 4, 1.9, 4, 2.02, PAL.ink, 2.4 * S, 0.016);
+  wline(ctx, cam, N, 4, 1.9, 4.09, 1.85, PAL.ink, 2.4 * S, 0.016);
+  // west wall (cool half): hanging scroll
+  const sc0 = 4.75, sc1 = 5.45;
+  wline(ctx, cam, W, (sc0 + sc1) / 2, 2.68, sc0 + 0.05, 2.52, PAL.inkDark, 1.2 * S, 0.008);
+  wline(ctx, cam, W, (sc0 + sc1) / 2, 2.68, sc1 - 0.05, 2.52, PAL.inkDark, 1.2 * S, 0.008);
+  wfill(ctx, cam, W, sc0, 1.22, sc1, 2.52, PAL.paper, 0.01);
+  wfill(ctx, cam, W, sc0, 2.36, sc1, 2.52, '#7E8B6E', 0.012);
+  wfill(ctx, cam, W, sc0, 1.22, sc1, 1.32, '#7E8B6E', 0.012);
+  wpoly(ctx, cam, W, [[sc0 + 0.05, 1.45], [sc0 + 0.2, 1.95], [sc0 + 0.32, 1.72], [sc0 + 0.46, 2.12], [sc1 - 0.05, 1.45]], PAL.inkMid, 0.014);
+  wpoly(ctx, cam, W, [[sc0 + 0.05, 1.45], [sc0 + 0.14, 1.66], [sc0 + 0.26, 1.55], [sc0 + 0.4, 1.78], [sc1 - 0.05, 1.45]], PAL.inkDark, 0.015);
+  wfill(ctx, cam, W, sc1 - 0.16, 2.18, sc1 - 0.1, 2.24, PAL.seal, 0.016);
+  for (const v of [2.52, 1.22]) wfill(ctx, cam, W, sc0 - 0.04, v - 0.025, sc1 + 0.04, v + 0.025, PAL.woodLine, 0.018);
+  // west wall (warm half): bottle shelves
+  for (const v of [1.4, 1.92]) {
+    wfill(ctx, cam, W, 0.9, v - 0.04, 2.75, v, PAL.rail, 0.04);
+    const rnd = mulberry(Math.round(v * 100) + 3);
+    let u = 0.98;
+    while (u < 2.62) {
+      const bw = 0.055 + rnd() * 0.04, bh = 0.17 + rnd() * 0.13; const c = ['#3D7A55', '#6B3B22', '#B9D6D2', '#8A2C2A', '#D9B25A'][Math.floor(rnd() * 5)];
+      wfill(ctx, cam, W, u, v, u + bw, v + bh, c, 0.05);
+      wfill(ctx, cam, W, u + bw * 0.32, v + bh, u + bw * 0.68, v + bh + 0.07, c, 0.05);
+      wfill(ctx, cam, W, u + 0.008, v + bh * 0.3, u + bw - 0.008, v + bh * 0.6, '#EFE3C4', 0.052);
+      u += bw + 0.025 + (rnd() < 0.12 ? 0.1 : 0);
+    }
+  }
+  // east wall (cool half): oval mirror + sconce
+  wellipse(ctx, cam, E, 1.75, 1.75, 0.5, 0.42, PAL.gold, 0.01);
+  wellipse(ctx, cam, E, 1.75, 1.75, 0.44, 0.36, PAL.mirror, 0.012);
+  wpoly(ctx, cam, E, [[1.45, 1.55], [1.62, 1.55], [1.95, 2.02], [1.8, 2.04]], 'rgba(255,255,255,0.14)', 0.014);
+  wfill(ctx, cam, E, 0.52, 1.82, 0.62, 1.86, PAL.gold, 0.02);
+  wpoly(ctx, cam, E, [[0.45, 1.86], [0.69, 1.86], [0.64, 2.05], [0.5, 2.05]], '#F4E2B6', 0.04);
+  // east wall (warm half): door with frosted glass + mirrored lettering
+  wfill(ctx, cam, E, 4.35, 0, 5.45, 2.2, PAL.woodLine, 0.006);
+  wfill(ctx, cam, E, 4.42, 0, 5.38, 2.14, PAL.wood, 0.008);
+  wfill(ctx, cam, E, 4.55, 1.2, 5.25, 1.98, 'rgba(225,238,236,0.86)', 0.01);
+  wtext(ctx, cam, E, 5.15, 1.45, 4.65, 1.75, '冰室', HANZI, '#B48A3C', false, S, 0.012);
+  wfill(ctx, cam, E, 4.55, 0.18, 5.25, 1.0, PAL.woodHi, 0.01);
+  wellipse(ctx, cam, E, 5.25, 1.05, 0.035, 0.035, PAL.gold, 0.03, 12);
+  // south wall: neon + menu boards
+  wfill(ctx, cam, So, 1.3, 1.72, 2.3, 2.24, 'rgba(20,10,10,0.55)', 0.008);
+  wtext(ctx, cam, So, 1.38, 1.78, 2.22, 2.18, '冰室', HANZI, PAL.neonP, true, S, 0.012);
+  const menu = [['咖啡', 2.35], ['奶茶', 2.65], ['檸茶', 2.95], ['多士', 4.85], ['紅豆冰', 5.15], ['西餅', 5.45]];
+  for (const [t, u] of menu) {
+    const n = [...t].length, top = 2.12, h = 0.17 * n + 0.08;
+    wfill(ctx, cam, So, u - 0.015, top - h - 0.015, u + 0.235, top + 0.015, PAL.rail, 0.01);
+    wfill(ctx, cam, So, u, top - h, u + 0.22, top, PAL.board, 0.012);
+    wtextV(ctx, cam, So, u + 0.035, top - 0.04, 0.15, t, PAL.boardInk, false, S, 0.014);
+  }
+  // floor: checker tiles
+  fillP(ctx, polyS(cam, [[-4, 0, -3.5], [4, 0, -3.5], [4, 0, 3.5], [-4, 0, 3.5]]), PAL.floorA);
+  const T = 0.5;
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 14; j++) {
+    if ((i + j) % 2) continue;
+    const x0 = -4 + i * T, z0 = -3.5 + j * T;
+    fillP(ctx, polyS(cam, [[x0, 0.001, z0], [x0 + T, 0.001, z0], [x0 + T, 0.001, z0 + T], [x0, 0.001, z0 + T]]), PAL.floorB);
+  }
+  // zones and tape
+  if (opts.zones) {
+    const s = opts.refSide || 1;
+    fillP(ctx, polyS(cam, [[-4, 0.004, 0], [4, 0.004, 0], [4, 0.004, 3.5 * s], [-4, 0.004, 3.5 * s]]), 'rgba(47,200,120,0.22)');
+    fillP(ctx, polyS(cam, [[-4, 0.004, 0], [4, 0.004, 0], [4, 0.004, -3.5 * s], [-4, 0.004, -3.5 * s]]), 'rgba(240,70,75,0.22)');
+  }
+  if (opts.tape !== false) fillP(ctx, polyS(cam, [[-4, 0.005, -0.03], [4, 0.005, -0.03], [4, 0.005, 0.03], [-4, 0.005, 0.03]]), PAL.axis);
+  // contact shadows
+  for (const [c, r] of [[[0, 0, 0], 0.36], [[-1.02, 0, 0], 0.33], [[1.02, 0, 0], 0.33], [[2.75, 0, 2.35], 0.38], [[-2.75, 0, 2.45], 0.38], [[3.62, 0, 2.3], 0.18]])
+    fillP(ctx, polyS(cam, ring(add(c, [0, 0.006, 0]), r, 24)), PAL.shadow);
+  // table light pool on the floor
+  fillP(ctx, polyS(cam, ring([0, 0.007, 0], 1.25, 36)), 'rgba(255,214,140,0.14)');
+}
+
+/* ---------- props ---------- */
+const VEINS = [[[-0.3, 0.12], [-0.12, 0.05], [0.05, 0.1], [0.24, -0.02]], [[-0.2, -0.25], [-0.05, -0.12], [0.1, -0.2], [0.3, -0.12]], [[0.12, 0.3], [0.18, 0.15], [0.32, 0.12]]];
+function drawTableTop(ctx, cam) {
+  const top = ring([0, TABLE.y, 0], TABLE.r, 48), bot = ring([0, TABLE.y - TABLE.th, 0], TABLE.r * 0.985, 48);
+  fillP(ctx, hullOf(cam, top.concat(bot)), PAL.marbleEdge);
+  const tp = polyS(cam, top); if (!tp) return;
+  fillP(ctx, tp, PAL.marble);
+  ctx.save(); path(ctx, tp); ctx.clip();
+  for (const v of VEINS) { const pts = v.map(([x, z]) => [x, TABLE.y + 0.001, z]); strokePts(ctx, cam, pts, 0.004, PAL.vein, false); }
+  ctx.restore();
+}
+function tableBaseItem(cam, low) {
+  low.push({ d: cam.dist([0, 0.35, 0]), draw: c => {
+    for (const a of [90, 210, 330]) { const d = [Math.cos(rad(a)), 0, Math.sin(rad(a))]; strokePts(c, cam, [[0, 0.1, 0], add(mul(d, 0.16), [0, 0.04, 0]), add(mul(d, 0.27), [0, 0.012, 0])], 0.03, PAL.iron, false); }
+    limb(c, cam, [0, 0.08, 0], [0, TABLE.y - TABLE.th, 0], 0.055, PAL.iron);
+    fillP(c, hullOf(cam, ring([0, 0.46, 0], 0.045, 12).concat(ring([0, 0.4, 0], 0.045, 12))), PAL.iron);
+    fillP(c, hullOf(cam, ring([0, 0.735, 0], 0.11, 14).concat(ring([0, 0.7, 0], 0.06, 14))), PAL.iron);
+  } });
+}
+function cupItem(cam, pos, out) {
+  out.push({ d: cam.dist(pos), draw: ctx => {
+    fillP(ctx, polyS(cam, ring(add(pos, [0, 0.004, 0]), 0.078, 22)), '#DCD5C8');
+    const sau = polyS(cam, ring(add(pos, [0, 0.008, 0]), 0.072, 22)); fillP(ctx, sau, PAL.cup);
+    if (sau) { path(ctx, polyS(cam, ring(add(pos, [0, 0.009, 0]), 0.064, 22))); ctx.strokeStyle = PAL.cupRim; ctx.lineWidth = Math.max(0.8, 0.005 * cam.fpx / cam.depth(pos)); ctx.stroke(); }
+    fillP(ctx, hullOf(cam, ring(add(pos, [0, 0.01, 0]), 0.032, 16).concat(ring(add(pos, [0, 0.082, 0]), 0.044, 16))), '#F3F0E8');
+    fillP(ctx, hullOf(cam, ring(add(pos, [0, 0.066, 0]), 0.0415, 16).concat(ring(add(pos, [0, 0.074, 0]), 0.043, 16))), PAL.cupRim);
+    strokePts(ctx, cam, [add(pos, [0.04, 0.07, 0]), add(pos, [0.064, 0.064, 0]), add(pos, [0.062, 0.035, 0]), add(pos, [0.038, 0.03, 0])], 0.008, '#ECE7DD', false);
+    fillP(ctx, polyS(cam, ring(add(pos, [0, 0.083, 0]), 0.044, 18)), PAL.cup);
+    fillP(ctx, polyS(cam, ring(add(pos, [0, 0.084, 0]), 0.037, 18)), PAL.coffee);
+  } });
+}
+function tableProps(cam, high) {
+  // sugar jar
+  const sj = [-0.02, TABLE.y, -0.2];
+  high.push({ d: cam.dist(sj), draw: c => {
+    fillP(c, hullOf(cam, ring(sj, 0.035, 14).concat(ring(add(sj, [0, 0.11, 0]), 0.035, 14))), 'rgba(205,230,235,0.75)');
+    fillP(c, hullOf(cam, ring(sj, 0.033, 14).concat(ring(add(sj, [0, 0.055, 0]), 0.033, 14))), '#FFFFFF');
+    fillP(c, hullOf(cam, ring(add(sj, [0, 0.11, 0]), 0.037, 14).concat(ring(add(sj, [0, 0.15, 0]), 0.022, 14))), PAL.metal);
+  } });
+  // handbag
+  const hb = [0.2, TABLE.y + 0.052, -0.27];
+  high.push({ d: cam.dist(hb), draw: c => {
+    drawBox(c, cam, boxV(hb, [1, 0, 0], UP, [0, 0, 1], 0.09, 0.05, 0.035), { top: '#E3CDA6', side: '#CDB088', sideB: '#BB9C74' });
+    strokePts(c, cam, [add(hb, [-0.05, 0.05, 0]), add(hb, [-0.03, 0.1, 0]), add(hb, [0.03, 0.1, 0]), add(hb, [0.05, 0.05, 0])], 0.008, '#8C6A44', false);
+    ball(c, cam, add(hb, [0, 0.035, -0.037]), 0.009, PAL.gold);
+    ball(c, cam, add(hb, [0, 0.035, 0.037]), 0.009, PAL.gold);
+  } });
+}
+function chairItems(cam, ch, low, high) {
+  const F = ch.F, S = ch.S, b = ch.base;
+  const cc = add(madd(b, F, -0.03), [0, 0.46, 0]);
+  const back = madd(cc, F, -0.185);
+  const arch = (w, h, n) => { const pts = []; for (let i = 0; i <= n; i++) { const th = Math.PI * i / n; pts.push(add(add(back, mul(S, w * Math.cos(th))), [0, h * Math.sin(th), 0])); } return pts; };
+  const outer = arch(0.17, 0.54, 16), inner = arch(0.1, 0.37, 12);
+  const legs = [45, 135, 225, 315].map(a => { const r = rad(a); const dir = add(mul(F, Math.cos(r)), mul(S, Math.sin(r))); const top = madd(add(cc, [0, -0.03, 0]), dir, 0.16); return [top, madd([top[0], 0, top[2]], dir, 0.05)]; });
+  low.push({ d: cam.dist(cc), draw: ctx => {
+    for (const [t, bt] of legs) limb(ctx, cam, t, bt, 0.028, PAL.chair);
+    strokePts(ctx, cam, ring(add(cc, [0, -0.27, 0]), 0.165, 20), 0.014, PAL.chairDk, true);
+    fillP(ctx, hullOf(cam, ring(cc, 0.205, 20).concat(ring(add(cc, [0, -0.035, 0]), 0.2, 20))), PAL.chairDk);
+    fillP(ctx, polyS(cam, ring(cc, 0.205, 20)), PAL.chairHi);
+    strokeSplit(ctx, cam, outer, 0.03, PAL.chair, false);
+    strokeSplit(ctx, cam, inner, 0.022, PAL.chair, false);
+  } });
+  high.push({ d: cam.dist(add(back, [0, 0.35, 0])), draw: ctx => {
+    strokeSplit(ctx, cam, outer, 0.03, PAL.chair, true);
+    strokeSplit(ctx, cam, inner, 0.022, PAL.chair, true);
+  } });
+}
+function lampItem(cam, high) {
+  high.push({ d: cam.dist([0, 1.85, 0]) + 0.05, draw: ctx => {
+    limb(ctx, cam, [0, 3.0, 0], [0, 1.97, 0], 0.01, '#1C1C1C');
+    fillP(ctx, hullOf(cam, ring([0, 1.98, 0], 0.05, 16).concat(ring([0, 1.75, 0], 0.25, 28))), PAL.lampOut);
+    strokePts(ctx, cam, ring([0, 1.752, 0], 0.25, 28), 0.012, '#E7E0C8', true);
+    if (cam.pos[1] < 1.75) { fillP(ctx, polyS(cam, ring([0, 1.749, 0], 0.235, 28)), PAL.lampIn); ball(ctx, cam, [0, 1.78, 0], 0.042, PAL.bulb); }
+  } });
+}
+function standItem(cam, base, high) {
+  const aim = norm(sub([0, 1.2, 0], add(base, [0, 1.95, 0])));
+  const ah = norm([aim[0], 0, aim[2]]);
+  const right = norm(cross(ah, UP));
+  high.push({ d: cam.dist(add(base, [0, 1, 0])), draw: ctx => {
+    const hub = add(base, [0, 0.55, 0]);
+    for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2 + 0.4; limb(ctx, cam, hub, add(base, [Math.cos(a) * 0.38, 0.01, Math.sin(a) * 0.38]), 0.022, PAL.stand); }
+    limb(ctx, cam, add(base, [0, 0.4, 0]), add(base, [0, 1.95, 0]), 0.03, PAL.stand);
+    const c = madd(add(base, [0, 1.95, 0]), ah, 0.05);
+    drawBox(ctx, cam, boxV(c, right, UP, ah, 0.33, 0.33, 0.14), { top: '#35383C', side: '#2A2C30', front: PAL.softbox, frontN: ah });
+  } });
+}
+function umbrellaItem(cam, base, high) {
+  high.push({ d: cam.dist(add(base, [0, 0.4, 0])), draw: ctx => {
+    fillP(ctx, hullOf(cam, ring(base, 0.12, 16).concat(ring(add(base, [0, 0.5, 0]), 0.13, 16))), '#2F4F44');
+    fillP(ctx, polyS(cam, ring(add(base, [0, 0.5, 0]), 0.13, 16)), '#1D332B');
+    for (const [dx, dz, col] of [[-0.03, 0.02, '#1B1B1E'], [0.04, -0.02, '#8A2B2B']]) {
+      const s0 = add(base, [dx, 0.45, dz]), s1 = add(base, [dx * 2.5, 1.0, dz * 2.5]);
+      fillP(ctx, hullOf(cam, [add(s0, [0.05, 0, 0.05]), add(s0, [-0.05, 0, -0.05]), add(s0, [0.05, 0, -0.05]), add(s0, [-0.05, 0, 0.05]), s1]), col);
+      strokePts(ctx, cam, [s1, add(s1, [0, 0.09, 0]), add(s1, [0.04, 0.12, 0]), add(s1, [0.07, 0.09, 0])], 0.014, '#6B4428', false);
+    }
+  } });
+}
+function counterItem(cam, low) {
+  const c = [0, 0.5, 3.22];
+  low.push({ d: cam.dist(c) + 0.3, draw: ctx => {
+    drawBox(ctx, cam, boxV(c, [1, 0, 0], UP, [0, 0, 1], 1.9, 0.5, 0.28), { top: PAL.counterTop, side: PAL.wood });
+    // front panels (face at z = 2.94)
+    if (cam.pos[2] < 2.94) for (let x = -1.8; x < 1.8; x += 0.45) fillP(ctx, polyS(cam, [[x + 0.05, 0.14, 2.938], [x + 0.4, 0.14, 2.938], [x + 0.4, 0.86, 2.938], [x + 0.05, 0.86, 2.938]]), PAL.woodHi);
+    drawBox(ctx, cam, boxV([0, 1.015, 3.2], [1, 0, 0], UP, [0, 0, 1], 1.95, 0.02, 0.31), { top: PAL.counterTop, side: '#CDBEA3' });
+    // display case with jars
+    for (let i = 0; i < 5; i++) {
+      const p = [-1.5 + i * 0.24, 1.035, 3.24];
+      fillP(ctx, hullOf(cam, ring(p, 0.07, 12).concat(ring(add(p, [0, 0.2, 0]), 0.07, 12))), 'rgba(235,245,240,0.6)');
+      fillP(ctx, hullOf(cam, ring(p, 0.066, 12).concat(ring(add(p, [0, 0.12, 0]), 0.066, 12))), ['#E2574C', '#F2C14E', '#7CC29B', '#E98FB3', '#8E6A4E'][i]);
+      fillP(ctx, hullOf(cam, ring(add(p, [0, 0.2, 0]), 0.074, 12).concat(ring(add(p, [0, 0.235, 0]), 0.07, 12))), PAL.metal);
+    }
+    drawBox(ctx, cam, boxV([-1.02, 1.21, 3.24], [1, 0, 0], UP, [0, 0, 1], 0.62, 0.175, 0.22), { top: PAL.glassF, side: PAL.glassF });
+    // cash register
+    drawBox(ctx, cam, boxV([0.45, 1.17, 3.25], [1, 0, 0], UP, [0, 0, 1], 0.22, 0.14, 0.17), { top: PAL.metal, side: PAL.metalDk });
+    drawBox(ctx, cam, boxV([0.45, 1.36, 3.33], [1, 0, 0], UP, [0, 0, 1], 0.16, 0.06, 0.05), { top: '#2E2E2E', side: '#3A3A3A' });
+    // phone
+    drawBox(ctx, cam, boxV([1.08, 1.09, 3.2], [1, 0, 0], UP, [0, 0, 1], 0.1, 0.055, 0.1), { top: PAL.phone, side: '#8A2322' });
+    limb(ctx, cam, [1.0, 1.17, 3.2], [1.16, 1.17, 3.2], 0.04, '#1E1E1E');
+    // radio
+    drawBox(ctx, cam, boxV([1.55, 1.15, 3.25], [1, 0, 0], UP, [0, 0, 1], 0.2, 0.12, 0.12), { top: '#7A4E33', side: '#5C3925' });
+    if (cam.pos[2] < 3.13) { fillP(ctx, polyS(cam, ring([1.5, 1.15, 3.128], 0.07, 14).map(p => [p[0], 1.15 + (p[2] - 3.128), 3.128])), '#E7D7B4'); }
+  } });
+}
+
+/* ---------- characters ---------- */
+function capRegion(cam, Hc, R, axis, alpha, P) {
+  const ca = Math.cos(alpha), sa = Math.sin(alpha);
+  let e1 = cross(axis, UP); if (len(e1) < 1e-4) e1 = cross(axis, [1, 0, 0]); e1 = norm(e1);
+  const e2 = cross(axis, e1);
+  const N = 40, cap = [];
+  for (let i = 0; i < N; i++) {
+    const th = i / N * Math.PI * 2;
+    const d = add(mul(axis, ca), add(mul(e1, sa * Math.cos(th)), mul(e2, sa * Math.sin(th))));
+    const p = madd(Hc, d, R);
+    cap.push({ p, v: dot(d, sub(cam.pos, p)) > 0 });
+  }
+  if (cap.every(c => !c.v)) return null;
+  if (cap.every(c => c.v)) return cap.map(c => P(c.p)).filter(Boolean);
+  let s = 0; for (let i = 0; i < N; i++) if (cap[i].v && !cap[(i - 1 + N) % N].v) { s = i; break; }
+  const arc = []; for (let j = 0; j < N; j++) { const c = cap[(s + j) % N]; if (!c.v) break; arc.push(c.p); }
+  const v = norm(sub(cam.pos, Hc));
+  let w1 = cross(v, UP); if (len(w1) < 1e-4) w1 = cross(v, [1, 0, 0]); w1 = norm(w1);
+  const w2 = cross(v, w1);
+  const M = 56, sil = [];
+  for (let i = 0; i < M; i++) { const ph = i / M * Math.PI * 2; const d = add(mul(w1, Math.cos(ph)), mul(w2, Math.sin(ph))); sil.push({ p: madd(Hc, d, R), in: dot(d, axis) > ca }); }
+  let s2 = -1; for (let i = 0; i < M; i++) if (sil[i].in && !sil[(i - 1 + M) % M].in) { s2 = i; break; }
+  const run = []; if (s2 >= 0) for (let j = 0; j < M; j++) { const c = sil[(s2 + j) % M]; if (!c.in) break; run.push(c.p); }
+  const A = arc.map(P).filter(Boolean); if (A.length < 2) return null;
+  let Rn = run.map(P).filter(Boolean);
+  if (Rn.length) { const e = A[A.length - 1]; const d0 = (Rn[0][0] - e[0]) ** 2 + (Rn[0][1] - e[1]) ** 2, d1 = (Rn[Rn.length - 1][0] - e[0]) ** 2 + (Rn[Rn.length - 1][1] - e[1]) ** 2; if (d1 < d0) Rn.reverse(); }
+  return A.concat(Rn);
+}
+
+function drawHead(ctx, cam, ch, J, pose) {
+  const Hc = J.headC, R = HEAD_R, col = ch.col, woman = ch.style === 'woman';
+  const pc = cam.proj(Hc); if (!pc) return;
+  const k = cam.fpx / pc[2];
+  const SY = 1.07;
+  const P = p => { const q = cam.proj(p); return q ? [q[0], pc[1] + (q[1] - pc[1]) * SY] : null; };
+  const v = norm(sub(cam.pos, Hc));
+  const { Fh, Uh, Sh } = J;
+  const facing = d => { const p = madd(Hc, d, R); return dot(d, norm(sub(cam.pos, p))); };
+  const dirOf = (f, u, s) => norm(add(add(mul(Fh, f), mul(Uh, u)), mul(Sh, s)));
+  const blink = pose.blink || 0, mouth = pose.mouth || 0;
+  const headPath = () => { ctx.beginPath(); ctx.ellipse(pc[0], pc[1], R * k, R * k * SY, 0, 0, Math.PI * 2); };
+  // hair volume behind the head
+  ctx.fillStyle = col.hair;
+  let hvp = null;
+  if (woman) {
+    const hv = P(add(add(Hc, mul(Uh, -0.03)), mul(Fh, -0.022)));
+    if (hv) { hvp = [hv[0], hv[1], R * k * 1.2, R * k * SY * 1.1]; }
+  } else {
+    const hv = P(add(add(Hc, mul(Uh, 0.016)), mul(Fh, -0.014)));
+    if (hv) { hvp = [hv[0], hv[1], R * k * 1.06, R * k * SY * 1.05]; }
+  }
+  if (hvp) { ctx.beginPath(); ctx.ellipse(hvp[0], hvp[1], hvp[2], hvp[3], 0, 0, Math.PI * 2); ctx.fill(); }
+  headPath(); ctx.fill();
+  // face cap
+  const Fc = norm(add(mul(Fh, Math.cos(woman ? 0.4 : 0.34)), mul(Uh, -Math.sin(woman ? 0.4 : 0.34))));
+  const face = capRegion(cam, Hc, R, Fc, rad(woman ? 66 : 69), P);
+  ctx.save(); headPath(); ctx.clip();
+  if (face && face.length > 2) { path(ctx, face); ctx.fillStyle = col.skin; ctx.fill(); }
+  // lamp shading: the half of the head turned away from the lamp
+  const Lh = norm(sub(LAMP, Hc));
+  const shade = capRegion(cam, Hc, R, mul(Lh, -1), rad(90), P);
+  if (shade && shade.length > 2) { path(ctx, shade); ctx.fillStyle = 'rgba(48,22,36,0.22)'; ctx.fill(); }
+  // cheeks
+  if (woman) for (const s of [-1, 1]) {
+    const d = dirOf(0.74, -0.3, 0.5 * s), f = facing(d);
+    if (f > 0.2) { const q = P(madd(Hc, d, R)); if (q) { ctx.beginPath(); ctx.ellipse(q[0], q[1], 0.02 * k * clamp(f, 0.4, 1), 0.013 * k, 0, 0, Math.PI * 2); ctx.fillStyle = 'rgba(226,104,104,0.26)'; ctx.fill(); } }
+  }
+  // eyes (white + pupil looking at the other character + highlight), brows, lashes
+  const look = pose.lookAt || EYE[ch.id === 'A' ? 'B' : 'A'];
+  for (const s of [-1, 1]) {
+    const d = dirOf(0.88, 0.12, 0.4 * s), f = facing(d);
+    if (f <= 0.08) continue;
+    const pe = madd(Hc, d, R), q = P(pe); if (!q) continue;
+    const fx = clamp(f * 1.2, 0.3, 1);
+    const ex = 0.02 * k * fx, ey = Math.max(0.6, 0.022 * k * (1 - blink * 0.9));
+    ctx.beginPath(); ctx.ellipse(q[0], q[1], ex, ey, 0, 0, Math.PI * 2); ctx.fillStyle = '#FFFDF7'; ctx.fill();
+    if (blink < 0.7) {
+      const g = norm(sub(look, pe)), q2 = P(madd(pe, g, 0.25));
+      let ox = 0, oy = 0;
+      if (q2) { const vx = q2[0] - q[0], vy = q2[1] - q[1], vl = Math.hypot(vx, vy) || 1; const sinT = Math.sqrt(Math.max(0, 1 - dot(g, norm(sub(cam.pos, pe))) ** 2)); ox = vx / vl * sinT * ex * 0.55; oy = vy / vl * sinT * ey * 0.4; }
+      ctx.save(); ctx.beginPath(); ctx.ellipse(q[0], q[1], ex, ey, 0, 0, Math.PI * 2); ctx.clip();
+      ctx.beginPath(); ctx.ellipse(q[0] + ox, q[1] + oy, 0.0125 * k * fx, 0.0135 * k, 0, 0, Math.PI * 2); ctx.fillStyle = '#20160F'; ctx.fill();
+      ctx.beginPath(); ctx.arc(q[0] + ox - 0.004 * k, q[1] + oy - 0.005 * k, Math.max(0.5, 0.004 * k), 0, Math.PI * 2); ctx.fillStyle = '#FFFFFF'; ctx.fill();
+      ctx.restore();
+    }
+    // upper lid line
+    ctx.strokeStyle = woman ? '#1A100C' : 'rgba(40,24,18,0.75)'; ctx.lineWidth = (woman ? 0.0065 : 0.004) * k; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.ellipse(q[0], q[1], ex * 1.04, ey * 1.04, 0, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
+    if (woman && f > 0.3) { const outer = q[0] + s * 0 + (dot(Sh, cam.r) * s > 0 ? 1 : -1) * ex * 0.95; ctx.beginPath(); ctx.moveTo(outer, q[1] - ey * 0.4); ctx.lineTo(outer + (outer > q[0] ? 1 : -1) * 0.012 * k, q[1] - ey * 0.95); ctx.stroke(); }
+    const db = dirOf(0.8, 0.42 + (pose.brow || 0), 0.42 * s), qb = P(madd(Hc, db, R));
+    if (qb && f > 0.25) {
+      const bw = 0.021 * k * clamp(f, 0.3, 1); const tilt = pose.worry ? s * 0.005 * k * (dot(Sh, cam.r) > 0 ? 1 : -1) : 0;
+      ctx.strokeStyle = col.brow; ctx.lineWidth = (woman ? 0.0065 : 0.011) * k;
+      ctx.beginPath(); ctx.moveTo(qb[0] - bw, qb[1] + tilt + (woman ? 0.002 * k : 0)); ctx.quadraticCurveTo(qb[0], qb[1] - (woman ? 0.008 : 0.003) * k, qb[0] + bw, qb[1] - tilt + (woman ? 0.002 * k : 0)); ctx.stroke();
+    }
+  }
+  // mouth
+  {
+    const d = dirOf(0.84, -0.54, 0), f = facing(d);
+    if (f > 0.12) {
+      const q = P(madd(Hc, d, R));
+      if (q) {
+        const w = (woman ? 0.034 : 0.03) * k * clamp(f * 1.15, 0.3, 1), h = ((woman ? 0.008 : 0.004) + 0.02 * mouth) * k;
+        ctx.beginPath(); ctx.ellipse(q[0], q[1], w / 2, Math.max(0.7, h / 2), 0, 0, Math.PI * 2); ctx.fillStyle = col.mouth; ctx.fill();
+      }
+    }
+  }
+  // woman: side-swept fringe over the forehead
+  if (woman) {
+    const d = dirOf(0.6, 0.66, 0.42), q = P(madd(Hc, d, R * 1.02));
+    if (q && dot(d, v) > -0.2) { ctx.beginPath(); ctx.ellipse(q[0], q[1], 0.075 * k, 0.036 * k, -0.35 * Math.sign(dot(Sh, cam.r) || 1), 0, Math.PI * 2); ctx.fillStyle = col.hair; ctx.fill(); }
+  }
+  ctx.restore();
+  // ears (+ pearl earrings)
+  for (const s of [-1, 1]) {
+    const d = dirOf(-0.1, -0.08, 0.965 * s);
+    if (dot(d, v) > -0.18) {
+      const q = P(madd(Hc, d, R * 0.98));
+      if (q) {
+        if (!woman || dot(d, v) > 0.25) { ctx.beginPath(); ctx.ellipse(q[0], q[1], 0.02 * k, 0.03 * k, 0, 0, Math.PI * 2); ctx.fillStyle = col.skin; ctx.fill(); ctx.beginPath(); ctx.ellipse(q[0], q[1], 0.009 * k, 0.016 * k, 0, 0, Math.PI * 2); ctx.fillStyle = col.skinDk; ctx.fill(); }
+        if (woman) { ctx.beginPath(); ctx.arc(q[0], q[1] + 0.034 * k, Math.max(0.6, 0.011 * k), 0, Math.PI * 2); ctx.fillStyle = col.pearl; ctx.fill(); }
+      }
+    }
+  }
+  // nose (can poke out of the silhouette in profile)
+  {
+    const d = dirOf(0.97, -0.22, 0), p = madd(Hc, d, R * 1.1), q = P(p);
+    if (q) {
+      const outside = Math.hypot(q[0] - pc[0], (q[1] - pc[1]) / SY) > R * k * 0.98;
+      if (dot(d, v) > 0 || outside) { ctx.beginPath(); ctx.ellipse(q[0], q[1], 0.017 * k, 0.015 * k, 0, 0, Math.PI * 2); ctx.fillStyle = outside ? col.skin : col.skinDk; ctx.fill(); }
+    }
+  }
+  // man: slick pompadour + side part + shine
+  if (!woman) {
+    const d = dirOf(0.48, 0.88, 0.05), q = P(madd(Hc, d, R * 1.03));
+    if (q) { ctx.beginPath(); ctx.ellipse(q[0], q[1], 0.06 * k, 0.034 * k, 0, 0, Math.PI * 2); ctx.fillStyle = col.hair; ctx.fill(); }
+    const shine = []; for (let i = 0; i <= 6; i++) { const t = i / 6; const dd = dirOf(0.5 - 1.15 * t, 0.86, 0.24); if (dot(dd, v) > 0.05) shine.push(P(madd(Hc, dd, R * 1.04))); }
+    if (shine.length > 1 && shine.every(Boolean)) { ctx.strokeStyle = col.hairHi; ctx.globalAlpha = 0.8; ctx.lineWidth = 0.009 * k; ctx.lineCap = 'round'; ctx.beginPath(); shine.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); ctx.globalAlpha = 1; }
+  } else {
+    const shine = []; for (let i = 0; i <= 6; i++) { const t = i / 6; const dd = dirOf(0.3 - 1.0 * t, 0.9, -0.28); if (dot(dd, v) > 0.05) shine.push(P(madd(Hc, dd, R * 1.08))); }
+    if (shine.length > 1 && shine.every(Boolean)) { ctx.strokeStyle = col.hairHi; ctx.globalAlpha = 0.8; ctx.lineWidth = 0.012 * k; ctx.lineCap = 'round'; ctx.beginPath(); shine.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); ctx.globalAlpha = 1; }
+  }
+}
+
+function charItems(cam, ch, pose, low, high) {
+  const J = joints(ch, pose);
+  const col = ch.col, woman = ch.style === 'woman', F = ch.F, S = ch.S, B = ch.build;
+  const { lo, hi } = splitY(J.T, TORSO_EDGES, TABLE_Y);
+  const front = (t, s) => add(madd(lerp3(J.hip, J.shC, t), F, B.dep + 0.004), mul(S, s));
+  const backP = (t, s) => add(madd(lerp3(J.hip, J.shC, t), F, -B.dep - 0.004), mul(S, s));
+  const visFront = dot(F, norm(sub(cam.pos, J.shC))) > 0.04;
+  const above = pts => clipY(pts, TABLE_Y + 0.004, true);
+  low.push({ d: cam.dist(J.hip), draw: ctx => {
+    const dHip = cam.depth(J.hip);
+    const legs = [[J.hipL, J.kL, J.aL, J.tL], [J.hipR, J.kR, J.aR, J.tR]];
+    const order = cam.depth(legs[0][1]) > cam.depth(legs[1][1]) ? [0, 1] : [1, 0];
+    const thighFront = cam.depth(mid(J.kL, J.kR)) < dHip;
+    const lowerTorso = () => { const h = hullOf(cam, lo); if (h) fillRound(ctx, h, col.top, 0.04 * cam.fpx / Math.max(dHip, 0.1)); };
+    if (thighFront) lowerTorso();
+    order.forEach((i, n) => {
+      const L = legs[i]; const pcol = n === 0 ? col.pantsDk : col.pants;
+      limb(ctx, cam, L[0], L[1], woman ? 0.13 : 0.14, pcol);
+      if (woman) { limb(ctx, cam, L[1], lerp3(L[1], L[2], 0.25), 0.115, pcol); limb(ctx, cam, lerp3(L[1], L[2], 0.22), L[2], 0.085, col.leg); }
+      else limb(ctx, cam, L[1], L[2], 0.11, pcol);
+      limb(ctx, cam, L[2], L[3], woman ? 0.07 : 0.085, col.shoe);
+    });
+    if (!thighFront) lowerTorso();
+  } });
+  const tc = centroid(hi);
+  high.push({ d: cam.dist(tc), draw: ctx => {
+    const dT = cam.depth(tc), kT = cam.fpx / Math.max(dT, 0.1);
+    const arms = [{ s: J.shL, e: J.elL, h: J.hL, side: -1 }, { s: J.shR, e: J.elR, h: J.hR, side: 1 }];
+    for (const a of arms) { a.d = cam.depth(centroid([a.s, a.e, a.h])); a.far = a.d > dT; }
+    const drawArm = a => {
+      const c = a.far ? col.topDk : col.top, sk = a.far ? col.skinDk : col.skin;
+      if (woman) {
+        const capEnd = lerp3(a.s, a.e, 0.32);
+        limb(ctx, cam, capEnd, a.e, 0.078, sk); limb(ctx, cam, a.e, a.h, 0.07, sk);
+        limb(ctx, cam, a.s, capEnd, 0.1, c);
+        if (a.side > 0) limb(ctx, cam, lerp3(a.e, a.h, 0.82), lerp3(a.e, a.h, 0.86), 0.075, PAL.gold, 'butt');
+      } else {
+        limb(ctx, cam, a.s, a.e, 0.102, c); limb(ctx, cam, a.e, lerp3(a.e, a.h, 0.84), 0.09, c);
+        limb(ctx, cam, lerp3(a.e, a.h, 0.82), lerp3(a.e, a.h, 0.93), 0.074, col.shirt, 'butt');
+      }
+      ball(ctx, cam, a.h, woman ? 0.038 : 0.044, sk);
+    };
+    arms.filter(a => a.far).sort((x, y) => y.d - x.d).forEach(drawArm);
+    limb(ctx, cam, J.shC, madd(J.headC, J.Uh, -0.07), woman ? 0.07 : 0.082, col.skinDk);
+    const h = hullOf(cam, hi); if (h) fillRound(ctx, h, col.top, 0.05 * kT);
+    // lamp shading on the torso faces turned away from the lamp
+    const tcen = centroid(J.T);
+    for (const f of TORSO_FACES) {
+      let q = f.map(i => J.T[i]); const c = centroid(q);
+      let n = norm(cross(sub(q[1], q[0]), sub(q[3], q[0]))); if (dot(n, sub(c, tcen)) < 0) n = mul(n, -1);
+      if (dot(n, sub(cam.pos, c)) <= 0) continue;
+      const lit = dot(n, norm(sub(LAMP, c)));
+      if (lit < 0.05) { q = above(q); fillP(ctx, polyS(cam, q), `rgba(28,14,30,${clamp(0.1 + (0.05 - lit) * 0.3, 0.1, 0.3).toFixed(3)})`); }
+    }
+    if (woman) {
+      // cheongsam pattern dots
+      const rnd = mulberry(5);
+      for (let i = 0; i < 34; i++) {
+        const t = 0.6 + rnd() * 0.38, s = (rnd() - 0.5) * 2 * (B.sh - 0.02), onFront = rnd() < 0.6;
+        const p = onFront ? front(t, s) : backP(t, s);
+        const n = onFront ? F : mul(F, -1);
+        const r = 0.0045 + rnd() * 0.004, big = rnd() < 0.35;
+        if (p[1] < TABLE_Y + 0.01 || dot(n, sub(cam.pos, p)) <= 0) continue;
+        if (big) { for (let a = 0; a < 5; a++) { const ang = a / 5 * Math.PI * 2; ball(ctx, cam, add(p, add(mul(S, Math.cos(ang) * 0.009), [0, Math.sin(ang) * 0.009, 0])), 0.0045, col.pattern); } ball(ctx, cam, p, 0.004, col.piping); }
+        else ball(ctx, cam, p, r, col.pattern);
+      }
+      if (visFront) {
+        // mandarin collar, diagonal piping and frog buttons
+        const nb = add(J.shC, [0, 0.03, 0]);
+        fillP(ctx, hullOf(cam, ring(nb, 0.058, 16).concat(ring(add(nb, [0, 0.055, 0]), 0.054, 16))), col.top);
+        const topRing = ring(add(nb, [0, 0.055, 0]), 0.055, 16).filter(p => dot(sub(p, nb), F) > -0.01);
+        strokePts(ctx, cam, topRing.sort((a, b) => dot(sub(a, nb), S) - dot(sub(b, nb), S)), 0.008, col.piping, false);
+        const pip = [front(0.985, 0.0), front(0.95, 0.06), front(0.9, 0.11), add(madd(J.shC, S, B.sh - 0.005), [0, -0.1, 0])];
+        strokePts(ctx, cam, pip.map(p => [p[0], Math.max(p[1], TABLE_Y + 0.01), p[2]]), 0.008, col.piping, false);
+        for (const t of [0.4, 0.75]) { const p = lerp3(pip[Math.floor(t * 3)], pip[Math.floor(t * 3) + 1], (t * 3) % 1); ball(ctx, cam, p, 0.012, col.piping); }
+      }
+    } else if (visFront) {
+      // shirt V, lapels, tie, collar points, button
+      const V = above([front(1.0, -0.058), front(1.0, 0.058), front(0.64, 0)]);
+      fillP(ctx, polyS(cam, V), col.shirt);
+      for (const s of [-1, 1]) {
+        fillP(ctx, polyS(cam, above([front(1.0, 0.058 * s), front(0.93, 0.14 * s), front(0.66, 0.012 * s), front(0.64, 0)])), col.topDk);
+        fillP(ctx, polyS(cam, [add(J.shC, add(mul(S, 0.065 * s), mul(F, 0.05))), front(0.955, 0.048 * s), front(0.99, 0.006 * s)]), col.shirt);
+      }
+      fillP(ctx, polyS(cam, above([front(0.985, -0.012), front(0.985, 0.012), front(0.7, 0.021), front(0.665, 0), front(0.7, -0.021)])), col.tie);
+      fillP(ctx, polyS(cam, [front(1.0, -0.016), front(1.0, 0.016), front(0.965, 0.011), front(0.965, -0.011)]), '#3A3540');
+      const bt = front(0.6, 0); if (bt[1] > TABLE_Y + 0.008) ball(ctx, cam, bt, 0.011, col.topDk);
+    }
+    arms.filter(a => !a.far).sort((x, y) => y.d - x.d).forEach(drawArm);
+    drawHead(ctx, cam, ch, J, pose);
+  } });
+  return J;
+}
+
+/* ---------- scene ---------- */
+const GRAIN = (() => {
+  if (typeof document === 'undefined') return null;
+  const c = document.createElement('canvas'); c.width = c.height = 192;
+  const g = c.getContext('2d'); const img = g.createImageData(192, 192);
+  const rnd = mulberry(7);
+  for (let i = 0; i < img.data.length; i += 4) { const v = 128 + (rnd() - 0.5) * 230; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+  g.putImageData(img, 0, 0); return c;
+})();
+let GRAIN_PAT = null;
+const POSE0 = { A: {}, B: {}, cup: null };
+
+function lighting(ctx, cam, W, H, S) {
+  ctx.save();
+  // warm pool from the pendant lamp
+  const q = cam.proj([0, 1.25, 0]);
+  if (q) {
+    const k = cam.fpx / q[2], r = Math.max(W * 0.35, 2.0 * k);
+    const g = ctx.createRadialGradient(q[0], q[1], 0, q[0], q[1], r);
+    g.addColorStop(0, 'rgba(255,200,120,0.34)'); g.addColorStop(0.5, 'rgba(255,175,95,0.12)'); g.addColorStop(1, 'rgba(255,160,80,0)');
+    ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  }
+  // night grade: slight green in the shadows, then vignette
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = 'rgb(236,244,236)'; ctx.fillRect(0, 0, W, H);
+  const v = ctx.createRadialGradient(W / 2, H * 0.45, Math.min(W, H) * 0.3, W / 2, H / 2, Math.max(W, H) * 0.78);
+  v.addColorStop(0, 'rgb(255,255,255)'); v.addColorStop(1, 'rgb(136,142,148)');
+  ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+}
+
+function renderScene(ctx, W, H, spec, pose, opts) {
+  pose = pose || POSE0; opts = opts || {};
+  const cam = makeCam(spec.pos, spec.target, spec.vfov, W, H);
+  const S = W / 800;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.fillStyle = PAL.ceiling; ctx.fillRect(0, 0, W, H);
+  drawRoom(ctx, cam, S, opts);
+  const low = [], high = [];
+  tableBaseItem(cam, low);
+  chairItems(cam, CH.A, low, high);
+  chairItems(cam, CH.B, low, high);
+  charItems(cam, CH.A, pose.A || {}, low, high);
+  charItems(cam, CH.B, pose.B || {}, low, high);
+  cupItem(cam, pose.cupA || [-0.2, TABLE.y, 0.1], high);
+  cupItem(cam, [0.22, TABLE.y, -0.08], high);
+  tableProps(cam, high);
+  lampItem(cam, high);
+  standItem(cam, [2.75, 0, 2.35], high);
+  standItem(cam, [-2.75, 0, 2.45], high);
+  umbrellaItem(cam, [3.62, 0, 2.3], high);
+  counterItem(cam, low);
+  low.sort((a, b) => b.d - a.d); for (const it of low) it.draw(ctx);
+  drawTableTop(ctx, cam);
+  high.sort((a, b) => b.d - a.d); for (const it of high) it.draw(ctx);
+  lighting(ctx, cam, W, H, S);
+  if (opts.arAxis) drawARAxis(ctx, cam, S);
+  if (opts.grain !== false && GRAIN) {
+    if (!GRAIN_PAT) GRAIN_PAT = ctx.createPattern(GRAIN, 'repeat');
+    const gs = Math.max(1, S * 1.1);
+    ctx.save(); ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = 0.13; ctx.fillStyle = GRAIN_PAT;
+    ctx.setTransform(gs, 0, 0, gs, 0, 0); ctx.fillRect(0, 0, W / gs + 1, H / gs + 1); ctx.restore();
+  }
+  return analyze(cam, pose);
+}
+
+function drawARAxis(ctx, cam, S) {
+  const d = norm(sub(EYE.B, EYE.A));
+  const s = segS(cam, madd(EYE.A, d, -7), madd(EYE.B, d, 7)); if (!s) return;
+  ctx.save(); ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 7 * S; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(s[0][0], s[0][1]); ctx.lineTo(s[1][0], s[1][1]); ctx.stroke();
+  ctx.strokeStyle = PAL.axis; ctx.lineWidth = 4 * S; ctx.setLineDash([16 * S, 10 * S]);
+  ctx.beginPath(); ctx.moveTo(s[0][0], s[0][1]); ctx.lineTo(s[1][0], s[1][1]); ctx.stroke();
+  ctx.restore();
+}
+
+/* ---------- analysis (what the audience reads from the frame) ---------- */
+function sideOf(pos) {
+  const u = sub(HEAD.B, HEAD.A), v = sub(pos, HEAD.A);
+  const c = (u[0] * v[2] - u[2] * v[0]) / Math.hypot(u[0], u[2]);
+  return c > 0.15 ? 1 : c < -0.15 ? -1 : 0;
+}
+function bgOf(cam) {
+  const f = norm([cam.f[0], 0, cam.f[2]]); const p = cam.pos;
+  let best = Infinity;
+  if (f[0] > 1e-6) best = Math.min(best, (ROOM.x1 - p[0]) / f[0]);
+  if (f[0] < -1e-6) best = Math.min(best, (ROOM.x0 - p[0]) / f[0]);
+  if (f[2] > 1e-6) best = Math.min(best, (ROOM.z1 - p[2]) / f[2]);
+  if (f[2] < -1e-6) best = Math.min(best, (ROOM.z0 - p[2]) / f[2]);
+  return p[2] + f[2] * best < 0 ? 'cool' : 'warm';
+}
+function analyze(cam, pose) {
+  const info = { side: sideOf(cam.pos), chars: {}, bg: bgOf(cam), cam };
+  for (const id of ['A', 'B']) {
+    const J = joints(CH[id], (pose && pose[id]) || {});
+    const H = J.headC, p = cam.proj(H);
+    if (!p) { info.chars[id] = { inFrame: false }; continue; }
+    const eye = madd(H, J.Uh, 0.015);
+    const pe = cam.proj(eye), pg = cam.proj(madd(eye, J.Fh, 0.4));
+    const gx = pe && pg ? pg[0] - pe[0] : 0, gy = pe && pg ? pg[1] - pe[1] : 0;
+    const rpx = HEAD_R * cam.fpx / p[2];
+    const facing = dot(J.Fh, norm(sub(cam.pos, H)));
+    const x = (p[0] - cam.W / 2) / (cam.W / 2), y = (cam.H / 2 - p[1]) / (cam.H / 2);
+    info.chars[id] = { inFrame: Math.abs(x) < 0.97 && Math.abs(y) < 1.02, x, y, px: p[0], py: p[1], rpx, gx, gy, facing,
+      face: facing > 0.02, gaze: Math.abs(gx) < rpx * 0.3 ? 'C' : (gx > 0 ? 'R' : 'L') };
+  }
+  return info;
+}
+
+/* ---------- camera rigs ---------- */
+function rig(role, x, z, o) {
+  o = o || {};
+  if (role === 'master') {
+    const pos = [x, o.h || 1.36, z];
+    const T = o.target || [0, 0.98, 0];
+    const d = len(sub(T, pos));
+    return { pos, target: T, vfov: clamp(2 * Math.atan((o.frameH || 1.95) / 2 / d) * 180 / Math.PI, 16, 75) };
+  }
+  if (role === 'free') return { pos: [x, o.h || 1.3, z], target: o.target, vfov: o.vfov || 30 };
+  const subj = role === 'cuA' ? 'A' : 'B', other = subj === 'A' ? 'B' : 'A';
+  const h = o.h || 1.24;
+  const pos = [x, h, z];
+  const eyes = EYE[subj];
+  const d = len(sub(eyes, pos));
+  const vfov = 2 * Math.atan((o.frameH || 0.6) / 2 / d) * 180 / Math.PI;
+  const f0 = norm([eyes[0] - x, 0, eyes[2] - z]);
+  const r0 = norm(cross(f0, UP));
+  const gaze = norm([HEAD[other][0] - HEAD[subj][0], 0, HEAD[other][2] - HEAD[subj][2]]);
+  const gs = dot(gaze, r0);
+  const tx = Math.tan(rad(vfov) / 2) * 16 / 9;
+  const delta = Math.atan(0.33 * tx) * clamp(gs * 5, -1, 1);
+  const fh = norm(add(mul(f0, Math.cos(delta)), mul(r0, Math.sin(delta))));
+  const hd = Math.hypot(eyes[0] - x, eyes[2] - z);
+  const eps = Math.atan(0.2 * Math.tan(rad(vfov) / 2));
+  const pitch = Math.atan2(eyes[1] - h, hd) - eps;
+  const f = norm(add(mul(fh, Math.cos(pitch)), [0, Math.sin(pitch), 0]));
+  return { pos, target: madd(pos, f, d), vfov };
+}
+
+/* =====================================================================
+   180° 法則 — page logic (views, plans, sections)
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const smooth = (a, b, t) => { const x = clamp((t - a) / (b - a), 0, 1); return x * x * (3 - 2 * x); };
+try { document.documentElement.style.setProperty('--grain', `url(${GRAIN.toDataURL()})`); } catch (e) { /* grain is decorative */ }
+
+/* ============================ view scheduler ============================ */
+const VIEWS = new Set();
+const TICKERS = new Set();
+let rafPending = false;
+function kick() { if (!rafPending) { rafPending = true; requestAnimationFrame(frame); } }
+function frame(now) {
+  rafPending = false;
+  for (const f of [...TICKERS]) { let keep = false; try { keep = f(now) === true; } catch (e) { console.error(e); } if (!keep) TICKERS.delete(f); }
+  for (const v of VIEWS) if (v.dirty && v.visible) { try { v.render(); } catch (e) { console.error(e); v.dirty = false; } }
+  if (TICKERS.size) kick();
+}
+function addTicker(f) { TICKERS.add(f); kick(); }
+const DPR = () => Math.min(window.devicePixelRatio || 1, 2);
+const viewRO = new ResizeObserver(es => { for (const e of es) { const v = e.target.__view; if (v) v.inval(); } });
+const viewIO = new IntersectionObserver(es => { for (const e of es) { const v = e.target.__view; if (!v) continue; v.visible = e.isIntersecting; if (v.visible && v.dirty) kick(); } }, { rootMargin: '300px 0px' });
+class View {
+  constructor(canvas, o) {
+    this.c = canvas; this.ctx = canvas.getContext('2d'); Object.assign(this, o);
+    this.dirty = true; this.visible = false; canvas.__view = this;
+    VIEWS.add(this); viewRO.observe(canvas); viewIO.observe(canvas);
+  }
+  inval() { this.dirty = true; kick(); }
+  render() {
+    const r = this.c.getBoundingClientRect();
+    if (r.width < 4 || r.height < 4) return;
+    let w = Math.round(r.width * DPR()), h = Math.round(r.height * DPR());
+    const cap = this.maxW || 1500; if (w > cap) { h = Math.round(h * cap / w); w = cap; }
+    if (this.c.width !== w || this.c.height !== h) { this.c.width = w; this.c.height = h; }
+    const spec = this.spec(); if (!spec) { this.dirty = false; return; }
+    const pose = this.pose ? this.pose() : null;
+    this.info = renderScene(this.ctx, w, h, spec, pose, spec.opts || {});
+    if (this.overlay) this.overlay(this.ctx, this.info, w, h);
+    this.dirty = false;
+    if (this.after) this.after(this.info);
+  }
+}
+
+/* ============================ shared model ============================ */
+const SETUPS = {
+  std: { c1: [0, 3.0], c2: [1.25, 1.25], c3: [-1.25, 1.25] },
+  ots: { c1: [0, 3.0], c2: [1.75, 0.42], c3: [-1.75, 0.42] },
+  x3: { c1: [0, 3.0], c2: [1.25, 1.25], c3: [-1.25, -1.25] },
+  x2: { c1: [0, 3.0], c2: [1.25, -1.25], c3: [-1.25, 1.25] },
+  xm: { c1: [0, -3.0], c2: [1.25, 1.25], c3: [-1.25, 1.25] },
+};
+const ROLE = { c1: 'master', c2: 'cuA', c3: 'cuB' };
+const CAMNAME = { c1: 'Master', c2: 'CU A', c3: 'CU B' };
+const SUBJ = { c1: ['A', 'B'], c2: ['A'], c3: ['B'] };
+const ARW = { R: '→', L: '←', C: '◎' };
+const BGN = { cool: '雨夜窗景', warm: '水吧同餐牌' };
+function lensMM(vfov) { const th = Math.tan(rad(vfov) / 2) * 16 / 9; return Math.round(12.45 / th); }
+function analyzeSpec(spec, pose) { return analyze(makeCam(spec.pos, spec.target, spec.vfov, 1600, 900), pose || POSE0); }
+function subjOf(role) { return role === 'master' ? ['A', 'B'] : role === 'cuA' ? ['A'] : role === 'cuB' ? ['B'] : []; }
+function compareShots(x, rx, y, ry) {
+  if (x.side === 0 || y.side === 0) return { level: 'neutral', head: '◎ 中性鏡頭', items: ['其中一格喺軸線上面拍，冇左右方向，可以當橋樑過去另一邊'] };
+  const sx = subjOf(rx), sy = subjOf(ry), bad = [], good = [];
+  if (sx.length === 1 && sy.length === 1 && sx[0] !== sy[0]) {
+    const a = x.chars[sx[0]], b = y.chars[sy[0]];
+    if (a.inFrame && b.inFrame && a.face && b.face && a.gaze !== 'C' && b.gaze !== 'C') {
+      if (a.gaze === b.gaze) bad.push(`${sx[0]} 同 ${sy[0]} 都望 ${ARW[a.gaze]}，唔似對望`);
+      else good.push(`${sx[0]} 望 ${ARW[a.gaze]}、${sy[0]} 望 ${ARW[b.gaze]}，視線對得上`);
+    }
+  }
+  for (const id of sx) {
+    if (!sy.includes(id)) continue;
+    const a = x.chars[id], b = y.chars[id]; if (!a.inFrame || !b.inFrame) continue;
+    const pa = a.x < 0 ? '左' : '右', pb = b.x < 0 ? '左' : '右';
+    if (pa !== pb) bad.push(`${id} 由畫面${pa}邊跳咗去${pb}邊`); else good.push(`${id} 一直喺畫面${pa}邊`);
+    if (a.face && b.face && a.gaze !== 'C' && b.gaze !== 'C') {
+      if (a.gaze !== b.gaze) bad.push(`${id} 本來望 ${ARW[a.gaze]}，下一格變咗望 ${ARW[b.gaze]}`);
+      else good.push(`${id} 一直望 ${ARW[a.gaze]}`);
+    }
+  }
+  if (x.bg !== y.bg) bad.push(`背景由${BGN[x.bg]}變咗${BGN[y.bg]}`);
+  if (x.side !== y.side) return { level: 'bad', head: '✗ 越軸', items: bad.length ? bad : ['兩格喺軸線兩邊拍'] };
+  return { level: 'ok', head: '✓ 接得順', items: good.length ? good : ['兩格都喺軸線同一邊'] };
+}
+
+/* ============================ overlays ============================ */
+function drawArrow(ctx, x0, y0, x1, y1, col, w) {
+  const dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy); if (L < 2) return;
+  const ux = dx / L, uy = dy / L, hl = Math.min(L * 0.5, w * 3.3), hw = w * 2.2;
+  const bx = x1 - ux * hl, by = y1 - uy * hl;
+  const tri = () => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(bx - uy * hw, by + ux * hw); ctx.lineTo(bx + uy * hw, by - ux * hw); ctx.closePath(); };
+  ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.strokeStyle = ctx.fillStyle = 'rgba(255,255,255,.95)';
+  ctx.lineWidth = w * 2.1; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(bx, by); ctx.stroke();
+  ctx.lineWidth = w * 1.1; tri(); ctx.stroke(); ctx.fill();
+  ctx.strokeStyle = ctx.fillStyle = col; ctx.lineWidth = w;
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(bx, by); ctx.stroke(); tri(); ctx.fill();
+  ctx.restore();
+}
+function drawPill(ctx, x, y, text, bg, fg, s) {
+  ctx.save();
+  ctx.font = `700 ${Math.round(14 * s)}px Fredoka, "Noto Sans HK", "Noto Sans CJK HK", sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const w = ctx.measureText(text).width + 14 * s, h = 22 * s;
+  ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - w / 2, y - h / 2, w, h, h / 2) : ctx.rect(x - w / 2, y - h / 2, w, h);
+  ctx.fillStyle = bg; ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 4 * s; ctx.fill(); ctx.shadowBlur = 0;
+  ctx.fillStyle = fg; ctx.fillText(text, x, y + 0.5 * s); ctx.restore();
+}
+const GAZE_COL = { A: '#FFAE2E', B: '#4F8FFF' };
+const OS = W => Math.max(W / 800, 0.72 * DPR());
+function ovGaze(ctx, info, ids, W) {
+  const s = OS(W);
+  for (const id of ids) {
+    const c = info.chars[id]; if (!c || !c.inFrame || !c.face) continue;
+    if (c.gaze === 'C') {
+      ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.95)'; ctx.lineWidth = 5 * s; ctx.setLineDash([6 * s, 5 * s]);
+      ctx.beginPath(); ctx.arc(c.px, c.py, c.rpx * 1.5, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = '#8B6CFF'; ctx.lineWidth = 3 * s; ctx.stroke(); ctx.restore();
+      continue;
+    }
+    const dir = c.gaze === 'R' ? 1 : -1;
+    const L = clamp(c.rpx * 1.5, Math.max(W * 0.07, 34 * s), W * 0.16);
+    const y = c.py + c.rpx * 0.02;
+    const x0 = c.px + dir * c.rpx * 1.25;
+    drawArrow(ctx, x0, y, x0 + dir * L, y, GAZE_COL[id], Math.max(2.5, 5 * s));
+  }
+}
+function ovTags(ctx, info, ids, W) {
+  const s = OS(W), H = info.cam.H;
+  for (const id of ids) {
+    const c = info.chars[id]; if (!c || !c.inFrame) continue;
+    let y = c.py - c.rpx * 1.75;
+    if (y < 16 * s) y = Math.min(H - 14 * s, c.py + c.rpx * 2.1);
+    drawPill(ctx, c.px, y, id, id === 'A' ? '#E7A33D' : '#3868BA', id === 'A' ? '#241A08' : '#FFFFFF', s * 1.05);
+  }
+}
+
+/* ============================ floor plan (SVG) ============================ */
+const SVGNS = 'http://www.w3.org/2000/svg';
+function E(tag, attrs, parent, text) {
+  const e = document.createElementNS(SVGNS, tag);
+  if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const PL = { floor: '#E6DCC6', floorB: '#D6CDB5', plank: '#DAC09C', rug: '#3A5A68', rugRing: '#E9DABD', cool: '#2F5E4F', warm: '#6B432C', win: '#A9CCDD', label: '#F3EBDC', muted: '#C3CCD4', table: '#EEEAE2', tableEdge: '#BDB4A5', chair: '#4E2F1D', chairDk: '#381F11', axis: '#7B4DFF', ok: '#34C77D', bad: '#F0464B', neutral: '#8B6CFF', ink: '#14202B', counter: '#5C3925', leaf: '#4F8F5E', pot: '#C86A45', halo: '#14202B' };
+const CAMCOL = { c1: '#4A5A6B', c2: '#E7A33D', c3: '#3E70C4' };
+const txt = (g, x, y, s, attrs) => E('text', Object.assign({ x, y, 'font-size': 24, fill: PL.label, 'font-weight': 700, 'font-family': 'var(--font-body)', 'paint-order': 'stroke', stroke: PL.halo, 'stroke-width': 5, 'stroke-linejoin': 'round' }, attrs || {}), g, s);
+const n2 = v => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; };
+const cr2 = (u, v) => u[0] * v[1] - u[1] * v[0];
+function clipHalf(poly, a, u, s) {
+  const f = p => s * cr2(u, [p[0] - a[0], p[1] - a[1]]); const out = [];
+  for (let i = 0; i < poly.length; i++) {
+    const P = poly[i], Q = poly[(i + 1) % poly.length], fp = f(P), fq = f(Q);
+    if (fp >= 0) out.push(P);
+    if ((fp >= 0) !== (fq >= 0)) { const t = fp / (fp - fq); out.push([P[0] + (Q[0] - P[0]) * t, P[1] + (Q[1] - P[1]) * t]); }
+  }
+  return out;
+}
+function lineRect(a, u, r) {
+  let t0 = -1e9, t1 = 1e9;
+  for (const [p, d, lo, hi] of [[a[0], u[0], r[0], r[1]], [a[1], u[1], r[2], r[3]]]) {
+    if (Math.abs(d) < 1e-9) { if (p < lo || p > hi) return null; }
+    else { let ta = (lo - p) / d, tb = (hi - p) / d; if (ta > tb) [ta, tb] = [tb, ta]; t0 = Math.max(t0, ta); t1 = Math.min(t1, tb); }
+  }
+  return t0 > t1 ? null : [[a[0] + u[0] * t0, a[1] + u[1] * t0], [a[0] + u[0] * t1, a[1] + u[1] * t1]];
+}
+const P100 = p => p.map(v => (v * 100).toFixed(1)).join(',');
+
+class Plan {
+  constructor(svg, o) {
+    this.svg = svg;
+    this.o = Object.assign({ view: [-4.35, -3.9, 8.7, 7.8], room: true, furniture: true, arcR: 1.9, show: {}, cams: {}, textScale: 1 }, o);
+    this.show = Object.assign({ zones: true, arc: true, axis: true, gaze: true, fov: true, tri: false, labels: true, camLabels: true }, this.o.show);
+    const v = this.o.view; svg.setAttribute('viewBox', `${v[0] * 100} ${v[1] * 100} ${v[2] * 100} ${v[3] * 100}`);
+    this.chars = this.o.chars || { A: { x: CH.A.base[0], z: 0, seated: true }, B: { x: CH.B.base[0], z: 0, seated: true } };
+    this.cams = this.o.cams;
+    const defs = E('defs', {}, svg);
+    const pid = 'hatch' + Math.random().toString(36).slice(2, 7); this.hatchId = pid;
+    const pat = E('pattern', { id: pid, width: 22, height: 22, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, defs);
+    E('rect', { width: 22, height: 22, fill: 'rgba(240,70,75,.13)' }, pat);
+    E('line', { x1: 0, y1: 0, x2: 0, y2: 22, stroke: 'rgba(232,64,70,.38)', 'stroke-width': 4 }, pat);
+    E('rect', { x: v[0] * 100, y: v[1] * 100, width: v[2] * 100, height: v[3] * 100, fill: 'transparent' }, svg);
+    for (const k of ['room', 'zones', 'arc', 'fov', 'furn', 'axis', 'extra', 'tri', 'chars', 'gaze', 'cams', 'labels']) this['g_' + k] = E('g', { class: 'lay-' + k }, svg);
+    if (this.o.room) this.drawRoom();
+    this.camEls = {}; this.charEls = {};
+    this.render();
+  }
+  drawRoom() {
+    const g = this.svg.querySelector('.lay-room'), T = this.o.textScale;
+    const defs = this.svg.querySelector('defs');
+    const cid = 'chk' + Math.random().toString(36).slice(2, 7);
+    const pat = E('pattern', { id: cid, width: 100, height: 100, patternUnits: 'userSpaceOnUse', x: -400, y: -350 }, defs);
+    E('rect', { width: 100, height: 100, fill: PL.floor }, pat);
+    E('rect', { width: 50, height: 50, fill: PL.floorB }, pat); E('rect', { x: 50, y: 50, width: 50, height: 50, fill: PL.floorB }, pat);
+    E('rect', { x: -400, y: -350, width: 800, height: 700, fill: `url(#${cid})` }, g);
+    if (!this.o.simple) E('circle', { cx: 0, cy: 0, r: 125, fill: 'rgba(255,200,110,.28)' }, g);
+    const W = 18;
+    E('rect', { x: -409, y: -350 - W, width: 818, height: W, fill: PL.cool }, g);
+    E('rect', { x: -409, y: 350, width: 818, height: W, fill: PL.warm }, g);
+    E('rect', { x: -400 - W, y: -368, width: W, height: 368, fill: PL.cool }, g);
+    E('rect', { x: -400 - W, y: 0, width: W, height: 368, fill: PL.warm }, g);
+    E('rect', { x: 400, y: -368, width: W, height: 368, fill: PL.cool }, g);
+    E('rect', { x: 400, y: 0, width: W, height: 368, fill: PL.warm }, g);
+    for (const [a, b] of [[-305, -75], [75, 305]]) {
+      E('rect', { x: a, y: -363, width: b - a, height: 11, rx: 2, fill: PL.win }, g);
+      for (let x = a + (b - a) / 3; x < b - 5; x += (b - a) / 3) E('line', { x1: x, y1: -363, x2: x, y2: -352, stroke: '#24463A', 'stroke-width': 4 }, g);
+    }
+    E('rect', { x: -270, y: 353, width: 100, height: 10, rx: 3, fill: '#FF72B8' }, g);
+    for (const x of [-170, -140, -110, 40, 70, 100]) E('rect', { x, y: 352, width: 22, height: 12, fill: '#F0E3C5' }, g);
+    E('rect', { x: 400 - 3, y: 85, width: 6, height: 110, fill: PL.floor }, g);
+    E('path', { d: 'M400,85 A110,110 0 0 0 290,195', fill: 'none', stroke: '#8A5A3A', 'stroke-width': 4, 'stroke-dasharray': '8 6' }, g);
+    if (this.o.simple) return;
+    E('rect', { x: -190, y: 294, width: 380, height: 56, rx: 4, fill: PL.counter }, g);
+    E('rect', { x: -190, y: 294, width: 380, height: 10, rx: 3, fill: '#E4D6BE' }, g);
+    for (let i = 0; i < 5; i++) E('circle', { cx: -150 + i * 24, cy: 326, r: 7, fill: ['#E2574C', '#F2C14E', '#7CC29B', '#E98FB3', '#8E6A4E'][i] }, g);
+    E('circle', { cx: 362, cy: 230, r: 13, fill: '#2F4F44', stroke: '#1D332B', 'stroke-width': 3 }, g);
+    for (const [x, z] of [[275, 235], [-275, 245]]) {
+      const s = E('g', { transform: `translate(${x} ${z})` }, g);
+      for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2 + 0.4; E('line', { x1: 0, y1: 0, x2: Math.cos(a) * 34, y2: Math.sin(a) * 34, stroke: '#26282B', 'stroke-width': 5, 'stroke-linecap': 'round' }, s); }
+      const ang = Math.atan2(-z, -x) * 180 / Math.PI;
+      E('rect', { x: -12, y: -26, width: 24, height: 52, rx: 4, fill: '#FFF5D8', stroke: '#26282B', 'stroke-width': 4, transform: `rotate(${ang})` }, s);
+    }
+    const V = this.o.view, inV = (x, z) => x > V[0] * 100 && x < (V[0] + V[2]) * 100 && z > V[1] * 100 + 10 && z < (V[1] + V[3]) * 100 - 4;
+    if (this.show.labels) {
+      if (inV(0, -378)) txt(g, 0, -378, '窗（雨夜街景）', { 'text-anchor': 'middle', 'font-size': 22 * T, fill: PL.muted, stroke: 'none' });
+      if (inV(0, 392)) txt(g, 0, 392, '水吧 · 餐牌', { 'text-anchor': 'middle', 'font-size': 22 * T, fill: PL.muted, stroke: 'none' });
+      txt(g, 275, 300, '燈', { 'text-anchor': 'middle', 'font-size': 20 * T });
+      txt(g, -275, 310, '燈', { 'text-anchor': 'middle', 'font-size': 20 * T });
+    }
+  }
+  headOf(id) {
+    const c = this.chars[id];
+    if (c.seated) { const h = HEAD[id]; return [h[0], h[2]]; }
+    return [c.x, c.z];
+  }
+  axis() {
+    const a = this.headOf('A'), b = this.headOf('B');
+    const u = n2([b[0] - a[0], b[1] - a[1]]);
+    let ref = 1;
+    const refId = this.o.refCam && this.cams[this.o.refCam] ? this.o.refCam : null;
+    if (this.o.refSide) ref = this.o.refSide;
+    else if (refId) { const p = this.cams[refId].pos; const d = cr2(u, [p[0] - a[0], p[1] - a[1]]); if (Math.abs(d) > 0.15) ref = Math.sign(d); else ref = this._lastRef || 1; }
+    this._lastRef = ref;
+    return { a, b, u, n: [-u[1], u[0]], m: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], ref };
+  }
+  sideOfPt(p, ax) { const d = cr2(ax.u, [p[0] - ax.a[0], p[1] - ax.a[1]]); return Math.abs(d) < 0.15 ? 0 : Math.sign(d); }
+  specOf(id) { const c = this.cams[id]; return c.spec ? c.spec() : rig(c.role, c.pos[0], c.pos[1]); }
+  toWorld(ev) {
+    const pt = this.svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const q = pt.matrixTransform(this.svg.getScreenCTM().inverse()); return [q.x / 100, q.y / 100];
+  }
+  dragify(el, onMove) {
+    el.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      e.preventDefault(); el.setPointerCapture(e.pointerId);
+      const move = ev => onMove(this.toWorld(ev));
+      const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); if (this.o.onDragEnd) this.o.onDragEnd(); };
+      el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+    });
+  }
+  keyify(el, get, set) {
+    el.addEventListener('keydown', e => {
+      const d = e.shiftKey ? 0.3 : 0.1; const p = get().slice();
+      if (e.key === 'ArrowLeft') p[0] -= d; else if (e.key === 'ArrowRight') p[0] += d; else if (e.key === 'ArrowUp') p[1] -= d; else if (e.key === 'ArrowDown') p[1] += d; else return;
+      e.preventDefault(); set(p);
+    });
+  }
+  render() {
+    const ax = this.axis(), V = this.o.view, T = this.o.textScale;
+    const rect = this.o.room ? [-4, 4, -3.5, 3.5] : [V[0], V[0] + V[2], V[1], V[1] + V[3]];
+    const poly = [[rect[0], rect[2]], [rect[1], rect[2]], [rect[1], rect[3]], [rect[0], rect[3]]];
+    const nS = [ax.n[0] * ax.ref, ax.n[1] * ax.ref];
+    // zones
+    const gz = this.g_zones; gz.replaceChildren();
+    if (this.show.zones) {
+      const safe = clipHalf(poly, ax.a, ax.u, ax.ref), bad = clipHalf(poly, ax.a, ax.u, -ax.ref);
+      if (safe.length > 2) E('polygon', { points: safe.map(P100).join(' '), fill: 'rgba(46,204,128,.30)' }, gz);
+      if (bad.length > 2) E('polygon', { points: bad.map(P100).join(' '), fill: `url(#${this.hatchId})` }, gz);
+    }
+    // arc
+    const ga = this.g_arc; ga.replaceChildren();
+    if (this.show.arc) {
+      const r = this.o.arcR, m = ax.m;
+      const p1 = [m[0] + ax.u[0] * r, m[1] + ax.u[1] * r], p2 = [m[0] - ax.u[0] * r, m[1] - ax.u[1] * r];
+      const cw = [-ax.u[1], ax.u[0]]; const sweep = (cw[0] * nS[0] + cw[1] * nS[1]) > 0 ? 1 : 0;
+      E('path', { d: `M${P100(p1)} A${r * 100},${r * 100} 0 0 ${sweep} ${P100(p2)}`, fill: 'none', stroke: '#2FA36B', 'stroke-width': 4, 'stroke-dasharray': '10 8', class: 'arcpath' }, ga);
+      const lp = [m[0] + nS[0] * (r + 0.02), m[1] + nS[1] * (r + 0.02)];
+      const lg = E('g', { transform: `translate(${lp[0] * 100} ${lp[1] * 100})` }, ga);
+      E('rect', { x: -38 * T, y: -17 * T, width: 76 * T, height: 34 * T, rx: 17 * T, fill: '#2FA36B' }, lg);
+      E('text', { x: 0, y: 8 * T, 'text-anchor': 'middle', 'font-size': 24 * T, 'font-weight': 700, fill: '#fff', 'font-family': 'Fredoka, var(--font-body)' }, lg, '180°');
+    }
+    // fov
+    const gf = this.g_fov; gf.replaceChildren();
+    if (this.show.fov) for (const id in this.cams) {
+      const c = this.cams[id]; if (c.hideFov) continue;
+      const sp = this.specOf(id);
+      const d = n2([sp.target[0] - sp.pos[0], sp.target[2] - sp.pos[2]]);
+      const h = Math.atan(Math.tan(rad(sp.vfov) / 2) * 16 / 9);
+      const L = Math.hypot(sp.target[0] - sp.pos[0], sp.target[2] - sp.pos[2]) * 1.12;
+      const rot = a => [d[0] * Math.cos(a) - d[1] * Math.sin(a), d[0] * Math.sin(a) + d[1] * Math.cos(a)];
+      const e1 = rot(h), e2 = rot(-h), p = c.pos;
+      const col = c.col || CAMCOL[id] || '#888';
+      E('polygon', { points: [p, [p[0] + e1[0] * L, p[1] + e1[1] * L], [p[0] + e2[0] * L, p[1] + e2[1] * L]].map(P100).join(' '), fill: col, 'fill-opacity': .2, stroke: col, 'stroke-opacity': .75, 'stroke-width': 2.5, 'stroke-dasharray': '7 6' }, gf);
+    }
+    // furniture
+    const gF = this.g_furn;
+    if (!this._furnDone) {
+      this._furnDone = true;
+      if (this.o.furniture) {
+        for (const id of ['A', 'B']) {
+          const ch = CH[id], b = ch.base, ang = Math.atan2(ch.F[2], ch.F[0]) * 180 / Math.PI;
+          const cg = E('g', { transform: `translate(${b[0] * 100} ${b[2] * 100}) rotate(${ang})` }, gF);
+          E('circle', { cx: -3, cy: 0, r: 21, fill: PL.chair }, cg);
+          E('path', { d: 'M-20,-18 A20,20 0 0 0 -20,18', fill: 'none', stroke: PL.chairDk, 'stroke-width': 6, transform: 'translate(-4 0)' }, cg);
+        }
+        E('circle', { cx: 0, cy: 0, r: 44, fill: PL.table, stroke: PL.tableEdge, 'stroke-width': 3 }, gF);
+        for (const [x, z] of [[-20, 10], [22, -8]]) { E('circle', { cx: x, cy: z, r: 7.5, fill: '#fff', stroke: '#2E7A5A', 'stroke-width': 2 }, gF); E('circle', { cx: x, cy: z, r: 4, fill: '#4E2E1E' }, gF); }
+        E('rect', { x: 11, y: -30, width: 18, height: 8, rx: 2, fill: '#E3CDA6' }, gF);
+      }
+    }
+    // axis
+    const gx = this.g_axis; gx.replaceChildren();
+    if (this.show.axis) {
+      const seg = lineRect(ax.a, ax.u, [V[0] - 1, V[0] + V[2] + 1, V[1] - 1, V[1] + V[3] + 1]);
+      if (seg) {
+        const ag = E('g', { class: 'ax' }, gx);
+        E('line', { x1: seg[0][0] * 100, y1: seg[0][1] * 100, x2: seg[1][0] * 100, y2: seg[1][1] * 100, stroke: '#fff', 'stroke-width': 11, 'stroke-linecap': 'round', opacity: .9 }, ag);
+        E('line', { x1: seg[0][0] * 100, y1: seg[0][1] * 100, x2: seg[1][0] * 100, y2: seg[1][1] * 100, stroke: PL.axis, 'stroke-width': 6, 'stroke-dasharray': '18 10' }, ag);
+      }
+    }
+    // extra (custom drawing)
+    this.g_extra.replaceChildren();
+    if (this.o.extra) this.o.extra(this.g_extra, ax, this);
+    // triangle
+    const gt = this.g_tri; gt.replaceChildren();
+    if (this.show.tri && this.cams.c1 && this.cams.c2 && this.cams.c3) {
+      const pts = ['c1', 'c2', 'c3'].map(id => this.cams[id].pos);
+      const anyBad = ['c2', 'c3'].some(id => this.sideOfPt(this.cams[id].pos, ax) === -ax.ref) || this.sideOfPt(pts[0], ax) === 0;
+      E('polygon', { points: pts.map(P100).join(' '), fill: 'none', stroke: anyBad ? PL.bad : '#F3EBDC', 'stroke-width': 3, 'stroke-dasharray': '4 9', 'stroke-linecap': 'round', opacity: .9 }, gt);
+    }
+    // characters
+    for (const id of ['A', 'B']) this.drawChar(id, ax);
+    // gaze
+    const gg = this.g_gaze; gg.replaceChildren();
+    if (this.show.gaze) {
+      for (const [id, oid] of [['A', 'B'], ['B', 'A']]) {
+        const h = this.headOf(id), o2 = this.headOf(oid);
+        const d = n2([o2[0] - h[0], o2[1] - h[1]]), L = Math.hypot(o2[0] - h[0], o2[1] - h[1]);
+        const s0 = [h[0] + d[0] * 0.2, h[1] + d[1] * 0.2], s1 = [h[0] + d[0] * Math.min(L * 0.45, 0.8), h[1] + d[1] * Math.min(L * 0.45, 0.8)];
+        const col = id === 'A' ? '#FFAE2E' : '#4F8FFF';
+        E('line', { x1: s0[0] * 100, y1: s0[1] * 100, x2: s1[0] * 100, y2: s1[1] * 100, stroke: col, 'stroke-width': 5, 'stroke-dasharray': '3 8', 'stroke-linecap': 'round' }, gg);
+        const bx = s1[0] * 100, by = s1[1] * 100, px = -d[1], py = d[0];
+        E('polygon', { points: `${bx + d[0] * 14},${by + d[1] * 14} ${bx + px * 8},${by + py * 8} ${bx - px * 8},${by - py * 8}`, fill: col }, gg);
+      }
+    }
+    // cameras
+    for (const id in this.cams) this.drawCam(id, ax);
+    for (const id in this.camEls) if (!this.cams[id]) { this.camEls[id].g.remove(); delete this.camEls[id]; }
+    // labels
+    const gl = this.g_labels; gl.replaceChildren();
+    if (this.show.labels && this.show.axis && Math.abs(ax.u[1]) < 0.3) {
+      const vr = [Math.max(rect[0], V[0]) + 0.14, Math.min(rect[1], V[0] + V[2]) - 0.14, Math.max(rect[2], V[1]) + 0.3, Math.min(rect[3], V[1] + V[3]) - 0.3];
+      const seg = lineRect(ax.a, ax.u, vr);
+      if (seg) {
+        const left = seg[0][0] <= seg[1][0] ? seg[0] : seg[1], right = seg[0][0] <= seg[1][0] ? seg[1] : seg[0];
+        const offBad = [-nS[0] * 0.26, -nS[1] * 0.26], offOk = [nS[0] * 0.3, nS[1] * 0.3];
+        txt(gl, (left[0] + offBad[0]) * 100, (left[1] + offBad[1]) * 100 + 8, '軸線 THE LINE', { 'font-size': 23 * T, fill: '#CDBBFF', 'text-anchor': 'start' });
+        if (this.show.zones) {
+          txt(gl, (right[0] + offOk[0]) * 100, (right[1] + offOk[1]) * 100 + 8, '✓ 攝影機嗰邊', { 'font-size': 23 * T, fill: '#9FF0C4', 'text-anchor': 'end' });
+          txt(gl, (right[0] + offBad[0]) * 100, (right[1] + offBad[1]) * 100 + 8, '✗ 越軸區', { 'font-size': 23 * T, fill: '#FFB0B3', 'text-anchor': 'end' });
+        }
+      }
+    }
+  }
+  drawChar(id, ax) {
+    const st = this.chars[id], ch = CH[id], col = ch.col, T = this.o.textScale;
+    let el = this.charEls[id];
+    if (!el) {
+      const g = E('g', { class: 'char' + (this.o.dragChars ? ' drag' : '') }, this.g_chars);
+      const body = E('g', {}, g), head = E('g', {}, g);
+      const arms = E('g', {}, body);
+      const woman = ch.style === 'woman';
+      for (const s of [-1, 1]) { E('line', { x1: 4, y1: s * 17, x2: 58, y2: s * 12, stroke: woman ? col.skin : col.top, 'stroke-width': woman ? 8 : 10, 'stroke-linecap': 'round' }, arms); if (woman) E('line', { x1: 4, y1: s * 17, x2: 16, y2: s * 16, stroke: col.top, 'stroke-width': 10, 'stroke-linecap': 'round' }, arms); E('circle', { cx: 60, cy: s * 12, r: 6, fill: col.skin }, arms); }
+      E('ellipse', { cx: 0, cy: 0, rx: 13, ry: woman ? 19 : 22, fill: col.top, stroke: 'rgba(0,0,0,.3)', 'stroke-width': 2 }, body);
+      if (woman) { for (const [x, y] of [[-4, -9], [5, 6], [-6, 10], [6, -12], [0, 0]]) E('circle', { cx: x, cy: y, r: 2.2, fill: col.pattern }, body); }
+      else { E('path', { d: 'M13,-6 L5,0 L13,6 Z', fill: col.shirt }, body); E('line', { x1: 7, y1: 0, x2: 13, y2: 0, stroke: col.tie, 'stroke-width': 3 }, body); }
+      E('circle', { cx: 0, cy: 0, r: woman ? 15 : 13, fill: col.hair }, head);
+      E('path', { d: woman ? 'M5,-11.6 A13,13 0 0 1 5,11.6 Z' : 'M3,-12.6 A13,13 0 0 1 3,12.6 Z', fill: col.skin }, head);
+      if (!woman) E('path', { d: 'M-8,-6 Q2,-12 9,-8', fill: 'none', stroke: col.hairHi, 'stroke-width': 2.5 }, head);
+      else for (const s of [-1, 1]) E('circle', { cx: 2, cy: s * 13.5, r: 2.6, fill: col.pearl }, head);
+      E('circle', { cx: 15, cy: 0, r: 3.6, fill: col.skinDk }, head);
+      const lab = E('g', {}, g);
+      E('circle', { cx: 0, cy: 0, r: 17 * T, fill: id === 'A' ? '#E7A33D' : '#3868BA', stroke: PL.halo, 'stroke-width': 3 }, lab);
+      E('text', { x: 0, y: 7.5 * T, 'text-anchor': 'middle', 'font-size': 22 * T, 'font-weight': 700, fill: id === 'A' ? '#241A08' : '#fff', 'font-family': 'Fredoka, var(--font-body)' }, lab, id);
+      if (this.o.dragChars) {
+        E('circle', { cx: 0, cy: 0, r: 40, fill: 'transparent' }, g);
+        g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button'); g.setAttribute('aria-label', `角色 ${id}：拖動或者用方向鍵移動`);
+        this.dragify(g, p => this.o.onChar(id, p));
+        this.keyify(g, () => [this.chars[id].x, this.chars[id].z], p => this.o.onChar(id, p));
+      }
+      el = this.charEls[id] = { g, body, head, arms, lab };
+    }
+    const oh = this.headOf(id === 'A' ? 'B' : 'A');
+    const pos = st.seated ? [ch.base[0], ch.base[2]] : [st.x, st.z];
+    const bodyAng = st.seated ? Math.atan2(ch.F[2], ch.F[0]) : (st.face != null ? st.face : Math.atan2(oh[1] - pos[1], oh[0] - pos[0]));
+    const hp = st.seated ? this.headOf(id) : pos;
+    const headAng = st.headFace != null ? st.headFace : Math.atan2(oh[1] - hp[1], oh[0] - hp[0]);
+    el.g.setAttribute('transform', `translate(${pos[0] * 100} ${pos[1] * 100}) scale(${this.o.charScale || 1})`);
+    el.body.setAttribute('transform', `rotate(${bodyAng * 180 / Math.PI})`);
+    el.arms.style.display = st.seated ? '' : 'none';
+    const k = this.o.charScale || 1;
+    el.head.setAttribute('transform', `translate(${(hp[0] - pos[0]) * 100 / k} ${(hp[1] - pos[1]) * 100 / k}) rotate(${headAng * 180 / Math.PI})`);
+    const bo = st.seated ? 0.52 : 0.62;
+    const back = [-Math.cos(bodyAng) * bo, -Math.sin(bodyAng) * bo];
+    el.lab.setAttribute('transform', `translate(${back[0] * 100 / k} ${back[1] * 100 / k}) scale(${1 / k})`);
+  }
+  drawCam(id, ax) {
+    const c = this.cams[id], T = this.o.textScale;
+    let el = this.camEls[id];
+    const col = c.col || CAMCOL[id] || '#777';
+    if (!el) {
+      const g = E('g', { class: 'cam' }, this.g_cams);
+      const hit = E('circle', { r: 44, fill: 'transparent' }, g);
+      const body = E('g', {}, g);
+      const sc = c.small ? 0.8 : 1;
+      E('rect', { x: -23 * sc, y: -16 * sc, width: 32 * sc, height: 32 * sc, rx: 8 * sc, fill: col, stroke: PL.ink, 'stroke-width': 3.5, class: 'cam-ring' }, body);
+      E('path', { d: `M${9 * sc},${-9 * sc} L${27 * sc},${-17 * sc} L${27 * sc},${17 * sc} L${9 * sc},${9 * sc} Z`, fill: col, stroke: PL.ink, 'stroke-width': 3.5, 'stroke-linejoin': 'round' }, body);
+      const num = E('text', { 'text-anchor': 'middle', 'font-size': 21 * sc, 'font-weight': 700, fill: id === 'c2' || c.darkText ? '#241A08' : '#fff', 'font-family': 'Fredoka, var(--font-body)', 'pointer-events': 'none' }, g, c.num || id.slice(1));
+      const badge = E('g', { 'pointer-events': 'none' }, g);
+      const bc = E('circle', { r: 13 * T, stroke: PL.halo, 'stroke-width': 3 }, badge);
+      const bt = E('text', { y: 6 * T, 'text-anchor': 'middle', 'font-size': 18 * T, 'font-weight': 800, fill: '#fff', 'font-family': 'var(--font-body)' }, badge);
+      const lab = this.show.camLabels ? txt(g, 0, 0, c.label || CAMNAME[id] || '', { 'text-anchor': 'middle', 'font-size': 20 * T, 'pointer-events': 'none' }) : null;
+      if (c.draggable) {
+        g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
+        g.setAttribute('aria-label', `${c.label || CAMNAME[id]} 攝影機：拖動或者用方向鍵移動`);
+        this.dragify(g, p => this.o.onCam(id, p));
+        this.keyify(g, () => this.cams[id].pos, p => this.o.onCam(id, p));
+      } else g.style.pointerEvents = 'none';
+      el = this.camEls[id] = { g, body, num, badge, bc, bt, lab, hit };
+    }
+    const sp = this.specOf(id);
+    const d = n2([sp.target[0] - sp.pos[0], sp.target[2] - sp.pos[2]]);
+    const ang = Math.atan2(d[1], d[0]) * 180 / Math.PI;
+    const p = c.pos;
+    el.g.setAttribute('transform', `translate(${p[0] * 100} ${p[1] * 100})`);
+    el.body.setAttribute('transform', `rotate(${ang})`);
+    el.num.setAttribute('x', (-d[0] * 7).toFixed(1)); el.num.setAttribute('y', (-d[1] * 7 + 7.5).toFixed(1));
+    let st = c.status;
+    if (!st) { const s = this.sideOfPt(p, ax); st = c.isRef ? 'ref' : s === 0 ? 'neutral' : s === ax.ref ? 'ok' : 'bad'; }
+    el.status = st;
+    const bcol = st === 'ok' ? PL.ok : st === 'bad' ? PL.bad : st === 'neutral' ? PL.neutral : st === 'ref' ? '#F3EBDC' : null;
+    el.badge.style.display = bcol ? '' : 'none';
+    if (bcol) {
+      el.badge.setAttribute('transform', `translate(${26 * T} ${-26 * T})`);
+      el.bc.setAttribute('fill', bcol);
+      el.bt.textContent = st === 'ok' ? '✓' : st === 'bad' ? '✗' : st === 'neutral' ? '◎' : '★';
+      el.bt.setAttribute('fill', st === 'ref' ? '#14202B' : '#fff');
+    }
+    if (el.lab) { el.lab.setAttribute('x', 0); el.lab.setAttribute('y', 52 * T); }
+  }
+}
+
+/* ============================ HERO ============================ */
+function initHero() {
+  const cv = $('#heroCanvas'); const screen = $('#heroScreen');
+  const tags = { line: $('#tagLine'), ok: $('#tagOk'), bad: $('#tagBad') };
+  let t0 = performance.now(), tt = 6;
+  const specAt = t => {
+    const s = REDUCED ? 0.5 : 0.5 + 0.5 * Math.sin(t / 5.5);
+    return { pos: [lerp(-0.1, 1.25, s), 1.95, 3.25], target: [0.06, 0.74, -0.12], vfov: 41, opts: { arAxis: true, zones: true, refSide: 1, tape: false, rainT: t } };
+  };
+  const v = new View(cv, {
+    maxW: 1400,
+    spec: () => specAt(tt),
+    pose: () => poseAt((tt % 24 + 24) % 24),
+    after: info => {
+      const cam = info.cam, W = cam.W, H = cam.H;
+      const place = (el, p) => { const q = cam.proj(p); if (!q || q[0] < W * 0.06 || q[0] > W * 0.94 || q[1] < H * 0.06 || q[1] > H * 0.94) { el.style.opacity = 0; return; } el.style.opacity = 1; el.style.left = (q[0] / W * 100) + '%'; el.style.top = (q[1] / H * 100) + '%'; };
+      const d = norm(sub(EYE.B, EYE.A));
+      place(tags.line, add(madd(EYE.B, d, 0.8), [0, 0.26, 0]));
+      place(tags.ok, [1.05, 0, 0.42]);
+      place(tags.bad, [1.7, 0, -2.2]);
+    },
+  });
+  if (!REDUCED) {
+    let vis = false;
+    new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis) addTicker(tick); }).observe(screen);
+    let lastF = 0;
+    const tick = now => { if (!vis) return false; if (now - lastF > 31) { lastF = now; tt = 6 + (now - t0) / 1000; v.inval(); } return true; };
+  }
+}
+
+/* ============================ §1 axis ============================ */
+function initAxisFig() {
+  const svg = $('#plan1');
+  const st = { A: { x: -1.1, z: 0.0, seated: false }, B: { x: 1.1, z: 0.0, seated: false } };
+  const cam = { m: { role: 'master', pos: [0.2, 2.6], col: CAMCOL.c1, num: '1', label: 'Master', draggable: true, isRef: true, spec: null } };
+  const specM = () => {
+    const a = [st.A.x, st.A.z], b = [st.B.x, st.B.z], m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    const p = cam.m.pos; const T = [m[0], 1.0, m[1]]; const dd = Math.hypot(T[0] - p[0], T[2] - p[1]);
+    return { pos: [p[0], 1.36, p[1]], target: T, vfov: clamp(2 * Math.atan(1.3 / dd) * 180 / Math.PI, 20, 75) };
+  };
+  cam.m.spec = specM;
+  const read = $('#p1Read');
+  const clampRoom = p => [clamp(p[0], -3.6, 3.6), clamp(p[1], -3.1, 3.1)];
+  const plan = new Plan(svg, {
+    furniture: false, simple: true, chars: st, cams: cam, refCam: 'm', dragChars: true, arcR: 1.55, view: [-3.5, -2.85, 7.0, 6.35], charScale: 1.45, textScale: 1.1,
+    show: { tri: false },
+    onChar: (id, p) => {
+      p = clampRoom(p); const o = st[id === 'A' ? 'B' : 'A'];
+      const d = Math.hypot(p[0] - o.x, p[1] - o.z); if (d < 0.9) { const k = 0.9 / (d || 1); p = [o.x + (p[0] - o.x) * k, o.z + (p[1] - o.z) * k]; }
+      st[id].x = p[0]; st[id].z = p[1]; plan.render(); update();
+    },
+    onCam: (id, p) => { p = clampRoom(p); for (const c of ['A', 'B']) { const d = Math.hypot(p[0] - st[c].x, p[1] - st[c].z); if (d < 0.45) { const k = 0.45 / (d || 1); p = [st[c].x + (p[0] - st[c].x) * k, st[c].z + (p[1] - st[c].z) * k]; } } cam.m.pos = p; plan.render(); update(); },
+  });
+  function update() {
+    const ax = plan.axis();
+    const s = plan.sideOfPt(cam.m.pos, ax);
+    read.textContent = s === 0 ? '攝影機企咗喺條線上：冇左右之分（中性鏡頭）。' : '綠色半邊就係你揀咗嘅 180°，之後每部機都留喺呢邊。';
+  }
+  update();
+  $('#p1Reset').addEventListener('click', () => { st.A.x = -1.1; st.A.z = 0; st.B.x = 1.1; st.B.z = 0; cam.m.pos = [0.2, 2.6]; plan.render(); update(); });
+  $('#p1Play').addEventListener('click', () => {
+    svg.classList.remove('play'); void svg.getBoundingClientRect(); svg.classList.add('play');
+    clearTimeout(svg._pt); svg._pt = setTimeout(() => svg.classList.remove('play'), 4600);
+  });
+}
+
+/* ============================ §2 sandbox ============================ */
+const SB = { pos: JSON.parse(JSON.stringify(SETUPS.std)), opts: { gaze: true, fov: true, tape: true, zones: false } };
+const sbListeners = [];
+function sbRef() { return sideOf([SB.pos.c1[0], 1.3, SB.pos.c1[1]]) || 1; }
+function sbSpec(id) { const p = SB.pos[id]; const s = rig(ROLE[id], p[0], p[1]); s.opts = { tape: SB.opts.tape, zones: SB.opts.zones, refSide: sbRef() }; return s; }
+function constrainCam(p) {
+  let x = clamp(p[0], -3.75, 3.75), z = clamp(p[1], -3.2, 3.2);
+  const K = [[0, 0, 0.64], [-1.0, 0, 0.5], [1.0, 0, 0.5], [-1.24, 0, 0.36], [1.24, 0, 0.36]];
+  for (let it = 0; it < 4; it++) for (const [cx, cz, r] of K) {
+    const dx = x - cx, dz = z - cz, d = Math.hypot(dx, dz);
+    if (d < r) { if (d < 1e-4) { x = cx + r; } else { x = cx + dx / d * r; z = cz + dz / d * r; } }
+  }
+  return [x, z];
+}
+function polarLerp(a, b, t) {
+  const ra = Math.hypot(a[0], a[1]), rb = Math.hypot(b[0], b[1]);
+  const aa = Math.atan2(a[1], a[0]), ab = Math.atan2(b[1], b[0]);
+  let d = ab - aa; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+  if (Math.abs(Math.abs(d) - Math.PI) < 1e-3) d = -Math.PI;
+  const r = lerp(ra, rb, t), an = aa + d * t;
+  return [r * Math.cos(an), r * Math.sin(an)];
+}
+function initSandbox() {
+  const svg = $('#plan2');
+  const cams = {};
+  for (const id of ['c1', 'c2', 'c3']) cams[id] = { role: ROLE[id], pos: SB.pos[id], col: CAMCOL[id], label: CAMNAME[id], draggable: true, isRef: id === 'c1', spec: () => sbSpec(id) };
+  const plan = new Plan(svg, {
+    cams, refCam: 'c1', arcR: 1.9, view: [-3.7, -2.75, 7.4, 6.55], textScale: 1.12, show: { tri: true },
+    onCam: (id, p) => { SB.pos[id] = constrainCam(p); setPresetBtn(null); changed(); },
+  });
+  const mons = {};
+  for (const id of ['c1', 'c2', 'c3']) {
+    const m = $('#m' + id.slice(1));
+    mons[id] = { el: m, chip: $('[data-chip]', m), lens: $('[data-lens]', m), read: $('[data-read]', m),
+      view: new View($('canvas', m), {
+        spec: () => sbSpec(id),
+        overlay: (ctx, info, W) => { if (SB.opts.gaze) ovGaze(ctx, info, SUBJ[id], W); },
+        after: info => updateMon(id, info),
+      }) };
+  }
+  function updateMon(id, info) {
+    const M = mons[id]; const ref = sbRef();
+    const st = id === 'c1' ? 'ref' : info.side === 0 ? 'neutral' : info.side === ref ? 'ok' : 'bad';
+    M.chip.className = 'chip ' + st;
+    M.chip.textContent = st === 'ref' ? '★ 基準' : st === 'ok' ? '✓ 同一邊' : st === 'bad' ? '✗ 越軸' : '◎ 軸線上';
+    M.el.classList.toggle('bad', st === 'bad'); M.el.classList.toggle('neutral', st === 'neutral');
+    M.lens.textContent = lensMM(sbSpec(id).vfov) + 'mm';
+    const parts = [];
+    for (const cid of SUBJ[id]) {
+      const c = info.chars[cid];
+      if (!c.inFrame) { parts.push(`<span>${cid} 唔喺畫面</span>`); continue; }
+      const side = c.x < 0 ? '左' : '右';
+      const g = !c.face ? '背住鏡頭' : c.gaze === 'C' ? '望鏡頭 ◎' : '望 ' + ARW[c.gaze];
+      parts.push(`<span class="${cid === 'A' ? 'ga' : 'gb'}">${cid}</span><span>喺${side}邊・${g}</span>`);
+    }
+    if (st === 'bad') parts.push('<span class="warn">越咗軸</span>');
+    M.read.innerHTML = parts.join('');
+  }
+  const verdict = $('#sbVerdict');
+  function updateVerdict() {
+    const ref = sbRef();
+    const sides = {}; for (const id of ['c2', 'c3']) sides[id] = sideOf([SB.pos[id][0], 1.2, SB.pos[id][1]]);
+    const bad = ['c2', 'c3'].filter(id => sides[id] !== 0 && sides[id] !== ref);
+    const neu = ['c2', 'c3'].filter(id => sides[id] === 0);
+    const refInfo = analyzeSpec(sbSpec('c1'));
+    if (!bad.length && !neu.length) {
+      const i2 = analyzeSpec(sbSpec('c2')), i3 = analyzeSpec(sbSpec('c3'));
+      const r = compareShots(i2, 'cuA', i3, 'cuB');
+      verdict.className = 'verdict-bar';
+      verdict.innerHTML = `<span class="vi">✓</span><span>三部機都喺同一邊，點剪都接得上。${r.level === 'ok' && r.items[0] ? '（' + r.items[0] + '）' : ''}</span>`;
+    } else {
+      verdict.className = 'verdict-bar' + (bad.length ? ' bad' : '');
+      const msgs = [];
+      for (const id of bad) {
+        const other = id === 'c2' ? 'c3' : 'c2';
+        const partner = sides[other] === ref ? other : 'c1';
+        const ia = analyzeSpec(sbSpec(partner)), ib = analyzeSpec(sbSpec(id));
+        const r = compareShots(ia, ROLE[partner], ib, ROLE[id]);
+        msgs.push(`<strong>Cam ${id.slice(1)} 越咗軸</strong>：同 Cam ${partner.slice(1)} 一剪，${r.items.slice(0, 2).join('；')}。`);
+      }
+      for (const id of neu) msgs.push(`<strong>Cam ${id.slice(1)} 喺軸線上</strong>：中性鏡頭，冇左右方向。`);
+      verdict.innerHTML = `<span class="vi">${bad.length ? '✗' : '◎'}</span><span>${msgs.join(' ')}</span>`;
+    }
+    void refInfo;
+  }
+  function changed() {
+    for (const id in cams) cams[id].pos = SB.pos[id];
+    plan.render();
+    for (const id in mons) mons[id].view.inval();
+    updateVerdict();
+    for (const f of sbListeners) f();
+  }
+  const btns = $$('#presetBtns [data-preset]');
+  function setPresetBtn(key) { for (const b of btns) b.classList.toggle('on', b.dataset.preset === key); }
+  let tw = null;
+  function tweenTo(key) {
+    const target = SETUPS[key], from = JSON.parse(JSON.stringify(SB.pos)), t0 = performance.now(), ms = REDUCED ? 1 : 1100;
+    setPresetBtn(key);
+    const me = {}; tw = me;
+    addTicker(now => {
+      if (tw !== me) return false;
+      const t = clamp((now - t0) / ms, 0, 1), e = ease(t);
+      for (const id in target) SB.pos[id] = polarLerp(from[id], target[id], e);
+      changed(); return t < 1;
+    });
+  }
+  for (const b of btns) b.addEventListener('click', () => tweenTo(b.dataset.preset));
+  const bindOpt = (id, key, planKey) => $(id).addEventListener('change', e => {
+    SB.opts[key] = e.target.checked;
+    if (planKey) { plan.show[planKey] = e.target.checked; }
+    changed();
+  });
+  bindOpt('#optGaze', 'gaze', 'gaze'); bindOpt('#optFov', 'fov', 'fov'); bindOpt('#optTape', 'tape'); bindOpt('#optZones', 'zones');
+  changed();
+}
+
+/* ============================ §3 eyeline ============================ */
+function initEyeline() {
+  const A_POS = SETUPS.std.c2, B_OK = SETUPS.std.c3, B_BAD = SETUPS.x3.c3;
+  const st = { t: 0, crossed: false };
+  const c3pos = () => polarLerp(B_OK, B_BAD, ease(st.t));
+  const vA = new View($('#eyeA'), { spec: () => rig('cuA', A_POS[0], A_POS[1]), overlay: (ctx, info, W) => { ovGaze(ctx, info, ['A'], W); } });
+  const vB = new View($('#eyeB'), { spec: () => { const p = c3pos(); return rig('cuB', p[0], p[1]); }, overlay: (ctx, info, W) => { ovGaze(ctx, info, ['B'], W); } });
+  const cams = { c2: { role: 'cuA', pos: A_POS, col: CAMCOL.c2, label: 'CU A' }, c3: { role: 'cuB', pos: c3pos(), col: CAMCOL.c3, label: 'CU B' } };
+  const plan = new Plan($('#plan3'), { view: [-2.55, -2.05, 5.1, 3.9], room: true, cams, refSide: 1, arcR: 1.2, textScale: 0.8, show: { tri: false, labels: false, camLabels: false } });
+  const mid = $('#eyeMid'), arrB = $('#eyeArrB'), lab = $('#eyeBLab'), mind = $('#mindSvg'), mindTxt = $('#mindTxt');
+  function drawMind(crossed) {
+    mind.replaceChildren();
+    const fig = (x, y, dir, col, name, ghost) => {
+      const g = E('g', { transform: `translate(${x} ${y}) scale(1.25)`, opacity: ghost ? .45 : 1 }, mind);
+      E('ellipse', { cx: 0, cy: 0, rx: 9, ry: 16, fill: col, transform: `rotate(${dir > 0 ? 0 : 180})` }, g);
+      E('circle', { cx: dir * 3, cy: 0, r: name === 'B' ? 11.5 : 10, fill: ghost ? '#8792A0' : (name === 'A' ? '#0F0D0C' : '#21150F'), stroke: '#C9B79A', 'stroke-width': 1.6 }, g);
+      E('circle', { cx: dir * 13, cy: 0, r: 3, fill: '#F4C7A3' }, g);
+      E('text', { x: 0, y: 36, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, fill: 'currentColor', 'font-family': 'Fredoka, var(--font-body)' }, g, name);
+      E('path', { d: `M${dir * 20},0 l${dir * 26},0`, stroke: col, 'stroke-width': 3, 'stroke-dasharray': '3 4', 'stroke-linecap': 'round' }, g);
+      E('path', { d: `M${dir * 50},0 l${-dir * 8},-5 l0,10 z`, fill: col }, g);
+    };
+    if (!crossed) { fig(40, 48, 1, '#B07A43', 'A'); fig(180, 48, -1, '#2E4D99', 'B'); }
+    else { fig(28, 48, 1, '#B07A43', 'A'); fig(112, 48, 1, '#2E4D99', 'B'); const g = E('g', { transform: 'translate(196 48) scale(1.25)', opacity: .55 }, mind); E('circle', { r: 13, fill: 'none', stroke: 'currentColor', 'stroke-width': 2, 'stroke-dasharray': '3 3' }, g); E('text', { y: 6, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 800, fill: 'currentColor' }, g, '?'); }
+    mind.style.color = 'var(--ink-2)';
+    mindTxt.innerHTML = crossed ? '兩個都望右：<span class="b-txt">B</span> 好似背住 <span class="a-txt">A</span>，望住畫外另一個人。' : '<span class="a-txt">A</span> 同 <span class="b-txt">B</span> 面對面，喺度對話。';
+  }
+  function setVerdict() {
+    const crossed = st.t > 0.5;
+    mid.className = 'eye-mid ' + (crossed ? 'bad' : 'ok'); mid.textContent = crossed ? '✗ 冇對望' : '對望 ✓';
+    arrB.classList.toggle('flip', crossed);
+    lab.textContent = crossed ? 'CAM 3 · CU B（過咗線）' : 'CAM 3 · CU B';
+    drawMind(crossed);
+  }
+  function go(crossed) {
+    $('#eyeOk').classList.toggle('on', !crossed); $('#eyeBad').classList.toggle('on', crossed);
+    const from = st.t, to = crossed ? 1 : 0, t0 = performance.now(), ms = REDUCED ? 1 : 1000;
+    const me = {}; st.tw = me;
+    addTicker(now => {
+      if (st.tw !== me) return false;
+      const k = clamp((now - t0) / ms, 0, 1); st.t = lerp(from, to, k);
+      cams.c3.pos = c3pos(); plan.render(); vB.inval();
+      if (k >= 1) setVerdict();
+      return k < 1;
+    });
+  }
+  $('#eyeOk').addEventListener('click', () => go(false));
+  $('#eyeBad').addEventListener('click', () => go(true));
+  setVerdict(); void vA;
+}
+
+/* ============================ §4 failure cases ============================ */
+const INS_SPEC = s => rig('free', 0.05, 0.92 * s, { h: 1.02, target: [0.0, 0.78, 0.02], vfov: 30 });
+const SHOT = (role, p, extra) => Object.assign({ role, pos: p, spec: () => rig(role, p[0], p[1]) }, extra || {});
+const CUP_FROM = [-0.26, TABLE.y, 0.1], CUP_TO = [0.18, TABLE.y, 0.02];
+const CASES = [
+  { rows: { ok: [SHOT('cuA', [1.25, 1.25]), SHOT('cuB', [-1.25, 1.25])], bad: [SHOT('cuA', [1.25, 1.25]), SHOT('cuB', [-1.25, -1.25])] },
+    notes: { ok: 'CU A 剪去 CU B', bad: 'CU A 剪去過咗線嘅 CU B' },
+    labs: { ok: ['CAM 2 · CU A', 'CAM 3 · CU B'], bad: ['CAM 2 · CU A', 'CAM 3′ · CU B'] },
+    feel: '兩個人唔似對住講嘢：A 望右，B 都望右，好似同畫外另一個人講。',
+    also: '觀眾講唔出原因，但會覺得怪；一諗，就出戲。',
+    plan: [['c2', [1.25, 1.25], 'cuA', 'ok', '2'], ['c3', [-1.25, 1.25], 'cuB', 'ok', '3'], ['x3', [-1.25, -1.25], 'cuB', 'bad', '3′']] },
+  { rows: { ok: [SHOT('master', [0, 3]), SHOT('cuB', [-1.25, 1.25])], bad: [SHOT('master', [0, 3]), SHOT('cuB', [-1.25, -1.25])] },
+    notes: { ok: 'Master 剪去 CU B', bad: 'Master 剪去過咗線嘅 CU B' },
+    labs: { ok: ['CAM 1 · MASTER', 'CAM 3 · CU B'], bad: ['CAM 1 · MASTER', 'CAM 3′ · CU B'] },
+    feel: 'B 瞬間移咗位：Master 入面佢坐右邊，下一格突然喺左邊。',
+    also: '注意力由對白跌咗落「邊個喺邊」，節奏即刻斷。',
+    plan: [['c1', [0, 3], 'master', 'ok', '1'], ['c3', [-1.25, 1.25], 'cuB', 'ok', '3'], ['x3', [-1.25, -1.25], 'cuB', 'bad', '3′']] },
+  { anim: true,
+    rows: { ok: [SHOT('master', [0, 3]), { role: 'insert', pos: [0.05, 0.92], spec: () => INS_SPEC(1) }], bad: [SHOT('master', [0, 3]), { role: 'insert', pos: [0.05, -0.92], spec: () => INS_SPEC(-1) }] },
+    notes: { ok: 'Master 剪去插入鏡頭', bad: 'Master 剪去過咗線嘅插入鏡頭' },
+    labs: { ok: ['CAM 1 · MASTER', 'INSERT · 杯'], bad: ['CAM 1 · MASTER', 'INSERT′ · 杯'] },
+    feel: 'A 將杯咖啡推過去，近鏡入面杯咖啡好似推返轉頭。',
+    also: '追車、行出畫面都一樣：越軸令動作方向反轉。',
+    plan: [['c1', [0, 3], 'master', 'ok', '1'], ['in', [0.05, 0.92], 'insert', 'ok', '插'], ['xin', [0.05, -0.92], 'insert', 'bad', '插′']] },
+  { rows: { ok: [SHOT('master', [0, 3]), SHOT('master', [1.55, 2.55])], bad: [SHOT('master', [0, 3]), SHOT('master', [0, -3])] },
+    notes: { ok: 'Master 剪去同一邊嘅全景', bad: 'Master 剪去過咗線嘅全景' },
+    labs: { ok: ['CAM 1 · MASTER', 'CAM 1b · WIDE'], bad: ['CAM 1 · MASTER', 'CAM 1′ · WIDE'] },
+    feel: '好似去咗第二個地方：雨夜窗景變咗水吧同餐牌，兩個人仲左右調轉。',
+    also: '仲會影埋燈架：工作人員同器材通常就喺「另一邊」。',
+    plan: [['c1', [0, 3], 'master', 'ok', '1'], ['w2', [1.55, 2.55], 'master', 'ok', '1b'], ['xm', [0, -3], 'master', 'bad', '1′']] },
+];
+function initCases() {
+  let idx = 0, t0 = performance.now(), animT = 0, running = false;
+  const panel = $('#casePanel');
+  const pose = () => { if (!CASES[idx].anim) return null; const k = smooth(0.1, 0.62, animT % 1); return { A: {}, B: {}, cupA: [lerp(CUP_FROM[0], CUP_TO[0], k), TABLE.y, lerp(CUP_FROM[2], CUP_TO[2], k)] }; };
+  const views = {};
+  for (const key of ['ok0', 'ok1', 'bad0', 'bad1']) {
+    const row = key.slice(0, -1), i = +key.slice(-1);
+    views[key] = new View($(`[data-v="${key}"]`, panel), {
+      spec: () => CASES[idx].rows[row][i].spec(),
+      pose,
+      overlay: (ctx, info, W) => {
+        const sh = CASES[idx].rows[row][i];
+        const ids = subjOf(sh.role);
+        if (CASES[idx].anim) {
+          const a = info.cam.proj(CUP_FROM), b = info.cam.proj(CUP_TO);
+          if (a && b) { const s = OS(W); const y = Math.min(a[1], b[1]) - 34 * s; const dir = Math.sign(b[0] - a[0]); const cx = (a[0] + b[0]) / 2; const L = clamp(Math.abs(b[0] - a[0]) * 0.9, 50 * s, 220 * s); drawArrow(ctx, cx - dir * L / 2, y, cx + dir * L / 2, y, row === 'ok' || i === 0 ? '#2FA36B' : '#E5484D', 6 * s); }
+          ovTags(ctx, info, ids, W);
+        } else { ovGaze(ctx, info, ids, W); ovTags(ctx, info, ids, W); }
+      },
+    });
+  }
+  const cams = {};
+  const plan = new Plan($('#plan4'), { view: [-3.0, -3.45, 6.0, 6.95], cams, refSide: 1, arcR: 1.5, textScale: 1.0, show: { tri: false, labels: false, camLabels: false, gaze: true } });
+  function setCase(i) {
+    idx = i;
+    $$('.tab').forEach(t => t.setAttribute('aria-selected', String(+t.dataset.case === i)));
+    const C = CASES[i];
+    $('[data-note="ok"]', panel).textContent = C.notes.ok; $('[data-note="bad"]', panel).textContent = C.notes.bad;
+    for (const key of ['ok0', 'ok1', 'bad0', 'bad1']) { const row = key.slice(0, -1), j = +key.slice(-1); $(`[data-lab="${key}"]`, panel).textContent = C.labs[row][j]; views[key].inval(); }
+    $('[data-feel]', panel).textContent = C.feel; $('[data-also]', panel).textContent = C.also;
+    for (const k in cams) delete cams[k];
+    for (const [id, pos, role, status, num] of C.plan) cams[id] = { role, pos, status, num, col: status === 'bad' ? '#E5484D' : (role === 'cuA' ? CAMCOL.c2 : role === 'cuB' ? CAMCOL.c3 : CAMCOL.c1), small: role === 'insert', spec: role === 'insert' ? () => INS_SPEC(pos[1] > 0 ? 1 : -1) : null, darkText: role === 'cuA' };
+    for (const id in plan.camEls) { plan.camEls[id].g.remove(); delete plan.camEls[id]; }
+    plan.render();
+    // verdict lines
+    for (const row of ['ok', 'bad']) {
+      const el = $(`[data-res="${row}"]`, panel);
+      const [s0, s1] = C.rows[row];
+      if (C.anim) {
+        const dirOf = sp => { const c = makeCam(sp.pos, sp.target, sp.vfov, 1600, 900); const a = c.proj(CUP_FROM), b = c.proj(CUP_TO); return b[0] > a[0] ? '由左去右 →' : '由右去左 ←'; };
+        const d0 = dirOf(s0.spec()), d1 = dirOf(s1.spec());
+        el.innerHTML = row === 'ok' ? `<span class="ri ok-txt">✓</span><span>兩格入面杯咖啡都係<strong>${d0}</strong>：動作方向一致。</span>` : `<span class="ri bad-txt">✗</span><span>Master 入面<strong>${d0}</strong>，近鏡入面變咗<strong>${d1}</strong>：方向反轉。</span>`;
+      } else {
+        const r = compareShots(analyzeSpec(s0.spec()), s0.role, analyzeSpec(s1.spec()), s1.role);
+        el.innerHTML = `<span class="ri ${r.level === 'bad' ? 'bad-txt' : 'ok-txt'}">${r.level === 'bad' ? '✗' : '✓'}</span><span>${r.items.slice(0, 3).join('；')}。</span>`;
+      }
+    }
+    if (C.anim && !running && !REDUCED) { running = true; t0 = performance.now(); addTicker(tick); }
+  }
+  let vis = false;
+  new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis && CASES[idx].anim && !running && !REDUCED) { running = true; addTicker(tick); } }).observe(panel);
+  const tick = now => {
+    if (!CASES[idx].anim || !vis) { running = false; return false; }
+    animT = ((now - t0) / 2600) % 1;
+    for (const k in views) views[k].inval();
+    return true;
+  };
+  if (REDUCED) animT = 0.8;
+  $$('.tab').forEach(t => t.addEventListener('click', () => setCase(+t.dataset.case)));
+  $('.tabs').addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const n = (idx + (e.key === 'ArrowRight' ? 1 : 3)) % 4; setCase(n); $(`.tab[data-case="${n}"]`).focus();
+  });
+  setCase(0);
+}
+
+/* ============================ §5 edit suite ============================ */
+const DUR = 24, FPS = 24;
+const LINES = [
+  { who: 'A', t0: 1.0, t1: 3.2, text: '落咁大雨，你仲要走？' },
+  { who: 'B', t0: 4.1, t1: 5.9, text: '尾班船十一點。' },
+  { who: 'A', t0: 6.9, t1: 9.4, text: '坐多陣啦，杯咖啡都未飲完。' },
+  { who: 'B', t0: 10.3, t1: 12.4, text: '你每次都係咁講。' },
+  { who: 'A', t0: 13.9, t1: 16.9, text: '咁今次呢？你想我點講？' },
+  { who: 'B', t0: 21.6, t1: 23.3, text: '……等雨停咗先講。' },
+];
+const EDL0 = [{ t: 0, cam: 1 }, { t: 3.7, cam: 3 }, { t: 6.5, cam: 2 }, { t: 9.8, cam: 3 }, { t: 13.5, cam: 2 }, { t: 17.3, cam: 3 }, { t: 21.2, cam: 1 }];
+function poseAt(t) {
+  const P = { A: {}, B: {} };
+  for (const id of ['A', 'B']) {
+    const q = P[id]; q.breathe = Math.sin(t * 1.6 + (id === 'A' ? 0 : 1.3));
+    const per = id === 'A' ? 3.3 : 4.1, bt = (t + (id === 'A' ? 0.7 : 1.9)) % per;
+    q.blink = bt < 0.15 ? Math.sin(bt / 0.15 * Math.PI) : 0;
+  }
+  for (const L of LINES) {
+    if (t >= L.t0 && t <= L.t1) {
+      const q = P[L.who]; const env = clamp(Math.min(t - L.t0, L.t1 - t) / 0.12, 0, 1);
+      q.mouth = env * (0.25 + 0.75 * Math.abs(Math.sin(t * 13.7) * Math.sin(t * 5.3 + 0.7)));
+      q.headPitch = (q.headPitch || 0) + 0.03 * Math.sin(t * 4.2);
+      q.headYaw = 0.03 * Math.sin(t * 2.3);
+    }
+  }
+  const k = smooth(17.5, 18.2, t) * (1 - smooth(19.9, 20.6, t));
+  P.B.headPitch = (P.B.headPitch || 0) + 0.32 * k;
+  if (k > 0.35) P.B.lookAt = [0.22, 0.8, -0.08];
+  P.B.worry = t > 10 && t < 23.5;
+  P.A.lean = 0.05 * smooth(15, 16.5, t) * (1 - smooth(22.5, 23.8, t));
+  const nod = smooth(12.5, 12.8, t) * (1 - smooth(12.9, 13.3, t)) + smooth(5.95, 6.15, t) * (1 - smooth(6.15, 6.5, t));
+  P.A.headPitch = (P.A.headPitch || 0) + 0.12 * nod;
+  return P;
+}
+const tcOf = t => { const f = Math.floor(t * FPS + 1e-6); const ff = f % FPS, s = Math.floor(f / FPS) % 60, m = Math.floor(f / FPS / 60); const p = n => String(n).padStart(2, '0'); return `00:${p(m)}:${p(s)}:${p(ff)}`; };
+function initEdit() {
+  const E_ = { cuts: EDL0.map(c => ({ ...c })), t: 0, playing: false, ver: 'std', cmp: true, sel: -1, last: 0 };
+  const VERN = { std: '✓ 跟足 180°', x3: '✗ Cam 3 越軸', xm: '✗ Master 越軸', sb: '你喺第 2 部分擺嘅機位' };
+  const posOf = ver => ver === 'sb' ? SB.pos : SETUPS[ver];
+  const specOf = (ver, cam) => { const id = 'c' + cam, p = posOf(ver)[id]; return rig(ROLE[id], p[0], p[1]); };
+  const camAt = t => { let c = E_.cuts[0].cam; for (const k of E_.cuts) { if (k.t <= t + 1e-6) c = k.cam; else break; } return c; };
+  const clipIdx = t => { let i = 0; for (let k = 0; k < E_.cuts.length; k++) if (E_.cuts[k].t <= t + 1e-6) i = k; return i; };
+  let evals = { std: [], cur: [] };
+  function evalVer(ver) {
+    const out = [];
+    for (let i = 1; i < E_.cuts.length; i++) {
+      const a = E_.cuts[i - 1], b = E_.cuts[i];
+      if (a.cam === b.cam) { out.push(null); continue; }
+      out.push(compareShots(analyzeSpec(specOf(ver, a.cam)), ROLE['c' + a.cam], analyzeSpec(specOf(ver, b.cam)), ROLE['c' + b.cam]));
+    }
+    return out;
+  }
+  const suite = $('#suite');
+  const pgs = { ref: $('#pgRef'), cur: $('#pgCur') };
+  const pgViews = {};
+  for (const k of ['ref', 'cur']) {
+    const el = pgs[k];
+    pgViews[k] = new View($('canvas', el), {
+      maxW: 1500,
+      spec: () => specOf(k === 'ref' ? 'std' : E_.ver, camAt(E_.t)),
+      pose: () => poseAt(E_.t),
+    });
+  }
+  const angViews = {};
+  $$('#angles .angle').forEach(btn => {
+    const cam = +btn.dataset.cam;
+    angViews[cam] = { btn, st: $('[data-st]', btn), view: new View($('canvas', btn), { maxW: 700, spec: () => specOf(E_.ver, cam), pose: () => poseAt(E_.t) }) };
+    btn.addEventListener('click', () => switchTo(cam));
+  });
+  function setSub(el, t) {
+    const L = LINES.find(l => t >= l.t0 && t <= l.t1 + 0.25);
+    el.innerHTML = L ? `<span class="who ${L.who}">${L.who}：</span>${L.text}` : '';
+  }
+  const tcEl = $('#tc');
+  function refreshStatic() {
+    const cur = camAt(E_.t);
+    for (const c in angViews) angViews[c].btn.classList.toggle('live', +c === cur);
+    for (const k of ['ref', 'cur']) {
+      $('[data-cam]', pgs[k]).textContent = `CAM ${cur} · ${CAMNAME['c' + cur]}`;
+      setSub($('[data-sub]', pgs[k]), E_.t);
+    }
+    tcEl.innerHTML = `${tcOf(E_.t)} <small>/ ${tcOf(DUR)}</small>`;
+    $('#playhead').style.left = (E_.t / DUR * 100) + '%';
+  }
+  function invalAll() { for (const k in pgViews) pgViews[k].inval(); for (const c in angViews) angViews[c].view.inval(); }
+  // ------- timeline -------
+  const ruler = $('#tlRuler'), laneV = $('#laneV'), laneA = $('#laneA'), laneB = $('#laneB');
+  (function buildStatic() {
+    for (let s = 0; s <= DUR; s++) {
+      E_.t = E_.t;
+      const tk = document.createElement('div'); tk.className = 'tl-tick' + (s % 2 === 0 ? ' major' : ''); tk.style.left = (s / DUR * 100) + '%'; ruler.appendChild(tk);
+      if (s % 4 === 0 && s < DUR) { const l = document.createElement('div'); l.className = 'tl-tick-l' + (s % 8 ? ' minor' : ''); l.style.left = (s / DUR * 100) + '%'; l.textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; if (s === 0) l.style.transform = 'none'; ruler.appendChild(l); }
+    }
+    LINES.forEach((L, i) => {
+      const el = document.createElement('div'); el.className = 'aclip ' + L.who;
+      el.style.left = (L.t0 / DUR * 100) + '%'; el.style.width = ((L.t1 - L.t0) / DUR * 100) + '%';
+      const cv = document.createElement('canvas'); cv.width = 240; cv.height = 40; el.appendChild(cv);
+      const g = cv.getContext('2d'); const rnd = mulberry(40 + i); g.fillStyle = L.who === 'A' ? '#5A3A06' : '#0D2A5A';
+      for (let x = 0; x < 240; x += 3) { const a = (0.25 + 0.75 * rnd()) * Math.sin(Math.PI * x / 240) ** 0.3 * 17; g.fillRect(x, 20 - a, 2, a * 2); }
+      const sp = document.createElement('span'); sp.textContent = L.text; el.appendChild(sp);
+      (L.who === 'A' ? laneA : laneB).appendChild(el);
+    });
+  })();
+  function buildTimeline() {
+    laneV.replaceChildren();
+    $$('.tl-mark', ruler).forEach(m => m.remove());
+    const clips = E_.cuts.map((c, i) => ({ t0: c.t, t1: i + 1 < E_.cuts.length ? E_.cuts[i + 1].t : DUR, cam: c.cam, i }));
+    const laneW = laneV.getBoundingClientRect().width || 800;
+    for (const c of clips) {
+      const b = document.createElement('button'); b.className = `clip k${c.cam}` + (c.i === E_.sel ? ' sel' : '');
+      const w = (c.t1 - c.t0) / DUR;
+      b.style.left = (c.t0 / DUR * 100) + '%'; b.style.width = `calc(${w * 100}% - 2px)`;
+      if (w * laneW < 96) b.classList.add('narrow');
+      b.setAttribute('aria-label', `片段 ${tcOf(c.t0)}：Cam ${c.cam} ${CAMNAME['c' + c.cam]}`);
+      const cv = document.createElement('canvas'); b.appendChild(cv);
+      const sp = document.createElement('span'); sp.className = 'cl'; sp.textContent = `${c.cam} ${CAMNAME['c' + c.cam]}`; b.appendChild(sp);
+      b.addEventListener('click', () => { pause(); E_.sel = c.i; seek(c.t0 + 0.001); buildTimeline(); });
+      laneV.appendChild(b);
+      requestAnimationFrame(() => {
+        const r = cv.getBoundingClientRect(); if (r.width < 4) return;
+        cv.width = Math.round(r.width * DPR()); cv.height = Math.round(r.height * DPR());
+        renderScene(cv.getContext('2d'), cv.width, cv.height, specOf(E_.ver, c.cam), poseAt(c.t0 + 0.3), { grain: false });
+      });
+    }
+    const ev = evals.cur;
+    for (let i = 1; i < E_.cuts.length; i++) {
+      const r = ev[i - 1]; if (!r) continue;
+      const m = document.createElement('button'); m.className = 'tl-mark ' + r.level; m.style.left = (E_.cuts[i].t / DUR * 100) + '%';
+      m.textContent = r.level === 'bad' ? '✗' : r.level === 'neutral' ? '◎' : '✓';
+      m.title = `${tcOf(E_.cuts[i].t)} ${r.head}：${r.items[0]}`;
+      m.setAttribute('aria-label', m.title);
+      m.addEventListener('pointerdown', e => e.stopPropagation());
+      m.addEventListener('click', e => { e.stopPropagation(); replayCut(i); });
+      ruler.appendChild(m);
+      if (r.level === 'bad') { const cl = document.createElement('div'); cl.className = 'cutline'; cl.style.left = (E_.cuts[i].t / DUR * 100) + '%'; laneV.appendChild(cl); }
+    }
+    buildCutList();
+    // angle status (is this angle on the other side of the master?)
+    const ref = sideOf([posOf(E_.ver).c1[0], 1.3, posOf(E_.ver).c1[1]]) || 1;
+    for (const c in angViews) {
+      const p = posOf(E_.ver)['c' + c], s = sideOf([p[0], 1.2, p[1]]);
+      const bad = +c !== 1 && s !== 0 && s !== ref;
+      angViews[c].st.innerHTML = +c === 1 ? '<span class="chip ref">★ 基準</span>' : bad ? '<span class="chip bad">✗ 越軸</span>' : s === 0 ? '<span class="chip neutral">◎</span>' : '<span class="chip ok">✓</span>';
+    }
+  }
+  const list = $('#cutlist');
+  function buildCutList() {
+    list.replaceChildren();
+    const ev = evals.cur; let nBad = 0, nAll = 0;
+    const h = document.createElement('h3'); list.appendChild(h);
+    for (let i = 1; i < E_.cuts.length; i++) {
+      const r = ev[i - 1]; if (!r) continue; nAll++; if (r.level === 'bad') nBad++;
+      const a = E_.cuts[i - 1].cam, b = E_.cuts[i].cam;
+      const it = document.createElement('div'); it.className = 'cut-item ' + r.level; it.setAttribute('role', 'button'); it.tabIndex = 0;
+      it.innerHTML = `<span class="tcs">${tcOf(E_.cuts[i].t).slice(3)}</span><span class="pair">${CAMNAME['c' + a]} → ${CAMNAME['c' + b]}</span><span class="why"><b>${r.head}</b>：${r.items.slice(0, 2).join('；')}</span>`;
+      it.title = '撳一下重播呢一刀';
+      it.addEventListener('click', () => replayCut(i));
+      it.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); replayCut(i); } });
+      list.appendChild(it);
+    }
+    h.innerHTML = `剪接點檢查（${VERN[E_.ver]}）：${nAll} 個剪接點，` + (nBad ? `<span style="color:#FF8A8F">✗ ${nBad} 個越軸</span>` : `<span style="color:#7FE0AE">✓ 全部接得順</span>`);
+  }
+  function reEval() { evals.cur = evalVer(E_.ver); evals.std = evalVer('std'); buildTimeline(); }
+  // ------- playback -------
+  const playBtn = $('#tPlay');
+  function setPlayUI() { playBtn.innerHTML = E_.playing ? '<svg width="16" height="16" aria-hidden="true"><use href="#i-pause"/></svg><span>暫停</span>' : '<svg width="16" height="16" aria-hidden="true"><use href="#i-play"/></svg><span>播放</span>'; }
+  function seek(t) { E_.t = clamp(t, 0, DUR); refreshStatic(); invalAll(); }
+  function pause() { E_.playing = false; setPlayUI(); }
+  function play() {
+    if (E_.t >= DUR - 0.01) E_.t = 0;
+    E_.playing = true; E_.last = performance.now(); setPlayUI();
+    addTicker(now => {
+      if (!E_.playing) return false;
+      const dt = Math.min(0.1, (now - E_.last) / 1000); E_.last = now;
+      const prev = E_.t; E_.t = Math.min(DUR, E_.t + dt);
+      for (let i = 1; i < E_.cuts.length; i++) { const c = E_.cuts[i]; if (prev < c.t && E_.t >= c.t) onCut(i); }
+      refreshStatic(); invalAll();
+      if (E_.t >= DUR) { pause(); return false; }
+      return true;
+    });
+  }
+  const timers = {};
+  function showCallout(k, r) {
+    const el = pgs[k]; if (el.hidden) return;
+    const co = $('[data-callout]', el), fl = $('[data-flash]', el);
+    co.className = 'callout show ' + r.level;
+    co.innerHTML = `<span>${r.head}</span><span style="font-weight:600">${r.items.slice(0, 2).join('；')}</span>`;
+    fl.className = 'flash ' + (r.level === 'bad' ? 'bad' : r.level === 'ok' ? 'ok' : '');
+    clearTimeout(timers[k]); timers[k] = setTimeout(() => { co.classList.remove('show'); fl.className = 'flash'; }, 2300);
+  }
+  function onCut(i) {
+    const r = evals.cur[i - 1]; if (r) showCallout('cur', r);
+    const r2 = evals.std[i - 1]; if (r2 && !pgs.ref.hidden) showCallout('ref', r2);
+  }
+  function replayCut(i) { pause(); seek(Math.max(0, E_.cuts[i].t - 1.6)); play(); }
+  function switchTo(cam) {
+    const t = E_.t;
+    if (E_.playing) {
+      const k = clipIdx(t);
+      if (E_.cuts[k].cam === cam) return;
+      if (t - E_.cuts[k].t < 0.35) E_.cuts[k].cam = cam;
+      else E_.cuts.splice(k + 1, 0, { t: Math.round(t * FPS) / FPS, cam });
+    } else {
+      const k = clipIdx(t); E_.cuts[k].cam = cam; E_.sel = k;
+    }
+    merge(); reEval(); refreshStatic(); invalAll();
+  }
+  function merge() { for (let i = E_.cuts.length - 1; i > 0; i--) if (E_.cuts[i].cam === E_.cuts[i - 1].cam) E_.cuts.splice(i, 1); if (E_.sel >= E_.cuts.length) E_.sel = -1; }
+  playBtn.addEventListener('click', () => E_.playing ? pause() : play());
+  $('#tStart').addEventListener('click', () => { pause(); seek(0); });
+  const cutTimes = () => E_.cuts.slice(1).map(c => c.t);
+  $('#tPrev').addEventListener('click', () => { pause(); const ts = cutTimes().filter(x => x < E_.t - 0.05); seek(ts.length ? ts[ts.length - 1] : 0); });
+  $('#tNext').addEventListener('click', () => { pause(); const ts = cutTimes().filter(x => x > E_.t + 0.05); seek(ts.length ? ts[0] : DUR); });
+  $('#tBlade').addEventListener('click', () => {
+    pause(); const t = Math.round(E_.t * FPS) / FPS; const k = clipIdx(t);
+    if (t - E_.cuts[k].t < 0.3 || (k + 1 < E_.cuts.length && E_.cuts[k + 1].t - t < 0.3) || t > DUR - 0.3) return;
+    const nextCam = [1, 2, 3].find(c => c !== E_.cuts[k].cam && c !== (E_.cuts[k + 1] || {}).cam) || 1;
+    E_.cuts.splice(k + 1, 0, { t, cam: nextCam }); E_.sel = k + 1; reEval(); refreshStatic(); invalAll();
+  });
+  $('#tReset').addEventListener('click', () => { pause(); E_.cuts = EDL0.map(c => ({ ...c })); E_.sel = -1; reEval(); seek(0); });
+  // scrub
+  const tl = $('#tl');
+  const scrubFrom = ev => { const r = laneV.getBoundingClientRect(); seek((ev.clientX - r.left) / r.width * DUR); };
+  ruler.addEventListener('pointerdown', e => { pause(); ruler.setPointerCapture(e.pointerId); scrubFrom(e); const mv = ev => scrubFrom(ev); const up = () => { ruler.removeEventListener('pointermove', mv); ruler.removeEventListener('pointerup', up); }; ruler.addEventListener('pointermove', mv); ruler.addEventListener('pointerup', up); });
+  for (const lane of [laneA, laneB]) lane.addEventListener('click', e => { pause(); scrubFrom(e); });
+  // versions
+  const verBtns = $$('#verBtns [data-ver]');
+  const cmp = $('#cmpToggle');
+  function setVer(v) {
+    E_.ver = v; for (const b of verBtns) b.classList.toggle('on', b.dataset.ver === v);
+    $('[data-vername]', pgs.cur).textContent = VERN[v];
+    layoutPrograms(); reEval(); refreshStatic(); invalAll();
+  }
+  function layoutPrograms() {
+    const two = cmp.checked && E_.ver !== 'std';
+    pgs.ref.hidden = !two; $('#programs').classList.toggle('two', two); $('.edit-view').classList.toggle('two', two);
+    $('#cmpWrap').style.opacity = E_.ver === 'std' ? .5 : 1;
+  }
+  for (const b of verBtns) b.addEventListener('click', () => setVer(b.dataset.ver));
+  cmp.addEventListener('change', () => { layoutPrograms(); invalAll(); });
+  let sbT = 0;
+  sbListeners.push(() => { if (E_.ver !== 'sb') return; clearTimeout(sbT); sbT = setTimeout(() => { reEval(); invalAll(); }, 160); });
+  // keyboard
+  let suiteVis = false;
+  new IntersectionObserver(es => { suiteVis = es[0].intersectionRatio > 0.2; }, { threshold: [0, 0.2, 0.5] }).observe(suite);
+  document.addEventListener('keydown', e => {
+    if (!suiteVis || e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (e.key === '1' || e.key === '2' || e.key === '3') { e.preventDefault(); switchTo(+e.key); }
+    else if (e.key === ' ' || e.code === 'Space') { if (tag === 'BUTTON' || document.activeElement.getAttribute('role') === 'button' || document.activeElement.getAttribute('role') === 'tab') return; e.preventDefault(); E_.playing ? pause() : play(); }
+    else if (e.key === 'ArrowLeft' && !document.activeElement.closest('svg')) { e.preventDefault(); $('#tPrev').click(); }
+    else if (e.key === 'ArrowRight' && !document.activeElement.closest('svg')) { e.preventDefault(); $('#tNext').click(); }
+  });
+  new ResizeObserver(() => buildTimeline()).observe(laneV);
+  layoutPrograms(); reEval(); refreshStatic(); setPlayUI();
+}
+
+/* ============================ §6 crossing ============================ */
+function initCrossing() {
+  // A: moving camera across the line
+  const D = { t: 0 };
+  const R = 2.6, TH0 = rad(68), TH1 = rad(-68);
+  const dollyPos = () => { const th = lerp(TH0, TH1, D.t); return [R * Math.cos(th), R * Math.sin(th)]; };
+  const dollySpec = () => { const p = dollyPos(); return rig('master', p[0], p[1], { frameH: 2.1 }); };
+  const dv = new View($('#dollyCv'), { maxW: 900, spec: dollySpec, overlay: (ctx, info, W) => { ovTags(ctx, info, ['A', 'B'], W); } });
+  const dcams = { d: { role: 'master', pos: dollyPos(), col: CAMCOL.c1, num: '1', spec: dollySpec, isRef: true } };
+  const dplan = new Plan($('#planDolly'), {
+    view: [-3.15, -3.15, 6.3, 6.3], cams: dcams, refCam: 'd', arcR: 1.35, textScale: 1.35,
+    show: { tri: false, labels: false, camLabels: false, gaze: false },
+    extra: g => {
+      const pts = []; for (let i = 0; i <= 40; i++) { const th = lerp(TH0, TH1, i / 40); pts.push([R * Math.cos(th) * 100, R * Math.sin(th) * 100]); }
+      E('polyline', { points: pts.map(p => p.join(',')).join(' '), fill: 'none', stroke: '#F3EBDC', 'stroke-width': 5, 'stroke-dasharray': '2 12', 'stroke-linecap': 'round', opacity: .9 }, g);
+      const e = pts[pts.length - 1], e2 = pts[pts.length - 3];
+      const d = n2([e[0] - e2[0], e[1] - e2[1]]);
+      E('polygon', { points: `${e[0] + d[0] * 16},${e[1] + d[1] * 16} ${e[0] - d[1] * 11},${e[1] + d[0] * 11} ${e[0] + d[1] * 11},${e[1] - d[0] * 11}`, fill: '#F3EBDC' }, g);
+    },
+  });
+  const dbtn = $('#dollyPlay');
+  dbtn.addEventListener('click', () => {
+    const from = D.t, to = D.t < 0.5 ? 1 : 0, t0 = performance.now(), ms = REDUCED ? 1 : 4200;
+    $('span', dbtn).textContent = to === 1 ? '播緊…' : '播緊…';
+    const me = {}; D.tw = me;
+    addTicker(now => {
+      if (D.tw !== me) return false;
+      const k = clamp((now - t0) / ms, 0, 1); D.t = lerp(from, to, ease(k));
+      dcams.d.pos = dollyPos(); dplan.render(); dv.inval();
+      if (k >= 1) $('span', dbtn).textContent = to === 1 ? '播返轉頭' : '播：Steadicam 繞過去';
+      return k < 1;
+    });
+  });
+  // B: neutral shot strip
+  const nspec = [() => rig('cuB', -1.25, 1.25), () => rig('free', -1.55, 0, { h: 1.52, target: EYE.B, vfov: 14 }), () => rig('cuB', -1.25, -1.25)];
+  ['#nv1', '#nv2', '#nv3'].forEach((s, i) => new View($(s), { maxW: 700, spec: nspec[i], overlay: (ctx, info, W) => ovGaze(ctx, info, ['B'], W) }));
+  // C: character walks, the line turns
+  const W = { t: 0 };
+  const path = [[0.98, 0.0], [1.35, 0.3], [1.95, -0.55], [1.75, -1.75], [1.05, -2.5]];
+  const walkPos = t => {
+    const segs = path.length - 1, x = clamp(t, 0, 1) * segs, i = Math.min(segs - 1, Math.floor(x)), f = x - i;
+    const a = path[i], b = path[i + 1];
+    return [lerp(a[0], b[0], f), lerp(a[1], b[1], f), Math.atan2(b[1] - a[1], b[0] - a[0])];
+  };
+  const wchars = { A: { x: CH.A.base[0], z: 0, seated: true, headFace: null }, B: { x: 0.98, z: 0, seated: true } };
+  const wcams = { c1: { role: 'master', pos: [0, 3.0], col: CAMCOL.c1, num: '1', isRef: true, hideFov: true } };
+  const wplan = new Plan($('#planWalk'), {
+    view: [-3.4, -3.25, 7.2, 6.85], chars: wchars, cams: wcams, refCam: 'c1', arcR: 1.6, textScale: 1.1,
+    show: { tri: false, camLabels: false, fov: false, labels: false },
+    extra: (g, ax) => {
+      if (W.t > 0.02) {
+        E('line', { x1: -400, y1: 0, x2: 400, y2: 0, stroke: '#F3EBDC', 'stroke-width': 4, 'stroke-dasharray': '6 10', opacity: .55 }, g);
+        txt(g, -320, -16, '舊軸線', { 'font-size': 26, fill: '#F3EBDC', opacity: .85 });
+      }
+      if (W.t > 0.98) { const m = ax.m; txt(g, (m[0] - 0.3) * 100, (m[1] - 0.2) * 100, '新軸線', { 'font-size': 28, fill: '#CDBBFF', 'text-anchor': 'end' }); }
+    },
+  });
+  const wbtn = $('#walkPlay');
+  wbtn.addEventListener('click', () => {
+    const from = W.t, to = W.t < 0.5 ? 1 : 0, t0 = performance.now(), ms = REDUCED ? 1 : 4600;
+    const me = {}; W.tw = me;
+    addTicker(now => {
+      if (W.tw !== me) return false;
+      const k = clamp((now - t0) / ms, 0, 1); W.t = lerp(from, to, ease(k));
+      if (W.t < 0.02) { wchars.B = { x: 0.98, z: 0, seated: true }; }
+      else {
+        const [x, z, ang] = walkPos(W.t);
+        const a = [HEAD.A[0], HEAD.A[2]];
+        const faceA = Math.atan2(a[1] - z, a[0] - x);
+        const blend = smooth(0.85, 1, W.t);
+        const walkAng = to === 1 ? ang : ang + Math.PI;
+        wchars.B = { x, z, seated: false, face: blend > 0.5 ? faceA : walkAng };
+      }
+      wplan.chars = wchars; wplan.render();
+      if (k >= 1) $('span', wbtn).textContent = to === 1 ? '播：B 坐返埋位' : '播：B 起身行去窗邊';
+      return k < 1;
+    });
+  });
+  // D: insert
+  new View($('#insertCv'), { maxW: 900, spec: () => rig('free', -0.16, 0.44, { h: 1.1, target: [-0.2, 0.8, 0.1], vfov: 21 }) });
+}
+
+/* ============================ table of contents ============================ */
+function initToc() {
+  const links = $$('.toc a'); const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const io = new IntersectionObserver(es => {
+    for (const e of es) if (e.isIntersecting) { for (const a of links) a.classList.remove('on'); const a = map.get(e.target.id); if (a) { a.classList.add('on'); a.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } }
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  for (const id of map.keys()) { const s = document.getElementById(id); if (s) io.observe(s); }
+}
+
+/* ============================ boot ============================ */
+function boot() {
+  initHero(); initAxisFig(); initSandbox(); initEyeline(); initCases(); initEdit(); initCrossing(); initToc();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const v of VIEWS) v.inval(); });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+
+</script>
+</body>
+</html>

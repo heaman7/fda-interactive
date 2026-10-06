@@ -1,0 +1,346 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-cut" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></g></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6.5 4.5h4v15h-4zM13.5 4.5h4v15h-4z" fill="currentColor"/></symbol>
+  <symbol id="i-start" viewBox="0 0 24 24"><path d="M5 5h2.5v14H5zM19 5v14L8.5 12z" fill="currentColor"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M17.5 5v14L7 12z" fill="currentColor"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M6.5 5v14L17 12z" fill="currentColor"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12M11 11.5v-2a1.5 1.5 0 0 1 3 0V12M14 10.5a1.5 1.5 0 0 1 3 0V12M17 11.5a1.5 1.5 0 0 1 3 0v3.5a6 6 0 0 1-6 6h-1.2a6 6 0 0 1-4.6-2.2L5.3 15.4a1.6 1.6 0 0 1 2.5-2L8 13.6"/></g></symbol>
+</svg>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="回到頂部">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 13a12 12 0 0 0 24 0z" fill="#34C77D" opacity=".28"/><path d="M4 13a12 12 0 0 0 24 0" fill="none" stroke="#2FA36B" stroke-width="2"/><line x1="1" y1="13" x2="31" y2="13" stroke="#7B4DFF" stroke-width="2.6" stroke-dasharray="4 3"/><circle cx="10" cy="13" r="3.6" fill="#E7A33D"/><circle cx="22" cy="13" r="3.6" fill="#3868BA"/><rect x="13" y="23" width="7" height="5" rx="1.4" fill="currentColor"/></svg>
+      <span class="brand-text">180° 法則</span>
+    </a>
+    <nav class="toc" aria-label="章節">
+      <a href="#s1"><span class="n">1</span>條線</a>
+      <a href="#s2"><span class="n">2</span>三機位</a>
+      <a href="#s3"><span class="n">3</span>視線</a>
+      <a href="#s4" class="hot"><span class="n">4</span>越軸出事</a>
+      <a href="#s5"><span class="n">5</span>剪接</a>
+      <a href="#s6"><span class="n">6</span>點樣過線</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">電影語言 · 場面調度 · 剪接</p>
+      <h1><span class="deg">180°</span><span>法則</span></h1>
+      <p class="lead">兩個人對話，中間有條睇唔見嘅線。攝影機留喺線嘅同一邊，觀眾就知道邊個喺左、邊個望緊邊個；一<strong>越軸</strong>，畫面就亂。</p>
+      <div class="hero-keys"><span><b>1</b> 條軸線</span><span><b>3</b> 部機</span><span><b>180°</b> 範圍</span></div>
+      <a class="hero-cta" href="#s4">直接睇：越軸會點錯 ↓</a>
+    </div>
+    <figure class="board hero-fig">
+      <div class="screen" id="heroScreen">
+        <canvas id="heroCanvas" role="img" aria-label="插畫：六十年代冰室，雨夜，西裝男 A 同旗袍女 B 對坐，紫色虛線穿過兩人視線，地上前半邊綠色、後半邊紅色"></canvas>
+        <span class="hero-tag line" id="tagLine">軸線 The Line</span>
+        <span class="hero-tag ok" id="tagOk">✓ 攝影機企呢邊</span>
+        <span class="hero-tag bad" id="tagBad">✗ 越軸區</span>
+      </div>
+      <figcaption>六十年代冰室，落緊雨。<b style="color:#F2B24D">A</b> 同 <b style="color:#7BA7F3">B</b> 之間嘅紫色虛線就係軸線；地上綠色嗰半邊，係攝影機可以企嘅 180°。</figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section class="sec" id="s1">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">1</span><h2>條線喺邊？</h2><p class="sec-sub"><i>The Line · Axis of Action</i>　軸線</p></header>
+      <div class="grid-2">
+        <div class="prose">
+          <p>第一步係搵<strong class="line-txt">軸線</strong>：將兩個角色之間嘅<strong>視線</strong>連埋，再向兩邊無限延長。</p>
+          <p>條線將場景切開兩半。攝影機揀咗一邊，就可以喺嗰邊嘅<strong>半圓（180°）</strong>入面任擺。</p>
+          <ul class="keys">
+            <li><span class="k line">—</span><span><strong>軸線 = 視線</strong>：條線穿過兩個人對眼。</span></li>
+            <li><span class="k ok">✓</span><span><strong>同一邊</strong>：Master 企邊，之後所有鏡頭跟住。</span></li>
+            <li><span class="k bad">✗</span><span><strong>越軸</strong>：有部機走咗去另一邊。</span></li>
+          </ul>
+          <div class="hint"><svg width="20" height="20" aria-hidden="true"><use href="#i-hand"/></svg><span>拖吓 <strong>A、B</strong>：條線跟住人走。再將<strong>攝影機</strong>拖過條線，睇吓綠紅點對調。</span></div>
+        </div>
+        <figure class="board plan-board">
+          <svg id="plan1" role="img" aria-label="平面圖：A、B 兩個角色、穿過佢哋嘅軸線、同攝影機嗰邊嘅 180 度範圍"></svg>
+          <div class="plan-legend"><span><i style="background:#7B4DFF"></i>軸線</span><span><i style="background:#34C77D"></i>攝影機嗰邊（180°）</span><span><i style="background:#F0464B"></i>越軸區</span></div>
+          <div class="fig-ctrl">
+            <button class="btn small" id="p1Play"><svg width="14" height="14" aria-hidden="true"><use href="#i-play"/></svg>睇動畫</button>
+            <button class="btn small" id="p1Reset">↺ 重設</button>
+          </div>
+          <p class="board-cap" id="p1Read" aria-live="polite"></p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="sec" id="s2">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">2</span><h2>三部機點擺：Master ＋ 兩個近鏡</h2><p class="sec-sub"><i>Triangle System</i>　三角形機位</p></header>
+      <div class="prose">
+        <p><strong>Cam 1</strong> 影全景（Master），<strong>Cam 2</strong>、<strong>Cam 3</strong> 影 <span class="a-txt">A</span>、<span class="b-txt">B</span> 近鏡。三部機成三角形，全部企喺軸線<strong>同一邊</strong>。</p>
+      </div>
+      <div class="sandbox" style="margin-top:22px">
+        <figure class="board plan-board sb-plan">
+          <svg id="plan2" role="img" aria-label="可拖動嘅平面圖：三部攝影機、兩個角色、軸線同 180 度範圍"></svg>
+          <div class="plan-legend"><span><i style="background:#7B4DFF"></i>軸線</span><span><i style="background:#34C77D"></i>180° 可擺位範圍</span><span><i style="background:#F0464B"></i>越軸區</span><span><i style="background:#8A5A3A"></i>燈／工作人員</span></div>
+        </figure>
+        <div class="mons">
+          <div class="monitor" id="m1">
+            <div class="mon-bar"><span class="cam-dot c1"></span><b>CAM 1</b><span class="mon-name">Master 全景</span><span class="mon-lens" data-lens></span><span class="chip ref" data-chip>基準</span></div>
+            <div class="screen"><canvas role="img" aria-label="Cam 1 畫面"></canvas></div>
+            <div class="mon-read" data-read></div>
+          </div>
+          <div class="mon-row">
+            <div class="monitor" id="m2">
+              <div class="mon-bar"><span class="cam-dot c2"></span><b>CAM 2</b><span class="mon-name">CU A 近鏡</span><span class="mon-lens" data-lens></span><span class="chip ok" data-chip>✓</span></div>
+              <div class="screen"><canvas role="img" aria-label="Cam 2 畫面"></canvas></div>
+              <div class="mon-read" data-read></div>
+            </div>
+            <div class="monitor" id="m3">
+              <div class="mon-bar"><span class="cam-dot c3"></span><b>CAM 3</b><span class="mon-name">CU B 近鏡</span><span class="mon-lens" data-lens></span><span class="chip ok" data-chip>✓</span></div>
+              <div class="screen"><canvas role="img" aria-label="Cam 3 畫面"></canvas></div>
+              <div class="mon-read" data-read></div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-ctrl">
+        <div class="btn-row" id="presetBtns"><span class="seg-label">擺位</span>
+          <button class="btn small on" data-preset="std">✓ 標準三角形</button>
+          <button class="btn small" data-preset="ots">✓ 過肩 OTS 版</button>
+          <button class="btn small bad" data-preset="x3">✗ Cam 3 越軸</button>
+          <button class="btn small bad" data-preset="x2">✗ Cam 2 越軸</button>
+          <button class="btn small bad" data-preset="xm">✗ Master 越軸</button>
+        </div>
+        <div class="btn-row">
+          <label class="toggle"><input type="checkbox" id="optGaze" checked>視線箭嘴</label>
+          <label class="toggle"><input type="checkbox" id="optFov" checked>鏡頭視野</label>
+          <label class="toggle"><input type="checkbox" id="optTape" checked>地上貼住條軸線</label>
+          <label class="toggle"><input type="checkbox" id="optZones">畫面顯示安全區</label>
+        </div>
+      </div>
+        <div class="verdict-bar" id="sbVerdict" aria-live="polite"></div>
+      </div>
+      <div class="hint"><svg width="20" height="20" aria-hidden="true"><use href="#i-hand"/></svg><span><strong>拖動平面圖上嘅攝影機</strong>（或者 Tab 揀中再按方向鍵），試吓將 Cam 3 拖過紫色線。</span></div>
+      <div class="roles">
+        <div class="role"><h3><span class="cam-dot c1"></span>Cam 1 · Master</h3><p class="sub">WIDE · 兩人全景</p><p>觀眾嘅「地圖」：<span class="a-txt">A</span> 喺左、<span class="b-txt">B</span> 喺右。Master 企邊，成場戲就用嗰邊。</p></div>
+        <div class="role"><h3><span class="cam-dot c2"></span>Cam 2 · CU A</h3><p class="sub">CLOSE-UP · 影 A</p><p>企喺 <span class="b-txt">B</span> 嗰邊影 <span class="a-txt">A</span>：A 喺畫面左邊，望<strong>右</strong>。</p></div>
+        <div class="role"><h3><span class="cam-dot c3"></span>Cam 3 · CU B</h3><p class="sub">CLOSE-UP · 影 B</p><p>企喺 <span class="a-txt">A</span> 嗰邊影 <span class="b-txt">B</span>：B 喺畫面右邊，望<strong>左</strong>。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="sec" id="s3">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">3</span><h2>點解會連到戲？睇視線</h2><p class="sec-sub"><i>Eyeline Match</i>　視線匹配</p></header>
+      <div class="grid-2">
+        <div class="prose">
+          <p>觀眾睇唔到成個片場，只係靠「<strong>角色望邊個方向</strong>」喺腦入面砌返個空間。</p>
+          <p><span class="a-txt">A</span> 望<strong>右</strong>，下一格 <span class="b-txt">B</span> 望<strong>左</strong>：兩條視線對上，觀眾就覺得佢哋對住講嘢，呢個就係<strong>視線匹配（eyeline match）</strong>。</p>
+          <p>兩部近鏡同一邊，效果<strong>自動</strong>出現；位置、方向、視線前後一致，就係「連戲」。</p>
+          <div class="btn-row" style="margin-top:20px">
+            <button class="btn ok on" id="eyeOk">✓ 兩部近鏡同一邊</button>
+            <button class="btn bad" id="eyeBad">✗ Cam 3 過咗線</button>
+          </div>
+        </div>
+        <div>
+          <div class="board pad">
+            <div class="cutpair">
+              <div class="shot"><div class="screen"><canvas id="eyeA" role="img" aria-label="CU A 畫面"></canvas></div><div class="shot-lab" style="color:var(--board-muted)"><span class="cam-dot c2"></span>CAM 2 · CU A</div></div>
+              <div class="cut-icon" style="color:var(--board-muted)"><svg width="20" height="20" aria-hidden="true"><use href="#i-cut"/></svg>CUT</div>
+              <div class="shot"><div class="screen"><canvas id="eyeB" role="img" aria-label="CU B 畫面"></canvas></div><div class="shot-lab" style="color:var(--board-muted)"><span class="cam-dot c3"></span><span id="eyeBLab">CAM 3 · CU B</span></div></div>
+            </div>
+            <div class="eye-verdict">
+              <div class="eye-arrow"><span style="color:#F2B24D">A 望</span><span class="big" style="color:#F2B24D">→</span></div>
+              <span class="eye-mid ok" id="eyeMid">對望 ✓</span>
+              <div class="eye-arrow"><span class="big" id="eyeArrB" style="color:#7BA7F3">←</span><span style="color:#7BA7F3">B 望</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="eye-row2">
+          <div class="mind">
+            <svg id="mindSvg" viewBox="0 0 220 120" role="img" aria-label="觀眾想像中兩個角色嘅位置"></svg>
+            <div><h3>觀眾腦入面砌出嚟嘅空間</h3><p id="mindTxt"></p></div>
+          </div>
+          <div class="board plan-board"><svg id="plan3" role="img" aria-label="細平面圖：Cam 2 同 Cam 3 嘅位置"></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="sec sec-alert" id="s4">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num" style="color:var(--bad)">4</span><h2>越軸會點錯？<span class="must">最重要</span></h2><p class="sec-sub"><i>Crossing the Line</i>　四種常見錯誤</p></header>
+      <div class="prose"><p>同一場戲、<strong>同一個剪接</strong>，淨係一部機擺錯邊，觀眾就會「唔知邊個喺邊」。上面跟法則，下面越咗軸。</p></div>
+      <div class="tabs" role="tablist" aria-label="越軸錯誤類型">
+        <button class="tab" role="tab" aria-selected="true" data-case="0">① 視線唔接<small>唔似對望</small></button>
+        <button class="tab" role="tab" aria-selected="false" data-case="1">② 位置跳轉<small>人突然換邊</small></button>
+        <button class="tab" role="tab" aria-selected="false" data-case="2">③ 動作方向反轉<small>好似推返轉頭</small></button>
+        <button class="tab" role="tab" aria-selected="false" data-case="3">④ 背景穿崩<small>好似換咗地方</small></button>
+      </div>
+      <div class="case" role="tabpanel" id="casePanel">
+        <div class="case-rows">
+          <div class="case-row ok">
+            <div class="row-head"><span class="row-tag ok">✓ 跟法則</span><span class="row-note" data-note="ok"></span></div>
+            <div class="shotpair">
+              <div class="shot"><div class="screen"><canvas data-v="ok0" role="img"></canvas></div><div class="shot-lab" data-lab="ok0"></div></div>
+              <div class="cut-icon"><svg width="20" height="20" aria-hidden="true"><use href="#i-cut"/></svg>CUT</div>
+              <div class="shot"><div class="screen"><canvas data-v="ok1" role="img"></canvas></div><div class="shot-lab" data-lab="ok1"></div></div>
+            </div>
+            <div class="row-result" data-res="ok"></div>
+          </div>
+          <div class="case-row bad">
+            <div class="row-head"><span class="row-tag bad">✗ 越軸</span><span class="row-note" data-note="bad"></span></div>
+            <div class="shotpair">
+              <div class="shot"><div class="screen"><canvas data-v="bad0" role="img"></canvas></div><div class="shot-lab" data-lab="bad0"></div></div>
+              <div class="cut-icon"><svg width="20" height="20" aria-hidden="true"><use href="#i-cut"/></svg>CUT</div>
+              <div class="shot"><div class="screen"><canvas data-v="bad1" role="img"></canvas></div><div class="shot-lab" data-lab="bad1"></div></div>
+            </div>
+            <div class="row-result" data-res="bad"></div>
+          </div>
+        </div>
+        <aside class="case-side">
+          <div class="board plan-board"><svg id="plan4" role="img" aria-label="細平面圖：正確同越軸嘅機位"></svg>
+            <div class="plan-legend"><span><i style="background:#34C77D"></i>✓ 機位</span><span><i style="background:#F0464B"></i>✗ 越軸機位</span></div>
+          </div>
+          <div class="feel"><h3>觀眾會覺得</h3><p data-feel></p><p class="also" data-also></p></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="sec" id="s5">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">5</span><h2>剪接：三部機同時拍，剪得幾爽？</h2><p class="sec-sub"><i>Multicam Editing</i>　剪接時間線</p></header>
+      <div class="grid-2" style="margin-bottom:22px">
+        <div class="prose"><p>三部機同步拍同一個 take，剪接就好似 <strong>multicam</strong>：同一秒有三個角度任揀。</p><p>點切都係 <span class="a-txt">A</span> 喺左望右、<span class="b-txt">B</span> 喺右望左，剪接師可以專心揀<strong>表演同節奏</strong>。</p></div>
+        <div class="prose"><p><strong>點玩：</strong>播緊時撳 <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd>（或者旁邊三個角度）即時切鏡；暫停時撳就換走嗰段。<kbd>空白鍵</kbd> 播放，<kbd>←</kbd> <kbd>→</kbd> 跳剪接點。</p><p>再轉做 <strong class="bad-txt">✗ Cam 3 越軸</strong>：同一個剪接，時間線即刻紅晒。</p></div>
+      </div>
+      <div class="suite" id="suite">
+        <div class="suite-top">
+          <span class="seg-label">拍攝版本</span>
+          <div class="btn-row" id="verBtns">
+            <button class="btn small ok on" data-ver="std">✓ 跟足 180°</button>
+            <button class="btn small bad" data-ver="x3">✗ Cam 3 越軸</button>
+            <button class="btn small bad" data-ver="xm">✗ Master 越軸</button>
+            <button class="btn small" data-ver="sb">你嘅沙盤擺位</button>
+          </div>
+          <label class="toggle" id="cmpWrap"><input type="checkbox" id="cmpToggle" checked>並排對照正確版</label>
+        </div>
+        <div class="edit-view">
+        <div class="programs" id="programs">
+          <div class="monitor prog" id="pgRef" hidden>
+            <div class="mon-bar"><b>PGM</b><span class="mon-name">✓ 跟足 180°（對照）</span><span class="mon-lens" data-cam></span></div>
+            <div class="screen prog-screen"><canvas role="img" aria-label="對照版節目畫面"></canvas><div class="sub-line" data-sub></div><div class="callout" data-callout></div><div class="flash" data-flash></div></div>
+          </div>
+          <div class="monitor prog" id="pgCur">
+            <div class="mon-bar"><b>PGM</b><span class="mon-name" data-vername>✓ 跟足 180°</span><span class="mon-lens" data-cam></span></div>
+            <div class="screen prog-screen"><canvas role="img" aria-label="節目畫面"></canvas><div class="sub-line" data-sub></div><div class="callout" data-callout></div><div class="flash" data-flash></div></div>
+          </div>
+        </div>
+        <div class="angles" id="angles">
+          <button class="angle" data-cam="1" aria-label="切去 Cam 1 Master"><div class="ang-top"><kbd>1</kbd><span class="cam-dot c1"></span><span>Master</span><span class="bad-dot" data-st></span></div><div class="screen"><canvas></canvas></div></button>
+          <button class="angle" data-cam="2" aria-label="切去 Cam 2 CU A"><div class="ang-top"><kbd>2</kbd><span class="cam-dot c2"></span><span>CU A</span><span class="bad-dot" data-st></span></div><div class="screen"><canvas></canvas></div></button>
+          <button class="angle" data-cam="3" aria-label="切去 Cam 3 CU B"><div class="ang-top"><kbd>3</kbd><span class="cam-dot c3"></span><span>CU B</span><span class="bad-dot" data-st></span></div><div class="screen"><canvas></canvas></div></button>
+        </div>
+        </div>
+        <div class="transport">
+          <button class="btn small" id="tStart" aria-label="回到開頭"><svg width="14" height="14" aria-hidden="true"><use href="#i-start"/></svg></button>
+          <button class="btn small" id="tPrev" aria-label="上一個剪接點"><svg width="14" height="14" aria-hidden="true"><use href="#i-prev"/></svg>剪接點</button>
+          <button class="btn primary" id="tPlay"><svg width="16" height="16" aria-hidden="true"><use href="#i-play"/></svg><span>播放</span></button>
+          <button class="btn small" id="tNext" aria-label="下一個剪接點">剪接點<svg width="14" height="14" aria-hidden="true"><use href="#i-next"/></svg></button>
+          <span class="tc" id="tc">00:00:00:00</span>
+          <span class="grow"></span>
+          <button class="btn small" id="tBlade"><svg width="14" height="14" aria-hidden="true"><use href="#i-cut"/></svg>喺播放頭剪一刀</button>
+          <button class="btn small" id="tReset">↺ 還原預設剪接</button>
+        </div>
+        <div class="tl" id="tl">
+          <div class="tl-grid">
+            <span></span><div class="tl-ruler" id="tlRuler"></div>
+            <span class="tl-label">V1</span><div class="tl-lane v" id="laneV"></div>
+            <span class="tl-label">A1</span><div class="tl-lane" id="laneA"></div>
+            <span class="tl-label">A2</span><div class="tl-lane" id="laneB"></div>
+          </div>
+          <div class="tl-over" id="tlOver"><div class="playhead" id="playhead"></div></div>
+        </div>
+        <div class="cutlist" id="cutlist" aria-live="polite"></div>
+        <p class="suite-help">V1 係畫面（顏色 = 邊部機），A1、A2 係對白。時間尺上嘅小方格係剪接點：✓ 順、✗ 越軸。撳清單可以重播嗰一刀。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="sec" id="s6">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">6</span><h2>真係要過線，點算？</h2><p class="sec-sub"><i>Crossing the Line Properly</i>　合法過線</p></header>
+      <div class="prose"><p>法則保護嘅係觀眾嘅方向感。只要觀眾<strong>親眼睇到</strong>條線點變，就可以過線。</p></div>
+      <div class="methods">
+        <article class="method">
+          <div class="m-text">
+            <h3><span class="n">A</span>鏡頭一路移過去</h3>
+            <p><strong>喺同一個鏡頭入面</strong>用軌道或者 Steadicam 由一邊行去另一邊。觀眾見到空間轉動就唔會亂；之後跟新嗰邊。</p>
+            <div class="btn-row"><button class="btn small primary" id="dollyPlay"><svg width="14" height="14" aria-hidden="true"><use href="#i-play"/></svg><span>播：Steadicam 繞過去</span></button></div>
+          </div>
+          <div class="card-fig">
+            <div class="board pad"><div class="screen"><canvas id="dollyCv" role="img" aria-label="移動鏡頭畫面"></canvas></div></div>
+            <div class="board plan-board"><svg id="planDolly" role="img" aria-label="移動鏡頭路線平面圖"></svg></div>
+          </div>
+        </article>
+        <article class="method">
+          <div class="m-text">
+            <h3><span class="n">B</span>中性鏡頭：企喺條線上面拍</h3>
+            <p>中間插一個<strong>喺軸線上</strong>拍嘅鏡頭：角色望住鏡頭附近，冇左右方向，等於「重設」。</p>
+          </div>
+          <div class="board pad">
+            <div class="strip3">
+              <div class="shot"><div class="screen"><canvas id="nv1" role="img" aria-label="Cam 3 南邊 CU B"></canvas></div></div>
+              <div class="cut-icon" style="color:var(--board-muted)"><svg width="16" height="16" aria-hidden="true"><use href="#i-cut"/></svg></div>
+              <div class="shot"><div class="screen"><canvas id="nv2" role="img" aria-label="中性鏡頭"></canvas></div></div>
+              <div class="cut-icon" style="color:var(--board-muted)"><svg width="16" height="16" aria-hidden="true"><use href="#i-cut"/></svg></div>
+              <div class="shot"><div class="screen"><canvas id="nv3" role="img" aria-label="Cam 3 北邊 CU B"></canvas></div></div>
+            </div>
+            <div class="strip3 strip-labels">
+              <span>① 南邊<br>B 望 ←</span><span></span><span style="color:#CBBDFF">② 軸線上<br>B 望鏡頭 ◎</span><span></span><span>③ 北邊<br>B 望 →</span>
+            </div>
+          </div>
+        </article>
+        <article class="method">
+          <div class="m-text">
+            <h3><span class="n">C</span>角色走位，條線跟住轉</h3>
+            <p>條線跟住人走。B 起身行去窗邊，新軸線由 A 連去 B，180° 範圍跟住轉；觀眾睇住佢行，唔會亂。</p>
+            <div class="btn-row"><button class="btn small primary" id="walkPlay"><svg width="14" height="14" aria-hidden="true"><use href="#i-play"/></svg><span>播：B 起身行去窗邊</span></button></div>
+          </div>
+          <div class="board plan-board fig-cap"><svg id="planWalk" role="img" aria-label="角色走位令軸線轉向嘅平面圖"></svg></div>
+        </article>
+        <article class="method">
+          <div class="m-text">
+            <h3><span class="n">D</span>插入鏡頭過渡 <span class="weak">效果較弱</span></h3>
+            <p>切去一個細節（杯咖啡）轉移注意力，返嚟先換邊。用得，但唔係萬能。</p>
+          </div>
+          <div class="board pad fig-cap"><div class="screen"><canvas id="insertCv" role="img" aria-label="插入鏡頭：枱面上 A 嘅咖啡杯"></canvas></div></div>
+        </article>
+      </div>
+      <div class="break-note">
+        <div class="ico">!</div>
+        <div><h3>刻意越軸都得，但要有理由</h3><p>有導演會故意越軸製造不安或者心理轉變，例如 Kubrick《閃靈》（The Shining）洗手間嗰場；小津安二郎亦經常唔跟。前提係：你知道自己喺度犯規。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="recap">
+    <div class="wrap">
+      <header class="sec-head"><span class="sec-num">✓</span><h2>開機前，問自己三條問題</h2><p class="sec-sub">Checklist</p></header>
+      <div class="recap-grid">
+        <div class="q"><div class="qn">01</div><h3>條線喺邊？</h3><p>兩個角色之間嘅視線；角色一郁，條線跟住郁。</p></div>
+        <div class="q"><div class="qn">02</div><h3>我企喺邊一邊？</h3><p>由 Master 決定，之後所有鏡頭留喺同一邊。</p></div>
+        <div class="q"><div class="qn">03</div><h3>真係要過線？</h3><p>用鏡頭移動、中性鏡頭或者角色走位。剪接時再檢查：A 望 →，B 就要望 ←。</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="foot"><div class="wrap">每格畫面都係按攝影機位置即時畫出嚟。角色、場景同對白都係原創。</div></footer>
