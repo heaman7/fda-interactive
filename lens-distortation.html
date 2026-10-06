@@ -1,0 +1,944 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>鏡頭變形課</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+HK:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: one reading column of "chapters"; each = round number badge + title, then an outlined animation board with a control panel beside it, like frames of an animated explainer short. */
+:root{
+  --paper:#F3E8D6; --paper-2:#EADBC2; --card:#FBF5EA; --ink:#23252E; --ink-2:#5D5A66;
+  --coral:#D95B43; --mustard:#EDAF3A; --teal:#2B7778; --navy:#26395A; --rose:#C98F8B;
+  --shadow:#23252E; --track:#D8C6A7; --on-accent:#FFF8EE; --stage-ink:#23252E; --stage-paper:#FFF8EE; --stage-bg:#CFE0D2;
+  --f-display:"Baloo 2","Noto Sans HK",system-ui,sans-serif;
+  --f-body:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#161B26; --paper-2:#1F2636; --card:#232B3C; --ink:#F2EADC; --ink-2:#ABA7B5;
+  --coral:#F07C61; --mustard:#F2C15A; --teal:#5BB1AF; --navy:#A9C0E4; --rose:#E0A9A4;
+  --shadow:#05070B; --track:#3A4458; --on-accent:#1A1D26; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --paper:#161B26; --paper-2:#1F2636; --card:#232B3C; --ink:#F2EADC; --ink-2:#ABA7B5;
+  --coral:#F07C61; --mustard:#F2C15A; --teal:#5BB1AF; --navy:#A9C0E4; --rose:#E0A9A4;
+  --shadow:#05070B; --track:#3A4458; --on-accent:#1A1D26; color-scheme:dark; }
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.page{max-width:1060px;margin:0 auto;padding-inline:20px;padding-block:28px 72px}
+p{margin:0}
+.eyebrow{font-family:var(--f-display);font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:.8rem;color:var(--coral)}
+h1{font-weight:900;font-size:clamp(2.1rem,6vw,3.7rem);line-height:1.15;margin:.15em 0 .3em;text-wrap:balance;letter-spacing:.01em}
+h1 .hl{background:linear-gradient(transparent 60%,var(--mustard) 60%,var(--mustard) 92%,transparent 92%);padding:0 .08em}
+h2{font-weight:900;font-size:clamp(1.45rem,3.4vw,2.1rem);line-height:1.25;margin:0;text-wrap:balance}
+h3{font-weight:900;font-size:1.1rem;margin:0}
+.sub{font-size:1.1rem;max-width:40em;color:var(--ink-2)}
+.num{font-family:var(--f-display);font-weight:800;font-variant-numeric:tabular-nums}
+
+/* boards = the animation frames */
+.board{position:relative;border:3px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--shadow);overflow:hidden;background:var(--stage-bg);margin:0;min-width:0}
+.view{position:relative;width:100%;max-width:100%;overflow:hidden;background:var(--stage-bg);touch-action:pan-y}
+.view canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.view canvas.bg{transition:filter .25s}
+.tag{position:absolute;left:12px;bottom:10px;font-family:var(--f-display);font-weight:800;color:var(--stage-paper);background:var(--stage-ink);padding:.05em .55em;border-radius:10px;line-height:1.45;font-size:1rem;pointer-events:none}
+.tag.big{font-size:clamp(1.3rem,3.6vw,2.2rem)}
+.tag.r{left:auto;right:12px}
+.drag-hint{position:absolute;right:12px;top:10px;font-size:.78rem;font-weight:700;color:var(--stage-ink);background:var(--stage-paper);border:2px solid var(--stage-ink);padding:0 .6em;border-radius:999px;pointer-events:none}
+
+/* hero */
+.hero{display:grid;gap:18px}
+.hero-board .tag{bottom:12px}
+.hero-board .ctl{position:absolute;right:12px;bottom:12px}
+.chain{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;counter-reset:c}
+.chain li{counter-increment:c;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:12px 14px 12px 52px;position:relative;font-size:.98rem;min-width:0}
+.chain li::before{content:counter(c);position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--mustard);color:var(--stage-ink);font-family:var(--f-display);font-weight:800;display:grid;place-items:center;border:2px solid var(--ink);line-height:1}
+.chain li:not(:last-child)::after{content:"→";position:absolute;right:-12px;top:50%;transform:translate(50%,-50%);font-weight:900;color:var(--ink-2);z-index:1}
+.toc{display:flex;flex-wrap:wrap;gap:8px}
+.toc a{font-size:.88rem;font-weight:700;color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:.2em .8em;background:var(--card)}
+.toc a:hover{background:var(--ink);color:var(--paper)}
+.toc a span{font-family:var(--f-display);color:var(--coral);margin-right:.35em}
+
+/* chapters */
+.chapter{margin-top:80px;display:grid;gap:20px;scroll-margin-top:16px}
+.ch-head{display:flex;gap:16px;align-items:center}
+.ch-num{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:1.9rem;line-height:1;color:var(--stage-ink);background:var(--c,var(--coral));border:3px solid var(--ink);box-shadow:3px 3px 0 var(--shadow)}
+.lede{font-size:1.06rem;max-width:44em}
+.prose{display:grid;gap:.8em;max-width:44em}
+.stage{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:22px;align-items:start}
+.stage.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:840px){.stage,.stage.even{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:16px;display:grid;gap:14px;min-width:0}
+.ctrl{display:grid;gap:2px}
+.ctrl .lbl{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:700;font-size:.92rem}
+.ctrl output{font-family:var(--f-mono);font-weight:600;font-size:.9rem;color:var(--coral)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:6px;background:var(--track);border:2px solid var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:var(--coral);border:3px solid var(--ink)}
+input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:var(--track);border:2px solid var(--ink)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--coral);border:3px solid var(--ink)}
+.ticks{position:relative;height:18px;font-family:var(--f-mono);font-size:.68rem;color:var(--ink-2)}
+.ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button,.chip,.btn{font:inherit;font-weight:700;font-size:.9rem;line-height:1.4;padding:.35em .95em;border-radius:999px;border:2px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"],.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.btn{background:var(--coral);color:var(--on-accent);box-shadow:3px 3px 0 var(--shadow)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+.btn.ghost{background:var(--stage-paper);color:var(--stage-ink);border-color:var(--stage-ink);box-shadow:none;padding:.15em .8em;font-size:.82rem}
+.btn:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--mustard);outline-offset:2px}
+.check{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.92rem;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--coral)}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+.stats div{background:var(--paper);border-radius:10px;padding:8px 10px;min-width:0}
+.stats dt{font-size:.76rem;color:var(--ink-2);font-weight:700}
+.stats dd{margin:0;font-family:var(--f-display);font-weight:800;font-size:1.35rem;font-variant-numeric:tabular-nums;line-height:1.25}
+.say{font-size:.95rem;background:var(--paper);border-radius:12px;padding:10px 12px}
+.say b{color:var(--coral)}
+.story{background:var(--paper-2);border-radius:16px;padding:16px 18px;display:grid;gap:8px;max-width:48em}
+.story h3{display:flex;align-items:center;gap:8px}
+.story h3::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--teal);border:2px solid var(--ink)}
+.think{display:flex;gap:12px;align-items:flex-start;border:2px dashed var(--ink-2);border-radius:14px;padding:12px 16px;max-width:48em}
+.think b{font-family:var(--f-display);font-weight:800;color:var(--teal);flex:none}
+.film{font-size:.9rem;color:var(--ink-2)}
+.cap{font-size:.92rem;color:var(--ink-2);max-width:48em}
+
+/* quiz */
+.quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:640px){.quiz{grid-template-columns:minmax(0,1fr);max-width:320px;margin-inline:auto;width:100%}}
+.qcard{display:grid;gap:10px;align-content:start;min-width:0}
+.letter{position:absolute;left:10px;top:10px;width:36px;height:36px;border-radius:50%;background:var(--stage-paper);color:var(--stage-ink);border:2px solid var(--stage-ink);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:1.2rem;line-height:1;z-index:2}
+.qres{font-size:.92rem;background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:10px 12px}
+.qres .verdict{font-weight:900}
+.qres.ok .verdict{color:var(--teal)}
+.qres.bad .verdict{color:var(--coral)}
+.qbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.score{font-weight:900}
+
+/* face lab */
+.bars{display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:3.2em minmax(0,1fr) 4.2em;gap:8px;align-items:center;font-size:.85rem;font-weight:700}
+.bar i{display:block;height:14px;border-radius:7px;border:2px solid var(--ink);background:var(--coral)}
+.bar.ear i{background:var(--mustard)}
+.bar span:last-child{font-family:var(--f-mono);text-align:right}
+.proof{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.proof figure{margin:0;display:grid;gap:8px;min-width:0}
+.proof figcaption{font-size:.86rem;line-height:1.5}
+.proof figcaption b{display:block;font-family:var(--f-display);font-weight:800;font-size:1rem}
+.myth{display:grid;gap:6px;background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:14px 16px;max-width:48em}
+.myth .q{font-weight:900;font-size:1.05rem}
+
+/* motion */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:720px){.duo{grid-template-columns:minmax(0,1fr)}}
+.duo figure{margin:0;display:grid;gap:8px;min-width:0}
+.meter{font-size:.92rem}
+.meter b{font-family:var(--f-display);font-size:1.25rem}
+
+/* lens deck */
+.lens-chips{display:flex;flex-wrap:wrap;gap:8px}
+.lens-chips .chip{font-family:var(--f-display);font-weight:800;font-size:1.05rem;padding:.2em .9em}
+.lens-card{display:grid;gap:10px}
+.lens-card header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.lens-card .fl{font-family:var(--f-display);font-weight:800;font-size:2.6rem;line-height:1;color:var(--coral)}
+.lens-card .nick{font-weight:900;font-size:1.15rem}
+.lens-card .kind{font-size:.85rem;color:var(--ink-2);font-weight:700}
+.lens-card dl{margin:0;display:grid;gap:8px}
+.lens-card dt{font-size:.76rem;font-weight:900;color:var(--teal);letter-spacing:.06em}
+.lens-card dd{margin:0;font-size:.95rem;line-height:1.6}
+footer{margin-top:80px;border-top:2px solid var(--ink);padding-top:16px;font-size:.86rem;color:var(--ink-2);display:grid;gap:6px}
+@media (max-width:640px){ .chain{grid-template-columns:minmax(0,1fr)} .chain li:not(:last-child)::after{content:"↓";right:auto;left:26px;top:auto;bottom:-14px;transform:none} .stats dd{font-size:1.15rem} .proof{gap:8px} .proof figcaption{font-size:.78rem} }
+@media (prefers-reduced-motion: reduce){ .view canvas.bg{transition:none} }
+</style>
+<div class="page">
+
+<header class="hero">
+  <div>
+    <p class="eyebrow">互動課 · 鏡頭語言</p>
+    <h1>鏡頭點樣<span class="hl">扭曲</span>世界</h1>
+    <p class="sub">由 8mm 魚眼到 200mm 長焦，換一支鏡，個人、條街、同個故事都會變。每一章都可以拉、拖、撳，自己睇吓。</p>
+  </div>
+  <figure class="board hero-board">
+    <div id="heroView" role="img" aria-label="同一個人，鏡頭一邊變焦一邊前後移動，佢大細不變，背景不停伸縮"></div>
+    <div class="tag big" id="heroF">35mm</div>
+    <div class="ctl"><button class="btn ghost" id="heroPause" type="button">暫停</button></div>
+  </figure>
+  <p class="cap">呢個鏡頭一路變焦，同時前後移動，所以個人大細冇變，但背後條街一時拉遠、一時迫埋嚟。今堂就係拆解點解會咁。</p>
+  <ol class="chain">
+    <li><b>焦距</b>決定你要企幾遠，先影到你想要嘅大細</li>
+    <li><b>距離</b>決定個人同背景會變成咩樣</li>
+    <li><b>個樣</b>決定觀眾有咩感受</li>
+  </ol>
+  <nav class="toc" aria-label="章節">
+    <a href="#s0"><span>0</span>估吓用咗咩鏡</a>
+    <a href="#s1"><span>1</span>焦距係咩</a>
+    <a href="#s2"><span>2</span>塊面點解會變形</a>
+    <a href="#s3"><span>3</span>直線變彎</a>
+    <a href="#s4"><span>4</span>邊位拉扯</a>
+    <a href="#s5"><span>5</span>壓縮同背景</a>
+    <a href="#s6"><span>6</span>鏡頭配郁動</a>
+    <a href="#s7"><span>7</span>九支鏡頭</a>
+  </nav>
+</header>
+
+<!-- 0 -->
+<section class="chapter" id="s0">
+  <div class="ch-head"><span class="ch-num" style="--c:var(--mustard)">0</span><div><p class="eyebrow">開場</p><h2>估吓用咗咩鏡</h2></div></div>
+  <p class="lede">三張相都係同一個人，個頭喺畫面入面差唔多一樣大，分別用咗 14mm、50mm 同 135mm 影。幫每張揀一個焦距，再撳「揭曉」。</p>
+  <div class="quiz">
+    <div class="qcard" data-q="A">
+      <figure class="board"><span class="letter">A</span><div id="qA" role="img" aria-label="相 A"></div></figure>
+      <div class="seg" role="group" aria-label="相 A 嘅焦距"><button type="button" data-v="14" aria-pressed="false">14mm</button><button type="button" data-v="50" aria-pressed="false">50mm</button><button type="button" data-v="135" aria-pressed="false">135mm</button></div>
+      <div class="qres" hidden></div>
+    </div>
+    <div class="qcard" data-q="B">
+      <figure class="board"><span class="letter">B</span><div id="qB" role="img" aria-label="相 B"></div></figure>
+      <div class="seg" role="group" aria-label="相 B 嘅焦距"><button type="button" data-v="14" aria-pressed="false">14mm</button><button type="button" data-v="50" aria-pressed="false">50mm</button><button type="button" data-v="135" aria-pressed="false">135mm</button></div>
+      <div class="qres" hidden></div>
+    </div>
+    <div class="qcard" data-q="C">
+      <figure class="board"><span class="letter">C</span><div id="qC" role="img" aria-label="相 C"></div></figure>
+      <div class="seg" role="group" aria-label="相 C 嘅焦距"><button type="button" data-v="14" aria-pressed="false">14mm</button><button type="button" data-v="50" aria-pressed="false">50mm</button><button type="button" data-v="135" aria-pressed="false">135mm</button></div>
+      <div class="qres" hidden></div>
+    </div>
+  </div>
+  <div class="qbar"><button class="btn" id="qReveal" type="button">揭曉</button><button class="chip" id="qReset" type="button" hidden>再估一次</button><span class="score" id="qScore"></span></div>
+  <div class="think"><b>諗吓</b><p>未揭曉之前，你覺得三張相入面，邊個人最友善？邊個最有威脅性？邊個最似被人偷影？</p></div>
+</section>
+
+<!-- 1 -->
+<section class="chapter" id="s1">
+  <div class="ch-head"><span class="ch-num" style="--c:var(--teal)">1</span><div><p class="eyebrow">Focal length</p><h2>焦距係咩？</h2></div></div>
+  <p class="lede">焦距嘅數字越細，鏡頭睇到嘅範圍越闊；數字越大，睇到嘅範圍越窄，好似望遠鏡。但真正改變畫面感覺嘅，係換鏡之後部機企喺邊。</p>
+  <div class="stage">
+    <div style="display:grid;gap:14px;min-width:0">
+      <figure class="board"><div id="v1" role="img" aria-label="鏡頭畫面"></div><div class="tag big" id="s1tag">35mm</div></figure>
+      <figure class="board" style="max-width:100%"><canvas id="t1" style="display:block;width:100%;aspect-ratio:2/1" role="img" aria-label="俯視圖：部機位置同視角"></canvas><div class="tag">俯視圖</div></figure>
+    </div>
+    <div class="panel">
+      <div class="ctrl"><div class="lbl"><label for="s1f">焦距</label><output id="s1fo">35mm</output></div>
+        <input type="range" id="s1f" min="0" max="1000" value="0"><div class="ticks" id="s1ticks"></div></div>
+      <div class="seg" id="s1mode" role="group" aria-label="點樣換鏡">
+        <button type="button" data-v="keep" aria-pressed="true">保持佢一樣大</button>
+        <button type="button" data-v="stay" aria-pressed="false">部機企定唔郁</button>
+      </div>
+      <label class="check"><input type="checkbox" id="s1dof" checked> 模擬景深（f/2.8）</label>
+      <dl class="stats">
+        <div><dt>水平視角</dt><dd id="s1fov">54°</dd></div>
+        <div><dt>部機離佢</dt><dd id="s1d">2.1 m</dd></div>
+        <div style="grid-column:1/-1"><dt>呢支鏡屬於</dt><dd id="s1name">標準偏廣</dd></div>
+      </dl>
+      <p class="say" id="s1say"></p>
+    </div>
+  </div>
+  <div class="think"><b>諗吓</b><p>如果你喺一間好細嘅房，想影到成個人全身，你會揀咩焦距？用長焦會有咩問題？</p></div>
+</section>
+
+<!-- 2 -->
+<section class="chapter" id="s2">
+  <div class="ch-head"><span class="ch-num" style="--c:var(--coral)">2</span><div><p class="eyebrow">Perspective distortion</p><h2>塊面點解會變形？</h2></div></div>
+  <p class="lede">大鼻、細耳、塊面拉長，人人都話係「廣角變形」。其實元兇係距離。嘢喺相入面有幾大，同佢離鏡頭幾遠成反比。鼻尖比耳仔近鏡頭大約 10cm：你企 3 米遠，10cm 唔算咩；你企 25cm 近，10cm 就差好遠。</p>
+  <div class="stage">
+    <figure class="board"><div id="v2" role="img" aria-label="人頭特寫，跟住距離變形"></div><div class="tag big" id="s2tag">≈ 32mm</div></figure>
+    <div class="panel">
+      <div class="ctrl"><div class="lbl"><label for="s2d">部機離個頭</label><output id="s2do">0.50 m</output></div>
+        <input type="range" id="s2d" min="0" max="1000" value="0"><div class="ticks" id="s2ticks"></div></div>
+      <div class="ctrl"><div class="lbl"><label for="s2y">佢轉頭</label><output id="s2yo">0°</output></div>
+        <input type="range" id="s2y" min="-45" max="45" value="0" step="1"></div>
+      <p style="font-size:.88rem;color:var(--ink-2)">焦距會自動配合，令個頭喺畫面一樣大。你淨係改緊距離。</p>
+      <dl class="stats">
+        <div><dt>鼻尖 → 鏡頭</dt><dd id="s2n">39 cm</dd></div>
+        <div><dt>耳仔 → 鏡頭</dt><dd id="s2e">50 cm</dd></div>
+      </dl>
+      <div class="bars" aria-label="鼻同耳嘅放大比例">
+        <div class="bar"><span>鼻</span><i id="s2bn" style="width:100%"></i><span>×1.00</span></div>
+        <div class="bar ear"><span>耳仔</span><i id="s2be" style="width:80%"></i><span id="s2ber">×0.80</span></div>
+      </div>
+      <p class="say" id="s2say"></p>
+    </div>
+  </div>
+  <h3>證明：唔關焦距事</h3>
+  <div class="proof">
+    <figure><div class="board"><div id="pA" role="img" aria-label="20mm 貼近影"></div></div><figcaption><b>A · 20mm 貼近</b>企 31cm，鼻大、耳仔唔見。</figcaption></figure>
+    <figure><div class="board"><div id="pB" role="img" aria-label="85mm 企遠影"></div></div><figcaption><b>B · 85mm 企遠</b>企 1.3m，比例自然。</figcaption></figure>
+    <figure><div class="board"><div id="pC" class="view" style="aspect-ratio:1" role="img" aria-label="20mm 企 1.3m 影再裁切"><canvas id="pCc"></canvas></div></div><figcaption><b>C · 20mm 企 1.3m，再裁切</b>左上係原圖。放大中間之後，個樣同 B 一樣。</figcaption></figure>
+  </div>
+  <p class="cap">C 同 B 嘅樣一模一樣，只係矇咗啲，因為裁走咗大部份像素。決定透視嘅係部機企邊，唔係鏡頭。</p>
+  <div class="myth"><p class="q">50mm 等於人眼？</p><p>人眼睇到嘅範圍差唔多有 180° 甚至更闊，所以呢句唔係講視角。意思係：用 50mm 左右（全片幅對角線大約 43mm）影嘅相，喺正常距離睇嘅時候，透視最似你企喺部機個位親眼望。當做大概講法就啱。</p></div>
+  <div class="story"><h3>講故仔</h3><p><b>廣角貼近影大特寫</b>：滑稽、怪誕、有壓迫感，觀眾好似被人迫埋身。Terry Gilliam 嘅《Brazil》(1985) 就成日咁影。</p><p><b>長焦企遠影特寫</b>：塊面平順、好睇，感覺平和，同時有一段距離。</p></div>
+  <div class="think"><b>諗吓</b><p>點解用手機前鏡頭自拍，個鼻成日好似大咗？如果你想影得「正常」啲，可以點做？</p></div>
+</section>
+
+<!-- 3 -->
+<section class="chapter" id="s3">
+  <div class="ch-head"><span class="ch-num" style="--c:var(--rose)">3</span><div><p class="eyebrow">Optical distortion</p><h2>光學變形：直線變彎</h2></div></div>
+  <p class="lede">第二種變形同距離無關，係鏡頭本身嘅設計。理想嘅 rectilinear 鏡頭會令直線保持直；實際嘅鏡頭或多或少會令直線向外脹，或者向內縮。魚眼更加係刻意用另一套投影方式。</p>
+  <div class="stage">
+    <figure class="board"><div id="v3" role="img" aria-label="廣場同一幅有窗嘅牆，示範鏡頭變形"></div><div class="tag big" id="s3tag">16mm</div><div class="drag-hint">← 拖街燈 →</div></figure>
+    <div class="panel">
+      <div class="seg" id="s3mode" role="group" aria-label="變形類型">
+        <button type="button" data-v="rect" aria-pressed="false">冇變形</button>
+        <button type="button" data-v="barrel" aria-pressed="true">桶形</button>
+        <button type="button" data-v="pin" aria-pressed="false">枕形</button>
+        <button type="button" data-v="mous" aria-pressed="false">鬍鬚形</button>
+        <button type="button" data-v="fish" aria-pressed="false">魚眼 8mm</button>
+      </div>
+      <div class="ctrl" id="s3sw"><div class="lbl"><label for="s3s">變形強度</label><output id="s3so">70%</output></div><input type="range" id="s3s" min="0" max="100" value="70"></div>
+      <label class="check"><input type="checkbox" id="s3grid" checked> 顯示格網（虛線＝真正嘅直線）</label>
+      <label class="check"><input type="checkbox" id="s3fix"> 鏡頭校正（拉直）</label>
+      <dl class="stats"><div><dt>邊位變形</dt><dd id="s3pct">−9%</dd></div><div><dt>水平視角</dt><dd id="s3fov">97°</dd></div></dl>
+      <p class="say" id="s3say"></p>
+    </div>
+  </div>
+  <div class="story"><h3>講故仔</h3><p><b>魚眼</b>：世界唔再正常。滑稽、迷幻、醉酒、失控，或者有人喺門眼偷睇緊。90 年代嘅滑板片同 hip-hop MV 好鍾意用；《The Favourite》(2018) 甚至用 6mm 魚眼影宮廷大房，令角色好似困喺一個扭曲嘅世界。</p><p><b>輕微桶形或者枕形</b>：多數係要校正嘅瑕疵，尤其係影建築、產品、或者需要觀眾「相信」個空間嘅時候。</p></div>
+  <div class="think"><b>諗吓</b><p>影一間鬼屋嘅時候，你會刻意保留變形，定係校正返直？兩個選擇分別令觀眾有咩感覺？</p></div>
+</section>
+
+<!-- 4 -->
+<section class="chapter" id="s4">
+  <div class="ch-head"><span class="ch-num" style="--c:var(--mustard)">4</span><div><p class="eyebrow">Edge stretching</p><h2>邊位拉扯</h2></div></div>
+  <p class="lede">用超廣角影大合照，企喺最邊嗰個朋友成日好似肥咗。呢個唔係鏡頭差，係 rectilinear 投影嘅代價：為咗保持直線係直，偏離中心越遠嘅嘢，就要拉得越闊（大約係 1 ÷ cos 偏離角度）。</p>
+  <div class="stage">
+    <figure class="board"><div id="v4" role="img" aria-label="一排人或者波，拖去畫面邊位會被拉闊"></div><div class="tag big" id="s4tag">14mm</div><div class="drag-hint">← 拖佢哋 →</div></figure>
+    <div class="panel">
+      <div class="ctrl"><div class="lbl"><label for="s4f">焦距</label><output id="s4fo">14mm</output></div><input type="range" id="s4f" min="0" max="1000" value="0"><div class="ticks" id="s4ticks"></div></div>
+      <div class="seg" id="s4obj" role="group" aria-label="主體"><button type="button" data-v="people" aria-pressed="true">一排人</button><button type="button" data-v="balls" aria-pressed="false">一排波</button></div>
+      <dl class="stats"><div><dt>最邊嗰個被拉闊</dt><dd id="s4max">+38%</dd></div><div><dt>部機離佢哋</dt><dd id="s4d">2.3 m</dd></div></dl>
+      <p class="say">焦距一變，部機會自動前後移，等成排都入到鏡。留意：用長啲嘅鏡、企後啲，邊位就冇咁拉。</p>
+    </div>
+  </div>
+  <div class="story"><h3>講故仔</h3><p><b>實用</b>：大合照用 35–50mm 再企後啲；一定要用廣角，就叫最重要嘅人企中間。</p><p><b>刻意</b>：將角色擺喺超廣角嘅邊位，佢會變得被扭曲、唔自在、格格不入，好適合惡夢或者心理驚慄。</p></div>
+  <div class="think"><b>諗吓</b><p>如果拍一場家庭飯局，主角係被排擠嗰個，你會將佢擺喺畫面邊個位？用咩焦距？</p></div>
+</section>
+
+<!-- 5 -->
+<section class="chapter" id="s5">
+  <div class="ch-head"><span class="ch-num" style="--c:var(--teal)">5</span><div><p class="eyebrow">Compression</p><h2>壓縮同背景放大</h2></div></div>
+  <p class="lede">人哋話長焦會「壓縮」背景，其實係因為你企得遠。想個人一樣大，用 200mm 就要退到十幾米外。咁樣佢同背景之間嘅距離就相對變細，後面啲嘢就顯得又大又近，好似疊埋一齊。</p>
+  <div class="stage">
+    <figure class="board"><div id="v5" role="img" aria-label="人站喺街中間，背景跟住焦距伸縮"></div><div class="tag big" id="s5tag">24mm</div></figure>
+    <div class="panel">
+      <div class="ctrl"><div class="lbl"><label for="s5f">焦距（佢大細保持不變）</label><output id="s5fo">24mm</output></div><input type="range" id="s5f" min="0" max="1000" value="0"><div class="ticks" id="s5ticks"></div></div>
+      <button class="btn" id="s5play" type="button">播 dolly zoom</button>
+      <dl class="stats"><div><dt>部機離佢</dt><dd id="s5d">1.4 m</dd></div><div><dt>水平視角</dt><dd id="s5fov">74°</dd></div>
+        <div style="grid-column:1/-1"><dt>佢身後 20 米嗰盞燈有幾大（對比 50mm）</dt><dd id="s5r">×0.53</dd></div></dl>
+      <p class="say">撳 dolly zoom：部機一邊推前或者拉後，一邊變焦，令主角大細不變，背景就會膨脹或者收縮。</p>
+    </div>
+  </div>
+  <div class="story"><h3>講故仔</h3><p><b>廣角，背景遠</b>：個人主宰個空間，或者細細個企喺好大嘅世界，好孤單。</p><p><b>長焦，背景迫近</b>：環境壓住個人，城市好擠迫，人海將佢淹沒。</p><p><b>Dolly zoom</b>：希治閣《迷魂記》(Vertigo, 1958) 用嚟表達畏高嘅暈眩；史匹堡《大白鯊》(Jaws, 1975) 用嚟表達主角突然驚覺出事。</p></div>
+  <div class="think"><b>諗吓</b><p>想拍一個人喺繁忙街頭覺得透唔到氣，你會用廣角定長焦？如果想佢覺得自由呢？</p></div>
+</section>
+
+<!-- 6 -->
+<section class="chapter" id="s6">
+  <div class="ch-head"><span class="ch-num" style="--c:var(--coral)">6</span><div><p class="eyebrow">Lens &amp; motion</p><h2>鏡頭配郁動</h2></div></div>
+  <p class="lede">焦距唔止影響一格畫面，仲會改變動作嘅速度感同畫面有幾穩。兩部機一開始影到佢一樣大，然後佢向鏡頭行 2.5 米。</p>
+  <div class="duo">
+    <figure><div class="board"><div id="v6a" role="img" aria-label="24mm：佢行近鏡頭"></div><div class="tag big">24mm</div></div><p class="meter">佢喺畫面大咗 <b id="s6a">×1.00</b></p></figure>
+    <figure><div class="board"><div id="v6b" role="img" aria-label="200mm：佢行近鏡頭"></div><div class="tag big">200mm</div></div><p class="meter">佢喺畫面大咗 <b id="s6b">×1.00</b></p></figure>
+  </div>
+  <div class="qbar"><button class="btn" id="s6play" type="button">播放</button><label class="check"><input type="checkbox" id="s6shake"> 加手震（兩部機都係 0.4°）</label></div>
+  <div class="prose">
+    <p><b>速度感</b>：24mm 入面佢由細變大好多，行近得好快、好有衝擊；200mm 入面佢幾乎冇變大，好似行極都行唔到。《畢業生》(The Graduate, 1967) 結尾主角趕去教堂，就係用長焦令佢跑極都好似原地踏步，表達心急同徒勞。</p>
+    <p><b>手震</b>：同一個 0.4° 嘅手震，24mm 只係郁畫面闊度嘅 <b id="s6sa">1.2%</b>，200mm 就郁成 <b id="s6sb">9.7%</b>。所以長焦手持會好晃，紀錄片、狗仔隊、監視畫面嗰種「偷影」感就係咁嚟。</p>
+  </div>
+  <div class="think"><b>諗吓</b><p>一個殺手慢慢行向受害者，用廣角同用長焦，觀眾嘅恐懼有咩唔同？</p></div>
+</section>
+
+<!-- 7 -->
+<section class="chapter" id="s7">
+  <div class="ch-head"><span class="ch-num" style="--c:var(--mustard)">7</span><div><p class="eyebrow">Lens personalities</p><h2>九支鏡頭，九種性格</h2></div></div>
+  <p class="lede">撳一個焦距，睇吓佢喺呢條街影出嚟係點，同埋導演通常用佢嚟講咩故事。以下係常見用法，唔係定律。</p>
+  <div class="lens-chips" id="s7chips" role="group" aria-label="揀焦距"></div>
+  <div class="stage">
+    <figure class="board"><div id="v7" role="img" aria-label="揀咗嘅焦距喺條街影出嚟嘅樣"></div><div class="tag big" id="s7tag">35mm</div></figure>
+    <article class="panel lens-card" id="s7card" aria-live="polite"></article>
+  </div>
+</section>
+
+<footer>
+  <p>所有數字以全片幅（36 × 24mm）計算。場景同角色係原創插畫，用實時 3D 投影畫出嚟，所以透視、變形同視角都係真實嘅數學結果；景深係簡化模擬。</p>
+  <p>電影例子可以當延伸觀看清單：《墮落天使》、《Brazil》、《The Revenant》、《The Favourite》、《迷魂記》、《大白鯊》、《畢業生》、《七俠四義》、《沙漠梟雄》。</p>
+</footer>
+</div>
+<script>
+(()=>{"use strict";
+/* ================= tiny flat-shaded 3D engine (painter's algorithm) ================= */
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const mul=(a,s)=>[a[0]*s,a[1]*s,a[2]*s];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const len=a=>Math.hypot(a[0],a[1],a[2]);
+const nrm=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l,a[2]/l];};
+const rotY=(p,a)=>{const c=Math.cos(a),s=Math.sin(a);return [c*p[0]+s*p[2],p[1],-s*p[0]+c*p[2]];};
+const C=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+
+const NEAR=0.02, FOGD=330, HAZE=[236,219,196];
+const LIGHT=nrm([-0.45,0.8,-0.55]);
+let CUR=null;
+
+function mkTri(a,b,c,col,o){
+  const cr=cross(sub(b,a),sub(c,a)); const L=len(cr); if(L<1e-12) return null;
+  let g=[cr[0]/L,cr[1]/L,cr[2]/L]; if(o.out&&dot(g,o.out)<0) g=[-g[0],-g[1],-g[2]];
+  return {a,b,c,g,n:o.n?nrm(o.n):g,col,bias:o.bias||0,grp:o.grp||CUR,flat:!!o.flat,nofog:!!o.nofog,fk:o.fk||1,ds:!!o.ds,
+    m:[(a[0]+b[0]+c[0])/3,(a[1]+b[1]+c[1])/3,(a[2]+b[2]+c[2])/3]};
+}
+function push(T,a,b,c,col,o){const t=mkTri(a,b,c,col,o); if(t) T.push(t);}
+function group(T,fn){const g={m:[0,0,0],r:0}; const prev=CUR; CUR=g; fn(); CUR=prev; return g;}
+function finalize(T){
+  const S=new Map();
+  for(const t of T){ if(!t.grp) continue; let s=S.get(t.grp); if(!s){s=[0,0,0,0];S.set(t.grp,s);} s[0]+=t.m[0];s[1]+=t.m[1];s[2]+=t.m[2];s[3]++; }
+  for(const [g,s] of S){ g.m=[s[0]/s[3],s[1]/s[3],s[2]/s[3]]; g.r=0; }
+  for(const t of T){ const g=t.grp; if(!g) continue; for(const p of [t.a,t.b,t.c]){ const d=len(sub(p,g.m)); if(d>g.r) g.r=d; } }
+  return T;
+}
+function xformTris(T,fp,fv){ for(const t of T){ t.a=fp(t.a); t.b=fp(t.b); t.c=fp(t.c); t.g=fv(t.g); t.n=fv(t.n); t.m=fp(t.m);} return T; }
+
+function quad(T,p0,u,v,col,o={}){
+  const cell=o.cell||1e9;
+  const nu=Math.max(1,Math.ceil(len(u)/cell-1e-9)), nv=Math.max(1,Math.ceil(len(v)/cell-1e-9));
+  const n=o.n||nrm(cross(u,v)); const po=Object.assign({},o,{out:n,n});
+  const P=(a,b)=>add(p0,add(mul(u,a/nu),mul(v,b/nv)));
+  for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){ const A=P(i,j),B=P(i+1,j),Cc=P(i+1,j+1),D=P(i,j+1); push(T,A,B,Cc,col,po); push(T,A,Cc,D,col,po); }
+}
+function box(T,c,s,col,o={}){
+  const x0=c[0]-s[0]/2,y0=c[1]-s[1]/2,z0=c[2]-s[2]/2,[X,Y,Z]=s; const f=o.faces||['+X','-X','+Y','+Z','-Z'];
+  const q=(p,u,v,n)=>quad(T,p,u,v,col,Object.assign({},o,{n}));
+  if(f.includes('+X')) q([x0+X,y0,z0],[0,0,Z],[0,Y,0],[1,0,0]);
+  if(f.includes('-X')) q([x0,y0,z0],[0,0,Z],[0,Y,0],[-1,0,0]);
+  if(f.includes('+Z')) q([x0,y0,z0+Z],[X,0,0],[0,Y,0],[0,0,1]);
+  if(f.includes('-Z')) q([x0,y0,z0],[X,0,0],[0,Y,0],[0,0,-1]);
+  if(f.includes('+Y')) q([x0,y0+Y,z0],[X,0,0],[0,0,Z],[0,1,0]);
+}
+function ellip(T,c,r,col,o={}){
+  const nu=o.nu||16,nv=o.nv||10,P=[],N=[],U=[];
+  for(let j=0;j<=nv;j++){ const ph=Math.PI*j/nv; for(let i=0;i<=nu;i++){ const th=2*Math.PI*i/nu;
+    const u=[Math.sin(ph)*Math.sin(th),Math.cos(ph),-Math.sin(ph)*Math.cos(th)]; U.push(u);
+    const s=o.shape?o.shape(u):u; let p=[s[0]*r[0],s[1]*r[1],s[2]*r[2]], n=[u[0]/r[0],u[1]/r[1],u[2]/r[2]];
+    if(o.rot){p=o.rot(p);n=o.rot(n);} P.push(add(c,p)); N.push(nrm(n)); } }
+  const id=(i,j)=>j*(nu+1)+i;
+  for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){
+    const a=id(i,j),b=id(i+1,j),cc=id(i+1,j+1),d=id(i,j+1);
+    if(o.keep){ const um=[0,1,2].map(k=>(U[a][k]+U[b][k]+U[cc][k]+U[d][k])/4); if(!o.keep(um)) continue; }
+    const n1=nrm(add(add(N[a],N[b]),N[cc])), n2=nrm(add(add(N[a],N[cc]),N[d]));
+    push(T,P[a],P[b],P[cc],col,Object.assign({},o,{out:n1,n:n1}));
+    push(T,P[a],P[cc],P[d],col,Object.assign({},o,{out:n2,n:n2}));
+  }
+}
+function cyl(T,p0,p1,r0,r1,col,o={}){
+  const seg=o.seg||10, rs=o.rings||1; const A=nrm(sub(p1,p0));
+  const u=Math.abs(A[1])<0.9?nrm(cross(A,[0,1,0])):nrm(cross(A,[1,0,0])); const w=cross(A,u); const R=[];
+  for(let k=0;k<=rs;k++){ const t=k/rs, c=add(p0,mul(sub(p1,p0),t)), r=r0+(r1-r0)*t, ring=[];
+    for(let i=0;i<seg;i++){ const a=2*Math.PI*i/seg; const d=add(mul(u,Math.cos(a)),mul(w,Math.sin(a))); ring.push([add(c,mul(d,r)),d]); } R.push(ring); }
+  for(let k=0;k<rs;k++)for(let i=0;i<seg;i++){ const i2=(i+1)%seg, a=R[k][i],b=R[k][i2],c=R[k+1][i2],d=R[k+1][i]; const n=nrm(add(a[1],b[1]));
+    const po=Object.assign({},o,{out:n,n}); push(T,a[0],b[0],c[0],col,po); push(T,a[0],c[0],d[0],col,po); }
+  if(o.cap!==false){ for(const [ring,ax] of [[R[rs],A],[R[0],mul(A,-1)]]){ let c=[0,0,0]; for(const x of ring) c=add(c,x[0]); c=mul(c,1/seg);
+    for(let i=0;i<seg;i++) push(T,c,ring[i][0],ring[(i+1)%seg][0],col,Object.assign({},o,{out:ax,n:ax})); } }
+}
+
+/* ---------- camera + projection ---------- */
+function mkCam(o){
+  const c=Object.assign({yaw:0,pitch:0,roll:0,proj:'rect',k1:0,k2:0},o);
+  const cy=Math.cos(c.yaw),sy=Math.sin(c.yaw),cp=Math.cos(c.pitch),sp=Math.sin(c.pitch);
+  c.fwd=[sy*cp,sp,cy*cp]; let right=[cy,0,-sy]; let up=cross(c.fwd,right);
+  if(c.roll){const cr=Math.cos(c.roll),sr=Math.sin(c.roll); const r2=add(mul(right,cr),mul(up,sr)); up=sub(mul(up,cr),mul(right,sr)); right=r2;}
+  c.right=right; c.up=up; return c;
+}
+const toCam=(c,p)=>{const d=[p[0]-c.pos[0],p[1]-c.pos[1],p[2]-c.pos[2]]; return [dot(d,c.right),dot(d,c.up),dot(d,c.fwd)];};
+function sensor(c,q){ // camera-space -> sensor mm
+  let sx,sy;
+  if(c.proj==='fish'){ const rr=Math.hypot(q[0],q[1]); const th=Math.atan2(rr,q[2]); if(th>1.62) return null; const r=2*c.f*Math.sin(th/2);
+    if(rr<1e-9){sx=0;sy=0;} else {sx=q[0]/rr*r; sy=q[1]/rr*r;} }
+  else { if(q[2]<NEAR*0.5) return null; sx=c.f*q[0]/q[2]; sy=c.f*q[1]/q[2];
+    if(c.k1||c.k2){ const rn2=(sx*sx+sy*sy)/324; if(1+3*c.k1*rn2+5*c.k2*rn2*rn2<0.08) return null; const k=1+c.k1*rn2+c.k2*rn2*rn2; sx*=k; sy*=k; } }
+  return [sx,sy];
+}
+function projCam(c,q,W,H){ const s=sensor(c,q); if(!s) return null; const k=W/c.sw; return [W/2+s[0]*k,H/2-s[1]*k]; }
+function clipNear(poly){ const out=[]; for(let i=0;i<poly.length;i++){ const A=poly[i],B=poly[(i+1)%poly.length]; const ai=A[2]>=NEAR,bi=B[2]>=NEAR;
+  if(ai) out.push(A); if(ai!==bi){ const t=(NEAR-A[2])/(B[2]-A[2]); out.push([A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t,NEAR]); } } return out; }
+function grpVisible(g,c,tH,tV){ const q=toCam(c,g.m); if(q[2]<-g.r) return false; if(c.proj==='fish') return true; const z=q[2]+g.r;
+  if(Math.abs(q[0])-g.r>z*tH) return false; if(Math.abs(q[1])-g.r>z*tV) return false; return true; }
+function shade(t,dist){
+  let k=1; if(!t.flat){ const l=t.n[0]*LIGHT[0]+t.n[1]*LIGHT[1]+t.n[2]*LIGHT[2]; const u=Math.min(1,Math.max(0,(l+0.15)/0.75)); k=0.76+0.24*u*u*(3-2*u); }
+  let r=t.col[0]*k,g=t.col[1]*k,b=t.col[2]*k;
+  if(!t.nofog){ const f=Math.min(0.9,1-Math.exp(-dist*t.fk/FOGD)); r+=(HAZE[0]-r)*f; g+=(HAZE[1]-g)*f; b+=(HAZE[2]-b)*f; }
+  return 'rgb('+(r|0)+','+(g|0)+','+(b|0)+')';
+}
+function drawLists(ctx,lists,c,W,H,sorted){
+  const items=[], P=c.pos, wide=(c.k1||c.k2)?1.8:1.06;
+  const tH=(c.sw/2)/c.f*wide, tV=(c.sh/2)/c.f*wide, gv=new Map();
+  for(const T of lists) for(const t of T){
+    let gd;
+    if(t.grp){ let v=gv.get(t.grp); if(v===undefined){ v=grpVisible(t.grp,c,tH,tV)?len(sub(t.grp.m,P)):-1; gv.set(t.grp,v);} if(v<0) continue; gd=v; }
+    const dx=t.m[0]-P[0],dy=t.m[1]-P[1],dz=t.m[2]-P[2];
+    if(!t.ds&&(t.g[0]*dx+t.g[1]*dy+t.g[2]*dz)>0) continue;
+    const dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
+    let poly=[toCam(c,t.a),toCam(c,t.b),toCam(c,t.c)];
+    if(poly[0][2]<NEAR||poly[1][2]<NEAR||poly[2][2]<NEAR){ poly=clipNear(poly); if(poly.length<3) continue; }
+    const pts=[]; let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9,ok=true;
+    for(const q of poly){ const s=projCam(c,q,W,H); if(!s){ok=false;break;} pts.push(s); if(s[0]<x0)x0=s[0]; if(s[0]>x1)x1=s[0]; if(s[1]<y0)y0=s[1]; if(s[1]>y1)y1=s[1]; }
+    if(!ok||x1<0||x0>W||y1<0||y0>H) continue;
+    const d=dist+t.bias; items.push({pts,gd:gd===undefined?d:gd,d,col:shade(t,dist)});
+  }
+  if(sorted) items.sort((a,b)=>(b.gd-a.gd)||(b.d-a.d));
+  ctx.lineJoin='round'; ctx.lineWidth=0.7;
+  for(const it of items){ const p=it.pts; ctx.beginPath(); ctx.moveTo(p[0][0],p[0][1]); for(let i=1;i<p.length;i++) ctx.lineTo(p[i][0],p[i][1]); ctx.closePath();
+    ctx.fillStyle=it.col; ctx.strokeStyle=it.col; ctx.fill(); ctx.stroke(); }
+}
+function paintSky(ctx,c,W,H){
+  const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#8DC0BF'); g.addColorStop(0.55,'#CFE2D4'); g.addColorStop(1,'#F3DAB8');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  const pts=[]; for(let a=-1.56;a<=1.561;a+=0.04){ const y=c.yaw+a; const p=[c.pos[0]+Math.sin(y)*4000,0,c.pos[2]+Math.cos(y)*4000];
+    const q=toCam(c,p); if(q[2]<NEAR) continue; const s=projCam(c,q,W,H); if(s) pts.push(s); }
+  if(pts.length>1){ ctx.beginPath(); ctx.moveTo(pts[0][0],H+4000); for(const s of pts) ctx.lineTo(s[0],s[1]); ctx.lineTo(pts[pts.length-1][0],H+4000); ctx.closePath(); ctx.fillStyle='#D8CBA9'; ctx.fill(); }
+}
+function fishMask(ctx,c,W,H){ const r=2*c.f*Math.SQRT1_2*W/c.sw; if(r*r>(W*W+H*H)/4) return;
+  ctx.save(); ctx.beginPath(); ctx.rect(0,0,W,H); ctx.arc(W/2,H/2,r,0,Math.PI*2,true); ctx.fillStyle='#1E2230'; ctx.fill('evenodd');
+  ctx.lineWidth=3; ctx.strokeStyle='#3A4057'; ctx.beginPath(); ctx.arc(W/2,H/2,r,0,Math.PI*2); ctx.stroke(); ctx.restore(); }
+function renderTo(bg,fg,W,H,L,c){
+  bg.clearRect(0,0,W,H); if(fg!==bg) fg.clearRect(0,0,W,H);
+  paintSky(bg,c,W,H);
+  drawLists(bg,L.ground||[],c,W,H,false);
+  drawLists(bg,L.objs||[],c,W,H,true);
+  drawLists(fg,L.subj||[],c,W,H,true);
+  if(c.proj==='fish') fishMask(fg,c,W,H);
+}
+function cocPx(c,W,focus,bgd,N){ const f=c.f, s=focus*1000, d=bgd*1000; if(s<=f) return 0; const coc=f*f/(N*(s-f))*Math.abs(d-s)/d; return Math.min(13,coc*W/c.sw); }
+
+class View{
+  constructor(host,o={}){
+    this.host=host; this.aspect=o.aspect||16/9; this.sw=o.sw||(this.aspect>=1?36:24); this.sh=this.sw/this.aspect;
+    host.classList.add('view'); host.style.aspectRatio=String(this.aspect);
+    this.bgc=document.createElement('canvas'); this.fgc=document.createElement('canvas'); this.bgc.className='bg'; this.fgc.className='fg';
+    host.append(this.bgc,this.fgc); this.bg=this.bgc.getContext('2d'); this.fg=this.fgc.getContext('2d'); this.W=0; this.H=0; this.dpr=1; this.draw=null;
+    new ResizeObserver(()=>{ if(this.fit()&&this.draw) this.draw(); }).observe(host);
+    ALLVIEWS.push(this);
+  }
+  fit(){ const W=this.host.clientWidth; if(!W) return false; const dpr=Math.min(2,window.devicePixelRatio||1); if(W===this.W&&dpr===this.dpr) return false;
+    this.W=W; this.H=W/this.aspect; this.dpr=dpr;
+    for(const cv of [this.bgc,this.fgc]){ cv.width=Math.round(W*dpr); cv.height=Math.round(this.H*dpr); }
+    this.bg.setTransform(dpr,0,0,dpr,0,0); this.fg.setTransform(dpr,0,0,dpr,0,0); return true; }
+  render(L,camOpts,opt={}){
+    if(!this.W) this.fit(); if(!this.W) return null;
+    const c=mkCam(Object.assign({sw:this.sw,sh:this.sh},camOpts));
+    renderTo(this.bg,this.fg,this.W,this.H,L,c);
+    let blur=0; if(opt.dof) blur=cocPx(c,this.W,opt.dof.focus,opt.dof.bg,opt.dof.N||2.8);
+    const on=blur>0.35; this.bgc.style.filter=on?'blur('+blur.toFixed(1)+'px)':''; this.bgc.style.transform=on?'scale(1.035)':'';
+    this.cam=c; return c;
+  }
+}
+const ALLVIEWS=[];
+
+/* ---------- world: an original 1960s-ish street, flat illustrated ---------- */
+function rng(seed){let s=seed>>>0;return()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296;};}
+function lamp(T,x,z,side,o={}){ group(T,()=>{ const pole=C('#2E3648');
+  cyl(T,[x,0,z],[x,4.6,z],0.075,0.06,pole,{seg:6,cap:false,rings:o.rings||1});
+  cyl(T,[x,4.5,z],[x-side*0.9,4.62,z],0.035,0.035,pole,{seg:4,cap:false});
+  ellip(T,[x-side*0.95,4.52,z],[0.24,0.1,0.15],C('#F3C55C'),{nu:7,nv:4}); }); }
+function tree(T,x,z,s){ group(T,()=>{ cyl(T,[x,0,z],[x,2.2*s,z],0.11,0.08,C('#7A5236'),{seg:5,cap:false});
+  ellip(T,[x,3.0*s,z],[1.2*s,1.3*s,1.2*s],C('#4E8C6A'),{nu:9,nv:6}); ellip(T,[x+0.45*s,3.7*s,z-0.25],[0.75*s,0.75*s,0.75*s],C('#62A47C'),{nu:8,nv:5}); }); }
+function tram(T,x,z){ group(T,()=>{
+  box(T,[x,1.95,z],[2.5,3.2,11],C('#EDAF3A'),{cell:3}); const wc=C('#2F4166'), band=C('#2B7778');
+  for(const sx of [-1,1]){ const fx=x+sx*1.27; for(let k=0;k<5;k++) quad(T,[fx,1.6,z-5.1+k*2.1],[0,0,1.6],[0,0.95,0],wc,{n:[sx,0,0],bias:-100});
+    quad(T,[fx,0.45,z-5.5],[0,0,11],[0,0.45,0],band,{n:[sx,0,0],bias:-100,cell:3}); }
+  quad(T,[x-1.0,1.55,z-5.52],[2.0,0,0],[0,1.1,0],wc,{n:[0,0,-1],bias:-100}); quad(T,[x-1.25,0.45,z-5.52],[2.5,0,0],[0,0.45,0],band,{n:[0,0,-1],bias:-100});
+  box(T,[x,0.2,z],[2.2,0.4,10],C('#2A2A33'),{faces:['+X','-X','-Z','+Z']}); }); }
+function car(T,x,z,col){ group(T,()=>{ box(T,[x,0.55,z],[1.8,0.7,4.2],C(col)); box(T,[x,1.15,z+0.3],[1.6,0.55,2.2],C('#F4EAD8'));
+  box(T,[x,0.15,z],[1.7,0.3,3.6],C('#2A2A33'),{faces:['+X','-X','-Z','+Z']}); }); }
+function buildStreet(){
+  const S={ground:[],objs:[],meta:{bld:[],lamps:[],trees:[]}}; const G=S.ground, O=S.objs;
+  quad(G,[-500,0,-300],[1000,0,0],[0,0,1500],C('#CDBF98'),{cell:250,n:[0,1,0]});
+  quad(G,[-7,0,-80],[3,0,0],[0,0,520],C('#E6D3B1'),{cell:5,n:[0,1,0]});
+  quad(G,[4,0,-80],[3,0,0],[0,0,520],C('#E6D3B1'),{cell:5,n:[0,1,0]});
+  quad(G,[-4,0,-80],[8,0,0],[0,0,520],C('#5D6679'),{cell:5,n:[0,1,0]});
+  for(let z=-80;z<440;z+=6) quad(G,[-0.08,0,z],[0.16,0,0],[0,0,3],C('#F4E6C8'),{cell:1.5,n:[0,1,0]});
+  const PALB=['#E59A78','#F1C36A','#86BBAE','#E9D7B9','#C98F8B','#9FB3D3','#DDB07E'];
+  for(const side of [-1,1]){ const r=rng(side>0?11:5); let z=-70;
+    while(z<300){ const w=7+r()*8, h=7+r()*18, dep=10, x0=side<0?-7-dep:7, colh=PALB[(r()*PALB.length)|0];
+      const lit=r();
+      group(O,()=>{
+        box(O,[x0+dep/2,h/2,z+w/2],[dep,h,w],C(colh),{cell:4,faces:[side<0?'+X':'-X','+Z','-Z','+Y']});
+        const fx=side<0?-7+0.04:7-0.04, n=[-side,0,0];
+        quad(O,[fx,2.5,z],[0,0,w],[0,0.55,0],C(['#D95B43','#2B7778','#26395A','#EDAF3A'][(r()*4)|0]),{n,bias:-100,cell:4});
+        quad(O,[fx,0,z+0.6],[0,0,w-1.2],[0,2.2,0],C('#3B4A68'),{n,bias:-100,cell:4});
+        for(let fy=3.7;fy+1.8<h-0.5;fy+=3.2) for(let wz=z+0.9;wz+1.3<z+w-0.5;wz+=2.4)
+          quad(O,[fx,fy,wz],[0,0,1.3],[0,1.7,0],C(r()<0.22?'#F6D58A':'#41557A'),{n,bias:-100});
+      });
+      S.meta.bld.push({x0,x1:x0+dep,z0:z,z1:z+w,col:colh});
+      z+=w+(r()<0.22?2+r()*3:0);
+    } }
+  for(let z=-40;z<=220;z+=12) for(const side of [-1,1]){ lamp(O,side*4.4,z,side); S.meta.lamps.push([side*4.4,z]); }
+  for(const [x,z,s] of [[-5.8,14,1],[5.8,26,1.1],[-5.8,50,0.9],[5.8,74,1],[-5.8,98,1.1],[5.8,-14,1]]){ tree(O,x,z,s); S.meta.trees.push([x,z]); }
+  tram(O,-2,46); S.meta.tram=[-2,46]; car(O,2.2,24,'#D95B43'); car(O,-2.2,-18,'#2B7778'); S.meta.cars=[[2.2,24],[-2.2,-18]];
+  group(O,()=>ellip(O,[-260,150,1300],[46,46,46],C('#F7D891'),{nu:14,nv:8,flat:1,nofog:1}));
+  for(const [x,y,z,r] of [[-380,210,900,90],[-60,260,1000,120],[260,190,880,80],[520,280,1050,110],[-650,240,1100,100]])
+    group(O,()=>ellip(O,[x,y,z],[r,r*0.28,r*0.4],C('#FFF7EA'),{nu:12,nv:6,flat:1,nofog:1}));
+  for(const [x,z,r] of [[-520,1150,330],[-120,1250,420],[300,1200,360],[700,1100,300]])
+    group(O,()=>ellip(O,[x,0,z],[r,r*0.35,r*0.5],C('#5F9599'),{nu:16,nv:8,keep:u=>u[1]>-0.05,fk:0.3}));
+  finalize(O); return S;
+}
+function buildPlaza(){
+  const S={ground:[],objs:[]}, G=S.ground, O=S.objs;
+  quad(G,[-40,0,-30],[80,0,0],[0,0,44],C('#E8D6B3'),{cell:3,n:[0,1,0]});
+  for(let z=2;z<=12;z+=2) quad(G,[-40,0,z-0.04],[80,0,0],[0,0,0.08],C('#B89F7A'),{cell:1,n:[0,1,0]});
+  for(let x=-20;x<=20;x+=2) quad(G,[x-0.04,0,-10],[0.08,0,0],[0,0,22],C('#B89F7A'),{cell:1,n:[0,1,0]});
+  group(O,()=>{
+    quad(O,[-26,0,12],[52,0,0],[0,18,0],C('#E59A78'),{cell:1.3,n:[0,0,-1]});
+    for(let y=3;y<18;y+=3.2) quad(O,[-26,y,11.97],[52,0,0],[0,0.3,0],C('#C9785C'),{cell:1,n:[0,0,-1],bias:-100});
+    for(let x=-24;x<=22.5;x+=3) for(let y=0.6;y<16;y+=3.2) quad(O,[x,y+0.6,11.96],[1.5,0,0],[0,1.9,0],C(y<1?'#3B4A68':'#41557A'),{cell:0.8,n:[0,0,-1],bias:-100});
+  });
+  finalize(O); return S;
+}
+
+/* ---------- original character: big-head explainer style ---------- */
+const SKIN=C('#EBB28B'), HAIR=C('#2A2733'), INK3=C('#23252E');
+function head(H,col,lod){
+  const nu=lod?14:24, nv=lod?10:16, hc=[0,1.57,0], R=[0.078,0.112,0.098];
+  const jaw=u=>{ if(u[1]>=0) return u; const k=Math.pow(-u[1],1.5); return [u[0]*(1-0.24*k),u[1],u[2]*(1-0.08*k)]; };
+  const hairR=u=>{ const l=Math.hypot(u[0],u[1],u[2])||1, y=u[1]/l, z=u[2]/l; return z<-0.45 ? y>0.4 : (y>0.1||(z>0.1&&y>-0.6)); };
+  const skullR=u=>{ const l=Math.hypot(u[0],u[1],u[2])||1, y=u[1]/l, z=u[2]/l; return z<-0.45 ? y>0.5 : (y>0.2||(z>0.2&&y>-0.5)); };
+  ellip(H,hc,R,SKIN,{nu,nv,shape:jaw,keep:u=>!skullR(u)});
+  ellip(H,[0,1.574,0.004],[R[0]*1.09,R[1]*1.07,R[2]*1.08],col.hair,{nu,nv,shape:jaw,keep:hairR,ds:true,bias:-0.004});
+  ellip(H,[0,1.655,0.088],[0.046,0.046,0.044],col.hair,{nu:lod?8:12,nv:lod?6:8});
+  ellip(H,[0,1.55,-0.092],[0.015,0.03,0.027],SKIN,{nu:lod?8:12,nv:lod?6:8,bias:-0.03});
+  for(const s of [-1,1]){
+    ellip(H,[s*0.079,1.553,0.006],[0.014,0.03,0.021],SKIN,{nu:8,nv:6});
+    ellip(H,[s*0.031,1.578,-0.087],[0.011,0.014,0.008],INK3,{nu:8,nv:6,bias:-0.05,flat:1});
+    ellip(H,[s*0.033,1.607,-0.085],[0.017,0.0045,0.007],col.hair,{nu:8,nv:4,bias:-0.05,flat:1});
+  }
+  ellip(H,[0,1.505,-0.078],[0.019,0.006,0.007],C('#B5483B'),{nu:8,nv:4,bias:-0.05,flat:1});
+}
+function person(o={}){
+  const col={hair:HAIR,top:C(o.top||'#D95B43'),bot:C(o.bot||'#2F3E5C'),shoe:C('#2A2A33')}, lod=!!o.lod, L=[];
+  group(L,()=>{
+    const sw=o.walk?Math.sin(o.phase||0)*0.42:0;
+    for(const s of [-1,1]){
+      const hip=[s*0.085,0.93,0], a=s*sw, foot=add(hip,[0,-0.84*Math.cos(a),-0.84*Math.sin(a)]);
+      cyl(L,hip,foot,0.072,0.052,col.bot,{seg:lod?6:9,cap:false});
+      ellip(L,add(foot,[0,-0.035,-0.045]),[0.05,0.04,0.1],col.shoe,{nu:8,nv:5});
+      const sh=[s*0.205,1.36,0], b=-s*sw*0.8, hand=add(sh,[s*0.03,-0.5*Math.cos(b),-0.5*Math.sin(b)]);
+      cyl(L,sh,hand,0.052,0.042,col.top,{seg:lod?6:9,cap:false});
+      ellip(L,add(hand,[0,-0.05,0]),[0.04,0.055,0.035],SKIN,{nu:8,nv:6});
+    }
+    ellip(L,[0,0.97,0],[0.165,0.12,0.105],col.bot,{nu:12,nv:8});
+    ellip(L,[0,1.17,0],[0.19,0.27,0.11],col.top,{nu:lod?12:16,nv:lod?8:12,shape:u=>[Math.sign(u[0])*Math.pow(Math.abs(u[0]),0.7),Math.sign(u[1])*Math.pow(Math.abs(u[1]),0.5),u[2]]});
+    cyl(L,[0,1.38,0],[0,1.49,0],0.043,0.043,SKIN,{seg:lod?6:10,cap:false});
+    const H=[]; head(H,col,lod);
+    if(o.headYaw){ const pv=[0,1.47,0]; xformTris(H,p=>add(pv,rotY(sub(p,pv),o.headYaw)),v=>rotY(v,o.headYaw)); }
+    for(const t of H) L.push(t);
+  });
+  const yaw=o.yaw||0, X=o.x||0, Z=o.z||0;
+  xformTris(L,p=>{const r=rotY(p,yaw); return [r[0]+X,r[1],r[2]+Z];},v=>rotY(v,yaw));
+  return finalize(L);
+}
+function ball(x,col){ const T=[]; group(T,()=>ellip(T,[x,1.0,0],[0.36,0.36,0.36],C(col),{nu:22,nv:14})); return finalize(T); }
+/* ================= lesson wiring ================= */
+const $=s=>document.querySelector(s);
+const DEG=180/Math.PI;
+const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MARKS=[8,14,24,28,35,50,85,135,200];
+const toF=(v,a,b)=>a*Math.pow(b/a,v/1000);
+const toV=(f,a,b)=>Math.round(1000*Math.log(f/a)/Math.log(b/a));
+const snapF=f=>{for(const m of MARKS){ if(Math.abs(Math.log(f/m))<0.035) return m;} return Math.round(f);};
+const keepD=(f,ext,frac,sh)=>f*ext/(frac*sh);
+const hfov=(f,sw=36)=>2*Math.atan(sw/2/f)*DEG;
+function aimCam(pos,target,f,extra){ const d=sub(target,pos); return Object.assign({pos,f,yaw:Math.atan2(d[0],d[2]),pitch:Math.atan2(d[1],Math.hypot(d[0],d[2]))},extra||{}); }
+function ticks(el,a,b,list){ el.innerHTML=(list||MARKS).filter(m=>m>=a&&m<=b).map(m=>{const p=Math.log(m/a)/Math.log(b/a); return '<span style="left:calc(12px + '+p.toFixed(4)+' * (100% - 24px))">'+m+'</span>';}).join(''); }
+function linTicks(el,vals,fmt,pos){ el.innerHTML=vals.map(v=>'<span style="left:calc(12px + '+pos(v).toFixed(4)+' * (100% - 24px))">'+fmt(v)+'</span>').join(''); }
+function pressed(g,v){ g.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v))); }
+function segBind(g,cb){ g.addEventListener('click',e=>{const b=e.target.closest('button'); if(!b||!g.contains(b)) return; pressed(g,b.dataset.v); cb(b.dataset.v);}); }
+function visTrack(el){ const st={v:false}; new IntersectionObserver(es=>{for(const e of es) st.v=e.isIntersecting;},{rootMargin:'120px'}).observe(el); return st; }
+function lensName(f){ return f<11?'魚眼':f<18?'超廣角':f<31?'廣角':f<45?'標準偏廣':f<65?'標準':f<110?'中長焦（人像）':f<170?'長焦':'超長焦'; }
+const anims=new Set(); (function loop(t){ for(const a of anims) a(t); requestAnimationFrame(loop); })(0);
+
+const STREET=buildStreet();
+const SUBJ=person({});
+const Lset=(subj,extra)=>({ground:[STREET.ground],objs:[STREET.objs].concat(extra||[]),subj:subj?[subj]:[]});
+
+/* ---------- hero ---------- */
+const heroV=new View($('#heroView'),{aspect:2.2});
+let heroF=35, heroPlay=!RM, heroLast=0; const heroVis=visTrack($('#heroView'));
+function heroDraw(){ const f=heroF, d=keepD(f,0.95,0.8,heroV.sh); heroV.render(Lset(SUBJ),aimCam([0,1.45,-d],[0,1.27,0],f),{dof:{focus:d,bg:d+18}}); $('#heroF').textContent=Math.round(f)+'mm'; }
+heroV.draw=heroDraw;
+$('#heroPause').textContent=heroPlay?'暫停':'播放';
+$('#heroPause').addEventListener('click',()=>{ heroPlay=!heroPlay; $('#heroPause').textContent=heroPlay?'暫停':'播放'; });
+let heroT0=null;
+anims.add(t=>{ if(!heroPlay||!heroVis.v) { heroT0=null; return; } if(t-heroLast<45) return; heroLast=t;
+  if(heroT0===null) heroT0=t-Math.acos(1-2*Math.log(heroF/16)/Math.log(120/16))/0.45*1000;
+  const ph=(t-heroT0)/1000*0.45; heroF=16*Math.pow(120/16,(1-Math.cos(ph))/2); heroDraw(); });
+
+/* ---------- 0 quiz ---------- */
+const QUIZ={A:135,B:14,C:50};
+const QTEXT={
+  14:'部機離佢得 20 幾厘米。鼻變大、塊面向前凸、耳仔縮埋，背後條街又遠又闊。感覺逼近、滑稽，甚至有威脅性。',
+  50:'部機離佢大約 80 厘米。比例接近我哋平時同人傾偈見到嘅樣，冇乜情緒加減，好中性。',
+  135:'部機離佢 2 米幾。塊面平咗、窄咗，背景放到好大又好矇。感覺好睇、柔和，似隔遠偷偷睇住佢。'};
+const picks={};
+for(const id of ['A','B','C']){ const f=QUIZ[id], v=new View($('#q'+id),{aspect:2/3}), d=f*0.27/17;
+  v.draw=()=>v.render(Lset(SUBJ),aimCam([0,1.47,-d],[0,1.45,0],f),{dof:{focus:d,bg:d+15}});
+  const card=document.querySelector('.qcard[data-q="'+id+'"]'); const g=card.querySelector('.seg');
+  segBind(g,val=>{ picks[id]=+val; }); }
+$('#qReveal').addEventListener('click',()=>{ let s=0;
+  for(const id of ['A','B','C']){ const card=document.querySelector('.qcard[data-q="'+id+'"]'), r=card.querySelector('.qres'), f=QUIZ[id], ok=picks[id]===f; if(ok) s++;
+    r.hidden=false; r.className='qres '+(ok?'ok':'bad');
+    r.innerHTML='<p class="verdict">'+(ok?'啱！':(picks[id]?'唔係 '+picks[id]+'mm，':'')+'答案係 '+f+'mm')+(ok?' 係 '+f+'mm':'')+'</p><p>'+QTEXT[f]+'</p>'; }
+  $('#qScore').textContent='你估啱 '+s+' / 3'; $('#qReveal').disabled=true; $('#qReset').hidden=false; });
+$('#qReset').addEventListener('click',()=>{ for(const id of ['A','B','C']){ delete picks[id]; const card=document.querySelector('.qcard[data-q="'+id+'"]'); card.querySelector('.qres').hidden=true; pressed(card.querySelector('.seg'),''); }
+  $('#qScore').textContent=''; $('#qReveal').disabled=false; $('#qReset').hidden=true; });
+
+/* ---------- 1 focal length ---------- */
+const v1=new View($('#v1'),{aspect:16/9}); const s1={f:35,mode:'keep',dof:true};
+const S1SAY={keep:'想個人喺畫面一樣大：用<b>廣角</b>就要行近，用<b>長焦</b>就要退後。留意背景點樣跟住變，透視就係喺度改變。',
+  stay:'部機唔郁，淨係換鏡：其實等於將同一張相<b>裁切</b>。個人同背景嘅比例一啲都冇變，只係睇到嘅範圍唔同。'};
+function s1draw(){ const f=s1.f, fish=f<10, d=s1.mode==='keep'?keepD(f,0.9,0.75,v1.sh):6;
+  v1.render(Lset(SUBJ),aimCam([0,1.5,-d],[0,1.3,0],f,{proj:fish?'fish':'rect'}),(s1.dof&&!fish)?{dof:{focus:d,bg:d+15}}:{});
+  $('#s1tag').textContent=f+'mm'; $('#s1fo').textContent=f+'mm';
+  $('#s1fov').textContent=fish?'180°':Math.round(hfov(f))+'°'; $('#s1d').textContent=d.toFixed(d<2?2:1)+' m';
+  $('#s1name').textContent=lensName(f)+(fish?'（8mm 喺全片幅多數係魚眼，第 3 章詳講）':'');
+  $('#s1say').innerHTML=S1SAY[s1.mode]; drawTop($('#t1'),d,f,fish); }
+v1.draw=s1draw;
+ticks($('#s1ticks'),8,200); $('#s1f').value=toV(35,8,200);
+$('#s1f').addEventListener('input',e=>{ s1.f=snapF(toF(+e.target.value,8,200)); s1draw(); });
+segBind($('#s1mode'),v=>{ s1.mode=v; s1draw(); });
+$('#s1dof').addEventListener('change',e=>{ s1.dof=e.target.checked; s1draw(); });
+function drawTop(cv,d,f,fish){
+  const W=cv.clientWidth, H=W/2; if(!W) return; const dpr=Math.min(2,devicePixelRatio||1);
+  if(cv.width!==Math.round(W*dpr)){ cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); }
+  const x=cv.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0);
+  // rotate the street so it runs left->right: camera on the left
+  const zmin=-Math.max(d,1)-3, zmax=zmin+44, sc=W/(zmax-zmin);
+  const X=z=>(z-zmin)*sc, Y=xw=>H/2-xw*sc;
+  x.fillStyle='#D9CDAE'; x.fillRect(0,0,W,H);
+  x.fillStyle='#E6D3B1'; x.fillRect(0,Y(7),W,Y(-7)-Y(7));
+  x.fillStyle='#5D6679'; x.fillRect(0,Y(4),W,Y(-4)-Y(4));
+  x.fillStyle='#F4E6C8'; for(let z=-80;z<440;z+=6){ if(z+3<zmin||z>zmax) continue; x.fillRect(X(z),Y(0.12),3*sc,0.24*sc); }
+  for(const b of STREET.meta.bld){ if(b.z1<zmin||b.z0>zmax) continue; x.fillStyle=b.col; x.fillRect(X(b.z0),Y(b.x1),(b.z1-b.z0)*sc,(b.x1-b.x0)*sc); x.strokeStyle='#23252E'; x.lineWidth=1; x.strokeRect(X(b.z0),Y(b.x1),(b.z1-b.z0)*sc,(b.x1-b.x0)*sc); }
+  x.fillStyle='#EDAF3A'; const tr=STREET.meta.tram; x.fillRect(X(tr[1]-5.5),Y(tr[0]+1.25),11*sc,2.5*sc);
+  for(const c of STREET.meta.cars){ x.fillStyle='#F4EAD8'; x.fillRect(X(c[1]-2.1),Y(c[0]+0.9),4.2*sc,1.8*sc); }
+  x.fillStyle='#2E3648'; for(const l of STREET.meta.lamps){ x.beginPath(); x.arc(X(l[1]),Y(l[0]),Math.max(2,0.25*sc),0,7); x.fill(); }
+  x.fillStyle='#4E8C6A'; for(const t of STREET.meta.trees){ x.beginPath(); x.arc(X(t[1]),Y(t[0]),1.2*sc,0,7); x.fill(); }
+  // FOV wedge
+  const cx=X(-d), cy=Y(0), a=fish?Math.PI/2:Math.atan(18/f);
+  x.save(); x.beginPath(); x.moveTo(cx,cy); x.arc(cx,cy,W*2,-a,a); x.closePath(); x.fillStyle='rgba(237,175,58,.32)'; x.fill();
+  x.strokeStyle='#C98410'; x.lineWidth=2; x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+Math.cos(-a)*W*2,cy+Math.sin(-a)*W*2); x.moveTo(cx,cy); x.lineTo(cx+Math.cos(a)*W*2,cy+Math.sin(a)*W*2); x.stroke(); x.restore();
+  // distance line
+  x.strokeStyle='#23252E'; x.setLineDash([4,4]); x.lineWidth=1.5; x.beginPath(); x.moveTo(cx,cy+14); x.lineTo(X(0),cy+14); x.stroke(); x.setLineDash([]);
+  x.font='700 12px "IBM Plex Mono",monospace'; x.fillStyle='#23252E'; x.textAlign='center';
+  const lab=d.toFixed(d<2?2:1)+' m', lx=Math.max(30,(cx+X(0))/2); x.fillStyle='#FFF8EE'; const tw=x.measureText(lab).width+10; x.fillRect(lx-tw/2,cy+20,tw,17); x.fillStyle='#23252E'; x.fillText(lab,lx,cy+33);
+  // subject + camera
+  x.fillStyle='#D95B43'; x.strokeStyle='#23252E'; x.lineWidth=2; x.beginPath(); x.arc(X(0),cy,Math.max(5,0.3*sc),0,7); x.fill(); x.stroke();
+  x.fillStyle='#23252E'; x.beginPath(); x.roundRect?x.roundRect(cx-12,cy-8,14,16,3):x.rect(cx-12,cy-8,14,16); x.fill(); x.beginPath(); x.moveTo(cx,cy-5); x.lineTo(cx+7,cy-8); x.lineTo(cx+7,cy+8); x.lineTo(cx,cy+5); x.fill();
+}
+
+/* ---------- 2 face lab ---------- */
+const v2=new View($('#v2'),{aspect:1,sw:24}); const s2={D:0.5,yaw:0}; const headCache=new Map();
+const s2min=0.22, s2max=6;
+function headSubj(yaw){ const k=Math.round(yaw); if(!headCache.has(k)) headCache.set(k,person({headYaw:k/DEG})); return headCache.get(k); }
+function s2draw(){ const D=s2.D, f=Math.min(600,Math.max(8,64*D)), y=s2.yaw/DEG;
+  v2.render(Lset(headSubj(s2.yaw)),aimCam([0,1.57,-D],[0,1.57,0],f),{dof:{focus:D,bg:D+15}});
+  $('#s2tag').textContent='≈ '+Math.round(f)+'mm'; $('#s2do').textContent=(D<1?(D*100).toFixed(0)+' cm':D.toFixed(2)+' m');
+  const pv=[0,1.47,0], R=p=>add(pv,rotY(sub(p,pv),y)), cam=[0,1.57,-D];
+  const dn=len(sub(R([0,1.55,-0.119]),cam)), de=(len(sub(R([0.093,1.553,0.006]),cam))+len(sub(R([-0.093,1.553,0.006]),cam)))/2;
+  const ratio=dn/de;
+  $('#s2n').textContent=(dn*100).toFixed(0)+' cm'; $('#s2e').textContent=(de*100).toFixed(0)+' cm';
+  $('#s2be').style.width=(ratio*100).toFixed(1)+'%'; $('#s2ber').textContent='×'+ratio.toFixed(2);
+  const big=(1/ratio-1)*100;
+  $('#s2say').innerHTML=D<0.6?'企得咁近，鼻比耳仔放大咗 <b>'+big.toFixed(0)+'%</b>。塊面向前凸、耳仔縮到背後，好似哈哈鏡。':
+    D<1.6?'呢個距離，鼻只係比耳仔大 <b>'+big.toFixed(0)+'%</b>，比例接近我哋傾偈時見到嘅樣。':
+    '企到咁遠，鼻同耳仔幾乎一樣比例（差 <b>'+big.toFixed(0)+'%</b>）。塊面變平、變窄，背景就放到好大。'; }
+v2.draw=s2draw;
+const s2pos=D=>Math.log(D/s2min)/Math.log(s2max/s2min);
+linTicks($('#s2ticks'),[0.25,0.5,1,2,4],v=>v<1?v*100+'cm':v+'m',s2pos);
+$('#s2d').value=Math.round(1000*s2pos(0.5));
+$('#s2d').addEventListener('input',e=>{ s2.D=s2min*Math.pow(s2max/s2min,+e.target.value/1000); s2draw(); });
+$('#s2y').addEventListener('input',e=>{ s2.yaw=+e.target.value; $('#s2yo').textContent=s2.yaw+'°'; s2draw(); });
+const pA=new View($('#pA'),{aspect:1,sw:24}), pB=new View($('#pB'),{aspect:1,sw:24});
+pA.draw=()=>pA.render(Lset(SUBJ),aimCam([0,1.57,-0.3125],[0,1.57,0],20));
+pB.draw=()=>pB.render(Lset(SUBJ),aimCam([0,1.57,-1.328],[0,1.57,0],85));
+const pCh=$('#pC'), pCc=$('#pCc');
+function drawProofC(){ const W=pCh.clientWidth; if(!W) return; const dpr=Math.min(2,devicePixelRatio||1), P=Math.round(W*dpr);
+  const off=document.createElement('canvas'); off.width=P; off.height=P; const o=off.getContext('2d'); o.setTransform(dpr,0,0,dpr,0,0);
+  renderTo(o,o,W,W,Lset(SUBJ),mkCam(Object.assign({sw:24,sh:24},aimCam([0,1.57,-1.328],[0,1.57,0],20))));
+  pCc.width=P; pCc.height=P; const x=pCc.getContext('2d'); x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
+  const cw=P*20/85, s0=(P-cw)/2; x.drawImage(off,s0,s0,cw,cw,0,0,P,P);
+  const iw=P*0.34, m=P*0.04; x.fillStyle='#23252E'; x.fillRect(m-3*dpr,m-3*dpr,iw+6*dpr,iw+6*dpr); x.drawImage(off,0,0,P,P,m,m,iw,iw);
+  x.strokeStyle='#EDAF3A'; x.lineWidth=2*dpr; x.strokeRect(m+iw*s0/P,m+iw*s0/P,iw*cw/P,iw*cw/P); }
+new ResizeObserver(drawProofC).observe(pCh);
+
+/* ---------- 3 optical distortion ---------- */
+const v3=new View($('#v3'),{aspect:16/9}); const PLAZA=buildPlaza();
+const PL_PERSON=person({x:3.4,z:7.5,yaw:0.35,top:'#2B7778',lod:true});
+const s3={mode:'barrel',s:0.7,grid:true,fix:false,lampX:-4.5}; let lampTris=null, lampKey=null;
+function s3lamp(){ const k=s3.lampX.toFixed(2); if(k!==lampKey){ const T=[]; lamp(T,s3.lampX,6,1,{rings:14}); lampTris=finalize(T); lampKey=k; } return lampTris; }
+function s3cam(){ let f=16,proj='rect',k1=0,k2=0; const m=s3.mode, s=s3.s;
+  if(m==='fish'){ f=8; proj=s3.fix?'rect':'fish'; }
+  else if(!s3.fix){ if(m==='barrel')k1=-0.2*s; if(m==='pin')k1=0.2*s; if(m==='mous'){k1=-0.42*s;k2=0.3*s;} }
+  return {pos:[0,1.6,0],yaw:0,pitch:0,f,proj,k1,k2}; }
+const S3SAY={
+  rect:'理想嘅 rectilinear 鏡頭：直線保持直。不過邊位啲嘢會被拉闊，嗰個係第 4 章嘅「邊位拉扯」，唔係光學變形。',
+  barrel:'<b>桶形</b>：畫面中間向外脹，好似個酒桶。廣角鏡同變焦鏡嘅廣角端最常見。',
+  pin:'<b>枕形</b>：四邊向內凹，四角拉尖。多數出現喺變焦鏡嘅長焦端（呢度喺廣角上誇張示範，方便睇）。',
+  mous:'<b>鬍鬚形</b>：中間桶形、近邊位又反轉做枕形，直線變成波浪，好似撇鬍鬚。部份廣角定焦會有，後期最難校正。',
+  fish:'<b>魚眼</b>唔係「有問題」，係刻意用另一套投影：每一度視角平均攤喺畫面，所以塞得落 180°。代價係唔經過中心嘅直線全部會彎。試吓將街燈拖去正中，佢就會變返直。'};
+function s3draw(){ const cam=v3.render({ground:[PLAZA.ground],objs:[PLAZA.objs,s3lamp(),PL_PERSON]},s3cam()); if(!cam) return;
+  const fishOn=s3.mode==='fish'&&!s3.fix;
+  $('#s3tag').textContent=(s3.mode==='fish'?'8mm':'16mm')+(fishOn?' 魚眼':'');
+  $('#s3sw').hidden=(s3.mode==='rect'||s3.mode==='fish');
+  const fac=1+cam.k1+cam.k2; $('#s3pct').textContent=fishOn?'—':((fac-1)*100>0?'+':(fac<1?'−':''))+Math.abs((fac-1)*100).toFixed(0)+'%';
+  $('#s3fov').textContent=fishOn?'180°':Math.round(hfov(cam.f))+'°';
+  $('#s3say').innerHTML=(s3.fix?(s3.mode==='fish'?'校正咗魚眼，即係改用 8mm rectilinear：直線變返直，但邊位拉到極誇張，而且要裁走好多畫面。':'校正咗：後期用鏡頭資料將直線拉返直，代價係邊位要裁走少少。'):S3SAY[s3.mode]);
+  if(s3.grid) s3grid(cam); }
+function s3grid(cam){ const x=v3.fg, W=v3.W, H=v3.H, k=W/36, fishOn=cam.proj==='fish';
+  const map=(sx,sy)=>{ if(fishOn){ const r=Math.hypot(sx,sy); if(r<1e-9) return [W/2,H/2]; const th=Math.atan(r/16), r2=2*8*Math.sin(th/2); return [W/2+sx/r*r2*k,H/2-sy/r*r2*k]; }
+    const rn2=(sx*sx+sy*sy)/324, f=1+cam.k1*rn2+cam.k2*rn2*rn2; return [W/2+sx*f*k,H/2-sy*f*k]; };
+  const lines=[]; for(let sx=-18;sx<=18.01;sx+=4.5) lines.push(t=>[sx,-10.125+20.25*t]); for(let sy=-9;sy<=9.01;sy+=4.5) lines.push(t=>[-18+36*t,sy]);
+  x.save(); x.lineWidth=1; x.strokeStyle='rgba(35,37,46,.55)'; x.setLineDash([5,5]);
+  for(const L of lines){ x.beginPath(); for(let i=0;i<=1;i++){ const p=L(i); const q=[W/2+p[0]*k,H/2-p[1]*k]; i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]); } x.stroke(); }
+  x.setLineDash([]); x.lineWidth=2; x.strokeStyle='rgba(217,91,67,.9)';
+  if(fishOn||cam.k1||cam.k2) for(const L of lines){ x.beginPath(); for(let i=0;i<=40;i++){ const p=L(i/40), q=map(p[0],p[1]); i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]); } x.stroke(); }
+  x.restore(); }
+v3.draw=s3draw;
+segBind($('#s3mode'),v=>{ s3.mode=v; s3draw(); });
+$('#s3s').addEventListener('input',e=>{ s3.s=+e.target.value/100; $('#s3so').textContent=e.target.value+'%'; s3draw(); });
+$('#s3grid').addEventListener('change',e=>{ s3.grid=e.target.checked; s3draw(); });
+$('#s3fix').addEventListener('change',e=>{ s3.fix=e.target.checked; s3draw(); });
+(function(){ const host=$('#v3'); let drag=false;
+  const setX=e=>{ const r=host.getBoundingClientRect(), cam=s3cam(); const sx=((e.clientX-r.left)-r.width/2)*36/r.width; let X;
+    if(cam.proj==='fish'){ const th=2*Math.asin(Math.min(1,Math.abs(sx)/(2*cam.f))); X=Math.sign(sx)*Math.tan(Math.min(th,1.42))*6; }
+    else { const rn2=sx*sx/324, f=1+cam.k1*rn2+cam.k2*rn2*rn2; X=sx/f*6/cam.f; }
+    s3.lampX=Math.max(-16,Math.min(16,X)); s3draw(); };
+  host.addEventListener('pointerdown',e=>{ drag=true; host.setPointerCapture(e.pointerId); setX(e); });
+  host.addEventListener('pointermove',e=>{ if(drag) setX(e); });
+  host.addEventListener('pointerup',()=>drag=false); host.addEventListener('pointercancel',()=>drag=false); })();
+
+/* ---------- 4 edge stretching ---------- */
+const v4=new View($('#v4'),{aspect:16/9}); const s4={f:14,balls:false,xs:[-2.4,-1.2,0,1.2,2.4]};
+const COLS=['#D95B43','#EDAF3A','#2B7778','#C98F8B','#26395A']; const objCache=new Map();
+function s4obj(i){ const k=(s4.balls?'b':'p')+i+':'+s4.xs[i].toFixed(2); if(!objCache.has(k)){ if(objCache.size>80) objCache.clear();
+  objCache.set(k,s4.balls?ball(s4.xs[i],COLS[i]):person({x:s4.xs[i],top:COLS[i],lod:true})); } return objCache.get(k); }
+function s4cam(){ const d=s4.f*5.4/(0.9*36); return {d,cam:aimCam([0,1.4,-d],[0,1.0,0],s4.f)}; }
+function s4draw(){ const {d,cam}=s4cam(); const c=v4.render({ground:[STREET.ground],objs:[STREET.objs].concat(s4.xs.map((_,i)=>s4obj(i)))},cam); if(!c) return;
+  $('#s4tag').textContent=s4.f+'mm'; $('#s4fo').textContent=s4.f+'mm'; $('#s4d').textContent=d.toFixed(1)+' m';
+  const x=v4.fg; let mx=0; x.save(); x.font='800 14px "Baloo 2","Noto Sans HK",sans-serif'; x.textAlign='center'; x.textBaseline='middle';
+  s4.xs.forEach((X,i)=>{ const q=toCam(c,[X,1.0,0]); const th=Math.atan2(Math.hypot(q[0],q[1]),q[2]); const pct=(1/Math.cos(th)-1)*100; mx=Math.max(mx,pct);
+    const top=projCam(c,toCam(c,[X,s4.balls?1.5:1.9,0]),v4.W,v4.H); if(!top) return;
+    const lab='+'+pct.toFixed(0)+'%', w=x.measureText(lab).width+14, y=Math.max(14,top[1]-14);
+    x.fillStyle=pct>20?'#D95B43':'#FFF8EE'; x.strokeStyle='#23252E'; x.lineWidth=2; x.beginPath(); x.roundRect?x.roundRect(top[0]-w/2,y-11,w,22,11):x.rect(top[0]-w/2,y-11,w,22); x.fill(); x.stroke();
+    x.fillStyle=pct>20?'#FFF8EE':'#23252E'; x.fillText(lab,top[0],y+1); });
+  x.restore(); $('#s4max').textContent='+'+mx.toFixed(0)+'%'; }
+v4.draw=s4draw;
+ticks($('#s4ticks'),12,50,[14,24,28,35,50]); $('#s4f').value=toV(14,12,50);
+$('#s4f').addEventListener('input',e=>{ s4.f=snapF(toF(+e.target.value,12,50)); s4draw(); });
+segBind($('#s4obj'),v=>{ s4.balls=v==='balls'; s4draw(); });
+(function(){ const host=$('#v4'); let idx=-1;
+  const sxOf=e=>{ const r=host.getBoundingClientRect(); return ((e.clientX-r.left)-r.width/2)*36/r.width; };
+  host.addEventListener('pointerdown',e=>{ const {d}=s4cam(), sx=sxOf(e); let best=1e9; s4.xs.forEach((X,i)=>{ const p=X*s4.f/d; if(Math.abs(p-sx)<best){best=Math.abs(p-sx); idx=i;} }); host.setPointerCapture(e.pointerId); });
+  host.addEventListener('pointermove',e=>{ if(idx<0) return; const {d}=s4cam(); const lim=d*18/s4.f+1; s4.xs[idx]=Math.max(-lim,Math.min(lim,sxOf(e)*d/s4.f)); s4draw(); });
+  const end=()=>idx=-1; host.addEventListener('pointerup',end); host.addEventListener('pointercancel',end); })();
+
+/* ---------- 5 compression ---------- */
+const v5=new View($('#v5'),{aspect:16/9}); const s5={f:24}; const s5vis=visTrack($('#v5'));
+function s5draw(){ const f=s5.f, d=keepD(f,0.9,0.75,v5.sh); v5.render(Lset(SUBJ),aimCam([0,1.5,-d],[0,1.3,0],f));
+  const fr=Math.round(f); $('#s5tag').textContent=fr+'mm'; $('#s5fo').textContent=fr+'mm'; $('#s5d').textContent=d.toFixed(d<2?2:1)+' m';
+  $('#s5fov').textContent=Math.round(hfov(f))+'°'; const d50=keepD(50,0.9,0.75,v5.sh); $('#s5r').textContent='×'+((f/(d+20))/(50/(d50+20))).toFixed(2); }
+v5.draw=s5draw;
+ticks($('#s5ticks'),14,200,[14,24,35,50,85,135,200]); $('#s5f').value=toV(24,14,200);
+$('#s5f').addEventListener('input',e=>{ s5anim=null; s5.f=snapF(toF(+e.target.value,14,200)); s5draw(); });
+let s5anim=null;
+$('#s5play').addEventListener('click',()=>{ s5anim={t0:null}; });
+anims.add(t=>{ if(!s5anim) return; if(s5anim.t0===null) s5anim.t0=t; const u=(t-s5anim.t0)/(RM?1:7000); if(u>=1){ s5anim=null; s5.f=24; }
+  else { const e=(1-Math.cos(u*2*Math.PI))/2; s5.f=20*Math.pow(160/20,e); }
+  $('#s5f').value=toV(s5.f,14,200); s5draw(); });
+
+/* ---------- 6 motion ---------- */
+const v6a=new View($('#v6a'),{aspect:16/9}), v6b=new View($('#v6b'),{aspect:16/9}); const s6vis=visTrack($('#v6a'));
+const s6={p:0,play:false,shake:false,t0:null,hold:0};
+const AMP=0.4/DEG;
+$('#s6sa').textContent=(24*Math.tan(AMP)/36*100).toFixed(1)+'%'; $('#s6sb').textContent=(200*Math.tan(AMP)/36*100).toFixed(1)+'%';
+function noise(t,s){ return (Math.sin(t*1.9+s)+0.6*Math.sin(t*3.7+s*2.1)+0.35*Math.sin(t*6.3+s*0.7))/1.95; }
+function s6draw(t){ const p=s6.p, walked=2.5*p, P=person({z:-walked,walk:true,phase:walked/0.7*Math.PI,lod:true});
+  const sh=s6.shake&&t!==undefined, ny=sh?noise(t/1000,1)*AMP:0, np=sh?noise(t/1000,4)*AMP*0.7:0;
+  const ca=aimCam([0,1.45,-4],[0,1.0,0],24), cb=aimCam([0,1.45,-33.6],[0,1.0,0],200);
+  ca.yaw+=ny; ca.pitch+=np; cb.yaw+=ny; cb.pitch+=np;
+  v6a.render(Lset(P),ca); v6b.render(Lset(P),cb);
+  $('#s6a').textContent='×'+(4/(4-walked)).toFixed(2); $('#s6b').textContent='×'+(33.6/(33.6-walked)).toFixed(2); }
+v6a.draw=()=>s6draw(); v6b.draw=()=>s6draw();
+$('#s6play').addEventListener('click',()=>{ s6.play=!s6.play; s6.t0=null; if(s6.play&&s6.p>=1) s6.p=0; $('#s6play').textContent=s6.play?'暫停':'播放'; });
+$('#s6shake').addEventListener('change',e=>{ s6.shake=e.target.checked; if(!s6.shake) s6draw(); });
+let s6last=0;
+anims.add(t=>{ if(!s6vis.v||!(s6.play||s6.shake)) return; if(t-s6last<40) return; const dt=s6last?Math.min(100,t-s6last):40; s6last=t;
+  if(s6.play){ if(s6.p>=1){ s6.hold+=dt; if(s6.hold>900){ s6.hold=0; s6.p=0; } } else s6.p=Math.min(1,s6.p+dt/4200); }
+  s6draw(t); });
+
+/* ---------- 7 lens deck ---------- */
+const LENSES=[
+ {f:8,kind:'魚眼',nick:'哈哈鏡',pos:[0,1.15,-0.55],target:[0,1.35,0],proj:'fish',
+  dist:'直線全部向外彎（經過畫面中心嗰啲除外），塞得落 180° 視角，畫面變成圓形。',
+  use:'滑板片、MV、門眼或者窺視孔、主觀鏡頭 (POV)、夢境同醉酒戲。',
+  story:'世界唔再正常：搞笑、迷幻、失控，或者有人偷睇緊。',
+  film:'《The Favourite》(2018) 用 6mm 魚眼影宮廷大房，令角色好似困喺一個扭曲嘅世界。',
+  warn:'好快睇膩，用多咗會變噱頭。'},
+ {f:14,kind:'超廣角',nick:'空間鏡',pos:[0,0.35,-1.3],target:[0,1.45,1],
+  dist:'近嘅嘢好大、遠嘅嘢好細，空間被拉深；邊位拉扯明顯；仰拍時建築物向中間倒。',
+  use:'大場面嘅 establishing shot、細小室內、動作場面、低角度英雄鏡。',
+  story:'空間壓倒人；或者用低角度令角色好霸氣。貼近人面就變得怪誕、有壓迫感。',
+  film:'王家衛《墮落天使》(1995)，杜可風用 9.8mm 超廣角貼近演員；Terry Gilliam《Brazil》(1985) 出名用廣角影大特寫。',
+  warn:'影人面會大鼻；機身要擺正，唔係成個畫面向一邊倒。'},
+ {f:24,kind:'廣角',nick:'環境人像',pos:[0,1.5,-3.2],target:[0,1.1,0],
+  dist:'透視比肉眼誇張少少，前景同背景嘅距離感好明顯。',
+  use:'Establishing shot、交代人喺咩環境、多走位嘅長鏡頭。',
+  story:'觀眾好似一齊企喺現場，投入、有活力。',
+  film:'Emmanuel Lubezki 拍《The Revenant》(2015) 用好闊嘅廣角貼近演員，連呼吸嘅霧都影埋落鏡。',
+  warn:'行得太近，人面一樣會變形。'},
+ {f:28,kind:'廣角',nick:'街頭眼',pos:[0.2,1.6,-2.6],target:[0,1.3,0],roll:0.03,
+  dist:'輕微，邊位開始見到少少拉闊。',
+  use:'紀錄片、手持跟拍、街拍、新聞。',
+  story:'真實、即興，好似攝影師就喺身邊。',
+  film:'好多街頭攝影師嘅標準焦距；紀錄片手持跟拍都好常見。',
+  warn:'容易影入太多嘢冇重點，構圖要清楚。'},
+ {f:35,kind:'標準偏廣',nick:'講故事鏡',pos:[0,1.55,-2.4],target:[0,1.3,0],
+  dist:'好少。人同背景比例平衡。',
+  use:'中景、兩人對話 (two-shot)、跟住角色行。',
+  story:'中性但有空間感：觀眾貼住角色，同時知道佢喺邊。',
+  film:'好多劇情片當佢係主力鏡，一套戲大部份鏡頭都可以靠佢。',
+  warn:'太安全就會平淡，要靠構圖同光出性格。'},
+ {f:50,kind:'標準',nick:'旁觀者',pos:[0,1.55,-3.2],target:[0,1.4,0],dof:true,
+  dist:'透視接近我哋平時睇相嘅感覺。',
+  use:'中景、日常生活戲、冷靜觀察。',
+  story:'客觀、平實，好似一個安靜嘅旁觀者。',
+  film:'小津安二郎據講幾乎只用 50mm，配合低機位，靜靜睇住一家人。',
+  warn:'「等於人眼」只係大概講法。'},
+ {f:85,kind:'中長焦',nick:'人像鏡',pos:[0,1.57,-2.0],target:[0,1.5,0],dof:true,
+  dist:'塊面比例最討好，背景開始溶開。',
+  use:'特寫、訪問、愛情戲、廣告。',
+  story:'親密、美化，觀眾嘅注意力全部落喺角色嘅情緒。',
+  film:'人像攝影最經典嘅焦距之一；電影特寫好常用 75–100mm 呢個範圍。',
+  warn:'細房度要企好後先夠位。'},
+ {f:135,kind:'長焦',nick:'偷睇鏡',pos:[0,1.6,-3.6],target:[0,1.52,0],dof:true,
+  dist:'壓縮明顯，背景又大又矇。',
+  use:'隔遠影特寫、喺人群中孤立一個人、偷拍感。',
+  story:'偷窺、孤獨、與世隔絕，又或者好浪漫。',
+  film:'黑澤明《七俠四義》(Seven Samurai, 1954) 用長焦多機拍打鬥，人、馬同雨疊埋一齊。',
+  warn:'景深好淺，演員郁少少就失焦。'},
+ {f:200,kind:'超長焦',nick:'監視鏡',pos:[0.9,1.75,-16],target:[0,1.5,0],
+  dist:'背景極度壓縮，景物疊晒埋；手震同熱浪都會放大。',
+  use:'監視、跟蹤、運動、人海、熱浪。',
+  story:'被睇住、焦慮、徒勞，好似命運拉住個角色。',
+  film:'《畢業生》(The Graduate, 1967) 用長焦拍主角狂奔，點跑都好似原地踏步；《沙漠梟雄》(Lawrence of Arabia, 1962) 更為海市蜃樓出場特製咗一支 482mm 鏡頭。',
+  warn:'要好遠距離，腳架要夠穩。'}];
+const v7=new View($('#v7'),{aspect:16/9}); let s7=4;
+function s7draw(){ const L=LENSES[s7], cam=aimCam(L.pos,L.target,L.f,{proj:L.proj||'rect',roll:L.roll||0}), d=len(sub(L.target,L.pos));
+  v7.render(Lset(SUBJ),cam,L.dof?{dof:{focus:d,bg:d+15}}:{}); $('#s7tag').textContent=L.f+'mm'; }
+function s7card(){ const L=LENSES[s7];
+  $('#s7card').innerHTML='<header><span class="fl">'+L.f+'mm</span><div><p class="nick">'+L.nick+'</p><p class="kind">'+L.kind+'</p></div></header><dl>'+
+    '<div><dt>變形</dt><dd>'+L.dist+'</dd></div><div><dt>常見用途</dt><dd>'+L.use+'</dd></div><div><dt>講故仔效果</dt><dd>'+L.story+'</dd></div>'+
+    '<div><dt>電影例子</dt><dd>'+L.film+'</dd></div><div><dt>小心</dt><dd>'+L.warn+'</dd></div></dl>'; }
+v7.draw=s7draw;
+$('#s7chips').innerHTML=LENSES.map((L,i)=>'<button type="button" class="chip" data-v="'+i+'" aria-pressed="'+(i===s7)+'">'+L.f+'</button>').join('');
+segBind($('#s7chips'),v=>{ s7=+v; s7draw(); s7card(); });
+s7card();
+
+/* theme change: redraw diagrams that read page tokens */
+if(window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{ for(const v of ALLVIEWS) v.draw&&v.draw(); });
+})();
+</script>
+
+</body></html>
